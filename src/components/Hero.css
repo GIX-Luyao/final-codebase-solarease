@@ -1,8 +1,9 @@
 .hero { width:100%; height:900px; position:relative; box-sizing:border-box; }
 .hero-inner { width:100%; height:100%; position:relative; display:flex; align-items:center; justify-content:center; padding:40px 0 }
 .hero-background { position:absolute; inset:0; overflow:hidden }
-.hero-background .bg-linear { position:absolute; inset:0; background: linear-gradient(135deg,#000f1f 0%, #0e1825 50%, #0f1a2e 100%); }
-.hero-background .bg-radial { position:absolute; width:100%; height:900px; background: radial-gradient(closest-side, rgba(13,162,231,0.12) 0%, rgba(13,162,231,0) 65%); mix-blend-mode:screen; transform:translateY(-40px) }
+.hero-background .bg-linear { position:absolute; inset:0; background: linear-gradient(135deg,#000f1f 0%, #0e1825 50%, #0f1a2e 100%); z-index:1; }
+.hero-background .bg-rating { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.5; z-index:2; filter: brightness(0.7) hue-rotate(190deg); mix-blend-mode:soft-light; }
+.hero-background .bg-radial { position:absolute; width:100%; height:900px; background: radial-gradient(closest-side, rgba(13,162,231,0.12) 0%, rgba(13,162,231,0) 65%); mix-blend-mode:screen; transform:translateY(-40px); z-index:3; }
 
 .hero-content { position:relative; z-index:2; width:100%; max-width:1200px; display:flex; align-items:center; justify-content:center; padding:96px 80px; box-sizing:border-box; margin:0 auto }
 .card-wrapper { width:920px }
@@ -14,13 +15,13 @@
 .Table-text { margin-top:18px; color:#a3b3c2; font-size:18px; line-height:28px; text-align:left; max-width:600px }
 .Button-container.frame { display:flex; gap:16px; margin-top:28px }
 .Button.primary .start-text, .Button.outline .contact-text { display:inline-block; padding:12px 20px; border-radius:12px; font-weight:700 }
-.Button.primary .start-text { background: linear-gradient(90deg,#0da2e7 0%, #07c0d5 100%); color:#071124 }
+.Button.primary .start-text { background: linear-gradient(90deg,#0da2e7 0%, #07c0d5 100%); color:#ffffff }
 .Button.outline .contact-text { border:1px solid rgba(255,255,255,0.12); color:#f8fafc; background:transparent }
 
-.stats-frame { display:flex; gap:28px; margin-top:36px }
-.stats-frame .stat-content { display:flex; flex-direction:column; gap:4px; align-items:center }
-.stats-frame .text-100, .stats-frame .text-2m, .stats-frame .text-50mw { font-weight:800; font-size:28px; color:#0da2e7 }
-.stats-frame .label { font-size:12px; color:#a3b3c2; text-align:center }
+.stats-frame { display:flex; justify-content:center; gap:80px; margin-top:36px }
+.stats-frame .stat-content { display:flex; flex-direction:column; gap:6px; align-items:center }
+.stats-frame .text-100, .stats-frame .text-2m, .stats-frame .text-50mw { font-weight:800; font-size:32px; color:#0da2e7 }
+.stats-frame .label { font-size:13px; color:#a3b3c2; text-align:center; font-weight:500 }
 
 /* small responsive tweak */
 @media (max-width:1100px){

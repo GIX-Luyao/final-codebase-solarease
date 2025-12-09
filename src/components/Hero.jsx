@@ -7,6 +7,7 @@ export default function Hero() {
     <section className="hero">
       <div className="hero-inner">
         <div className="hero-background">
+          <img src="/images/Rating.jpg" alt="" className="bg-rating" />
           <div className="bg-linear" />
           <div className="bg-radial" />
         </div>
@@ -20,7 +21,7 @@ export default function Hero() {
               <div className="Card-inner frame">
                 {/* Text input (headline) frame */}
                 <div className="Text-input frame headline-frame">
-                  <div className="Power-Your-Future-text text">Power Your Future with<br/><span className="highlight">Data-Driven Solar</span></div>
+                  <div className="Power-Your-Future-text text">Power Your Future With<br/><span className="highlight">Data-Driven Solar</span></div>
                 </div>
 
                 {/* Table (paragraph) frame */}
