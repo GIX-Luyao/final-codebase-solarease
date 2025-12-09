@@ -1,0 +1,10 @@
+.site-footer { width:100%; box-sizing:border-box; padding:40px 0; background: rgba(0,15,31,0.9); border-top:1px solid rgba(36,48,66,0.25) }
+.footer-inner { width:100%; max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; gap:28px; padding:0 16px; box-sizing:border-box }
+.footer-left { width:320px }
+.footer-left .brand { font-family:Poppins, sans-serif; font-weight:700; font-size:18px; background: linear-gradient(90deg,#0da2e7,#07c0d5); -webkit-background-clip:text; background-clip:text; color:transparent }
+.footer-left .tag { margin-top:8px; color:#a3b3c2; font-size:13px }
+.footer-columns { display:flex; gap:24px }
+.col { width:260px }
+.col-title { color:#f8fafc; font-weight:700; font-size:14px }
+.col-item { margin-top:8px; color:#a3b3c2; font-size:13px }
+.footer-bottom { width:100%; text-align:center; margin-top:28px; color:#a3b3c2; font-size:13px }

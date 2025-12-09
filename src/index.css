@@ -1,0 +1,13 @@
+:root{
+  --bg:#000f1f;
+  --muted:#a3b3c2;
+  --accent:#0da2e7;
+  --accent-2:#07c0d5;
+  --white:#f8fafc;
+}
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0; background:var(--bg); color:var(--white); font-family:Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+
+.app-root{display:flex; justify-content:center}
+button{font-family:inherit; cursor:pointer}

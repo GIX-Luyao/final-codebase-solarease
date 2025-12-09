@@ -1,0 +1,93 @@
+.negotiation-tool { width:100%; box-sizing:border-box; padding:96px 0; background: radial-gradient(circle at 20% 20%, rgba(13,162,231,0.08), transparent 50%), radial-gradient(circle at 80% 0%, rgba(7,192,213,0.08), transparent 55%); min-height:100vh }
+.negotiation-tool .section-header { display:flex; flex-direction:column; gap:14px; align-items:center; margin-bottom:48px }
+.negotiation-tool .section-title { font-family:Poppins, sans-serif; font-weight:700; font-size:40px; text-align:center; color:#f8fafc; margin:0 }
+.negotiation-tool .section-title .highlight { color: #0da2e7 }
+.negotiation-tool .section-subtitle { color:#a3b3c2; font-size:16px; text-align:center; max-width:760px; margin:0 }
+
+.negotiation-inner { width:100%; max-width:1400px; margin:0 auto; padding:0 16px; box-sizing:border-box; display:grid; grid-template-columns: 1fr 1fr; gap:32px; align-items:start }
+
+/* Left panel: Inputs */
+.nego-left { display:flex; flex-direction:column; gap:24px }
+.nego-panel { background: linear-gradient(165deg, rgba(13,162,231,0.24), rgba(7,192,213,0.12)); border:1px solid rgba(13,162,231,0.4); border-radius:16px; padding:24px; box-shadow:0 18px 36px rgba(4,15,35,0.4) }
+.panel-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px }
+.panel-title { font-family:Poppins, sans-serif; font-size:18px; font-weight:700; color:#f8fafc; margin:0; letter-spacing:0.2px }
+.add-btn { background:linear-gradient(90deg,#0da2e7,#07c0d5); color:#071124; border:0; padding:8px 16px; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow:0 4px 12px rgba(7,192,213,0.3) }
+.add-btn:hover { transform: translateY(-1px); box-shadow:0 6px 16px rgba(7,192,213,0.4) }
+.add-btn:active { transform: translateY(0) }
+
+.participants-list { display:flex; flex-direction:column; gap:16px }
+.participant-card { background:rgba(255,255,255,0.02); border:1px solid rgba(13,162,231,0.22); border-radius:12px; padding:16px; box-shadow:0 4px 12px rgba(2,6,23,0.25) }
+.card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+.card-num { color:#0da2e7; font-weight:700; font-size:14px }
+.remove-btn { background:rgba(255,50,50,0.2); color:#ff6b6b; border:1px solid rgba(255,50,50,0.3); width:28px; height:28px; border-radius:6px; font-size:20px; line-height:1; cursor:pointer; transition: all 0.2s ease }
+.remove-btn:hover { background:rgba(255,50,50,0.3); transform: scale(1.05) }
+
+.input-row { display:flex; flex-direction:column; gap:6px; margin-bottom:12px }
+.input-row:last-child { margin-bottom:0 }
+.input-row label { color:#a3b3c2; font-size:12px; font-weight:500; letter-spacing:0.2px; text-transform:uppercase }
+.input-row input { width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(163,179,194,0.16); background:rgba(255,255,255,0.03); color:#f8fafc; font-size:14px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.15); transition: border-color 0.2s ease; box-sizing:border-box }
+.input-row input:focus { outline:none; border-color:rgba(13,162,231,0.5); box-shadow: inset 0 1px 2px rgba(0,0,0,0.15), 0 0 0 3px rgba(13,162,231,0.1) }
+.input-row input::placeholder { color:#5a6a7a }
+
+.input-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px }
+.input-grid .input-row { margin-bottom:0 }
+.input-grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:14px }
+
+.run-nego-btn { width:100%; background:linear-gradient(90deg,#0da2e7,#07c0d5); color:#071124; border:0; padding:16px 20px; border-radius:12px; font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow:0 10px 24px rgba(7,192,213,0.4); position:relative; overflow:hidden }
+.run-nego-btn:hover { transform: translateY(-2px); box-shadow:0 12px 28px rgba(7,192,213,0.5) }
+.run-nego-btn:active { transform: translateY(0); box-shadow:0 8px 20px rgba(7,192,213,0.4) }
+.run-nego-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none }
+
+/* Right panel: Results */
+.nego-right { background: linear-gradient(165deg, rgba(13,162,231,0.24), rgba(7,192,213,0.12)); border:1px solid rgba(13,162,231,0.4); border-radius:16px; padding:28px; box-shadow:0 18px 36px rgba(4,15,35,0.4); min-height:600px; display:flex; flex-direction:column }
+
+.loading-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:80px 20px; text-align:center }
+.loading-state .spinner { width:40px; height:40px; border-radius:50%; border:4px solid rgba(255,255,255,0.12); border-top-color: #0da2e7; animation: spin 1s linear infinite }
+.loading-state p { color:#a3b3c2; font-size:14px }
+
+.empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:80px 20px; text-align:center }
+.empty-icon { font-size:64px; opacity:0.5 }
+.empty-state h3 { color:#f8fafc; font-size:20px; margin:0 }
+.empty-state p { color:#a3b3c2; font-size:14px; max-width:300px; margin:0 }
+
+.error-box { background:rgba(255,50,50,0.1); border:1px solid rgba(255,50,50,0.3); border-radius:12px; padding:20px; text-align:center }
+.error-box h3 { color:#ff6b6b; margin:0 0 8px; font-size:18px }
+.error-box p { color:#ffa8a8; margin:0; font-size:14px }
+
+.results-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid rgba(163,179,194,0.12) }
+.results-title { font-family:Poppins, sans-serif; font-size:20px; font-weight:700; color:#f8fafc; margin:0 }
+.surplus-badge { background:rgba(13,162,231,0.2); border:1px solid rgba(13,162,231,0.4); padding:8px 14px; border-radius:8px; color:#0da2e7; font-weight:700; font-size:13px }
+
+.allocations-list { display:flex; flex-direction:column; gap:16px; margin-bottom:24px }
+.alloc-card { background:rgba(255,255,255,0.02); border:1px solid rgba(13,162,231,0.22); border-radius:12px; padding:18px; box-shadow:0 4px 12px rgba(2,6,23,0.25); transition: transform 0.2s ease, box-shadow 0.2s ease }
+.alloc-card:hover { transform: translateY(-2px); box-shadow:0 6px 16px rgba(13,162,231,0.3) }
+
+.alloc-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
+.alloc-name { color:#f8fafc; font-weight:700; font-size:16px }
+.alloc-value { color:#0da2e7; font-weight:800; font-size:20px }
+
+.alloc-details { display:flex; flex-direction:column; gap:8px }
+.detail-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0 }
+.detail-label { color:#a3b3c2; font-size:12px; text-transform:uppercase; letter-spacing:0.3px }
+.detail-value { color:#f8fafc; font-weight:600; font-size:14px }
+.gain-row { border-top:1px solid rgba(163,179,194,0.08); padding-top:10px; margin-top:4px }
+.detail-value.gain { color:#07c0d5; font-weight:700 }
+
+.progress-bar { width:100%; height:6px; background:rgba(255,255,255,0.04); border-radius:3px; overflow:hidden; margin-top:10px }
+.progress-fill { height:100%; background:linear-gradient(90deg,#0da2e7,#07c0d5); transition: width 0.6s ease }
+
+.alloc-address { margin-top:10px; color:#7a8a9a; font-size:12px; font-style:italic; padding-top:10px; border-top:1px solid rgba(163,179,194,0.08) }
+
+.ai-section { margin-top:auto; padding-top:20px; border-top:1px solid rgba(163,179,194,0.12) }
+.ai-btn { width:100%; background:rgba(13,162,231,0.15); border:1px solid rgba(13,162,231,0.4); color:#0da2e7; padding:12px 16px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; transition: all 0.2s ease }
+.ai-btn:hover { background:rgba(13,162,231,0.25); transform: translateY(-1px) }
+.ai-btn:disabled { opacity:0.5; cursor:not-allowed }
+
+.ai-explanation { margin-top:16px; background:rgba(0,0,0,0.2); border:1px solid rgba(163,179,194,0.12); border-radius:10px; padding:16px }
+.ai-label { color:#0da2e7; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:8px }
+.ai-explanation p { color:#a3b3c2; font-size:14px; line-height:1.6; margin:0 }
+
+@keyframes spin { to { transform: rotate(360deg) } }
+
+@media (max-width:1200px) { .negotiation-inner { grid-template-columns: 1fr; } .nego-right { min-height:400px } }
+

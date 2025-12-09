@@ -1,0 +1,17 @@
+.pagination-container { width:100%; box-sizing:border-box; padding:96px 0; background: radial-gradient(circle at 20% 20%, rgba(13,162,231,0.08), transparent 50%), radial-gradient(circle at 80% 0%, rgba(7,192,213,0.08), transparent 55%); }
+.pagination-inner { width:100%; max-width:1200px; margin:0 auto; padding:0 16px; box-sizing:border-box; display:flex; flex-direction:column; gap:48px }
+.section-header .title { font-family:Poppins, sans-serif; font-weight:700; font-size:40px; text-align:center; color:#f8fafc }
+.section-header .title .highlight { color: #0da2e7 }
+.section-header { display:flex; flex-direction:column; gap:6px; align-items:center }
+.section-header .title { font-family:Poppins, sans-serif; font-weight:700; font-size:40px; text-align:center; color:#f8fafc }
+.section-header .subtitle { margin-top:0; color:#a3b3c2; font-size:16px; text-align:center; max-width:760px; margin-left:auto; margin-right:auto }
+.cards-row { display:flex; gap:24px; justify-content:center; flex-wrap:wrap }
+.map-card { width:360px; min-height:220px; border-radius:16px; background: linear-gradient(165deg, rgba(13,162,231,0.24), rgba(7,192,213,0.12)); border:1px solid rgba(13,162,231,0.4); padding:22px; box-sizing:border-box; box-shadow:0 16px 34px rgba(4,15,35,0.4) }
+.map-card-head { display:flex; justify-content:space-between; align-items:center }
+.location { color:#f8fafc; font-weight:700; font-size:15px }
+.active-pill { background:#0da2e7; color:#fff; padding:4px 12px; border-radius:9999px; font-size:11px }
+.pill-alt { background:#07c0d5 }
+.metric-row { display:flex; flex-direction:column; margin-top:16px; gap:10px }
+.metric { background:rgba(255,255,255,0.02); border:1px solid rgba(13,162,231,0.18); border-radius:10px; padding:10px 12px; box-sizing:border-box }
+.metric .m-val { color:#0da2e7; font-weight:800; font-size:16px }
+.metric .m-label { color:#a3b3c2; font-size:12px; letter-spacing:0.2px }

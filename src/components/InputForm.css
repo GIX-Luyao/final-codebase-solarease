@@ -1,0 +1,97 @@
+.input-form-container { width:100%; box-sizing:border-box; padding:56px 0; display:flex; justify-content:center; }
+.input-form-inner { width:1200px; margin:0 auto; display:flex; flex-direction:column; gap:48px }
+.input-header .title { font-family:Poppins, sans-serif; font-weight:700; font-size:36px; text-align:center; color:#f8fafc }
+.input-header .subtitle { margin-top:12px; color:#a3b3c2; font-size:16px; text-align:center; max-width:920px; margin-left:auto; margin-right:auto }
+.feature-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:20px }
+.feature { background: rgba(14,24,37,0.5); border:1px solid rgba(36,48,66,0.22); border-radius:12px; padding:20px; color:#f8fafc; box-sizing:border-box; min-height:220px; box-shadow: 0 6px 18px rgba(2,6,23,0.35) }
+
+.input-form-container { width: 100%; display: flex; justify-content: center; background: transparent; padding: 56px 0 }
+.Input-form.frame { width: 100%; max-width: 1200px; position: relative }
+.Text-input.rectangle { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: transparent }
+.Input-form-inner.frame { display: flex; flex-direction: column; gap: 28px; padding: 32px; box-sizing: border-box }
+
+/* Header row (title + subtitle) */
+.Horizontal-container.frame.header-row {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+}
+
+.Button.frame.title-frame {
+	font-family: 'Poppins', sans-serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--text-primary);
+	text-align: center;
+}
+
+.Horizontal-container.frame.subtitle-frame {
+	font-family: 'Poppins', sans-serif;
+	font-size: 16px;
+	color: var(--muted);
+	max-width: 900px;
+	text-align: center;
+}
+
+.highlight { color: #0DA2E7 }
+
+/* FEATURES AREA: converted to absolute pixel positions for pixel-exact mapping
+ 	Assumptions made (inferred from JSON-like layout):
+ 	- Parent inner content width (content box) ≈ 1128px (1200px wrapper - 36px padding each side)
+ 	- Each card width set to 360px with 18px horizontal gap between columns
+ 	- Two rows of cards, each card height ≈ 220px, vertical gap ≈ 20px
+ 	- These values are inferred; if you provide exact JSON x/y/width/height numbers I will use them verbatim.
+*/
+.Number-input.frame.features-area { position: relative; width: 100%; height: 480px; box-sizing: border-box }
+
+.feature-column { position: absolute; width: 360px; height: 220px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:12px; box-sizing:border-box; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease }
+.feature-column.clickable { cursor: pointer }
+.feature-column.clickable:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(13,162,231,0.3); border-color: rgba(13,162,231,0.4) }
+
+/* First row positions */
+.Number-input.frame.features-area .feature-column:nth-child(1) { left: 0px; top: 0px; }
+.Number-input.frame.features-area .feature-column:nth-child(2) { left: 378px; top: 0px; }
+.Number-input.frame.features-area .feature-column:nth-child(3) { left: 756px; top: 0px; }
+
+/* Second row positions (row spacing = 240px) */
+.Number-input.frame.features-area .feature-column:nth-child(4) { left: 0px; top: 240px; }
+.Number-input.frame.features-area .feature-column:nth-child(5) { left: 378px; top: 240px; }
+.Number-input.frame.features-area .feature-column:nth-child(6) { left: 756px; top: 240px; }
+
+.Button.frame.icon-box { width:56px; height:56px; border-radius:12px; background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); display:flex; align-items:center; justify-content:center }
+.Button.frame.icon-box svg { width:24px; height:24px; flex-shrink:0 }
+
+.Text-input.frame.feature-title {
+	font-family: 'Poppins', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.Container.frame.feature-desc {
+	font-family: 'Poppins', sans-serif;
+	font-size: 14px;
+	color: var(--muted);
+}
+
+/* Responsive smaller screens */
+@media (max-width: 980px) {
+	.Number-input.frame.features-area {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 640px) {
+	.Number-input.frame.features-area {
+		grid-template-columns: 1fr;
+	}
+}
+.feature-box { width:64px; height:64px; background: rgba(255,255,255,0.04); border-radius:14px; display:flex; align-items:center; justify-content:center }
+.feature-title { margin-top:10px; font-weight:700; font-size:16px }
+.feature-desc { margin-top:8px; color:#a3b3c2; font-size:14px; line-height:22px }
+
+/* fine-grain interior alignment for icon + titles inside feature cards */
+.feature .feature-box { width:56px; height:56px }
+.feature .feature-title { font-size:15px }
+.feature .feature-desc { font-size:13.5px }
