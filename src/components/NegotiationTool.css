@@ -48,6 +48,12 @@
 .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:80px 20px; text-align:center }
 .empty-icon { font-size:64px; opacity:0.5 }
 .empty-state h3 { color:#f8fafc; font-size:20px; margin:0 }
+
+/* AI Content Styling */
+.ai-content { margin-top:18px; background: linear-gradient(135deg, rgba(13,162,231,0.08), rgba(7,192,213,0.05)); border:1px solid rgba(13,162,231,0.25); border-radius:12px; padding:18px; box-shadow:0 4px 12px rgba(4,15,35,0.25) }
+.ai-content-header { font-size:15px; font-weight:700; color:#0da2e7; margin-bottom:12px; letter-spacing:0.3px }
+.ai-content p { margin:0 0 10px 0; color:#d1dae3; font-size:14px; line-height:1.7 }
+.ai-content p:last-child { margin-bottom:0 }
 .empty-state p { color:#a3b3c2; font-size:14px; max-width:300px; margin:0 }
 
 .error-box { background:rgba(255,50,50,0.1); border:1px solid rgba(255,50,50,0.3); border-radius:12px; padding:20px; text-align:center }

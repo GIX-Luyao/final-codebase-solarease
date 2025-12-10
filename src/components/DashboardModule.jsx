@@ -78,7 +78,13 @@ export default function DashboardModule({ initSizeA=100, initSizeB=200, initCost
     setAiResult(null)
     try{
       const payload = {
-        prompt: `Summarize this solar simulation and provide recommendations. Baseline: ${metrics.a.size}kW, Scenario: ${metrics.b.size}kW, deltaCapacity:${metrics.b.size-metrics.a.size}kW, deltaAnnualSavings:${Math.round(metrics.b.annualValue-metrics.a.annualValue)}, paybackA:${metrics.a.payback}, paybackB:${metrics.b.payback}`
+        prompt: `You're Soli from SolarEase helping analyze these solar scenarios. Keep it friendly and under 150 words:
+
+Individual: ${metrics.a.size}kW, $${Math.round(metrics.a.totalCost/1000)}K upfront, ${metrics.a.payback}yr payback, ${metrics.a.roi}% ROI
+Community: ${metrics.b.size}kW, $${Math.round(metrics.b.totalCost/1000)}K upfront, ${metrics.b.payback}yr payback, ${metrics.b.roi}% ROI
+
+Tell them which is better in a conversational way and give 2-3 quick tips. Be encouraging about community solar. No headers, no hashtags, just natural paragraphs.`,
+        context: 'community solar ROI analysis'
       }
       const res = await fetch('http://localhost:3000/api/ai', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
@@ -216,8 +222,15 @@ export default function DashboardModule({ initSizeA=100, initSizeB=200, initCost
               {Object.keys(glossary).map(k=> <option key={k} value={k}>{k}</option>)}
             </select>
             <div className="explain-box">{glossary[term]}</div>
-            {aiLoading && <div style={{marginTop:8}}>Loading AI summary…</div>}
-            {aiResult && <div style={{marginTop:8, whiteSpace:'pre-wrap'}} className="explain-box">{aiResult}</div>}
+            {aiLoading && <div style={{marginTop:8}}>Soli is analyzing your scenarios...</div>}
+            {aiResult && (
+              <div style={{marginTop:12}} className="explain-box ai-result">
+                <div className="ai-result-header">💡 Soli's Analysis</div>
+                <div className="ai-result-content">
+                  {aiResult.split('\n').map((line, i) => line.trim() && <p key={i}>{line.replace(/###|##|#/g, '').trim()}</p>)}
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

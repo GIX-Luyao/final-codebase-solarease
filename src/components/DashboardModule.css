@@ -45,6 +45,13 @@
 .ai-explain select { width:100%; padding:12px; border-radius:10px; background:rgba(255,255,255,0.02); color:#f8fafc; border:1px solid rgba(163,179,194,0.1) }
 .explain-box { margin-top:8px; background:rgba(0,0,0,0.12); padding:12px; border-radius:10px; color:#a3b3c2; border:1px solid rgba(163,179,194,0.08) }
 
+/* AI Result Styling */
+.ai-result { margin-top:14px; background: linear-gradient(135deg, rgba(13,162,231,0.08), rgba(7,192,213,0.05)); border:1px solid rgba(13,162,231,0.25); border-radius:12px; padding:18px; box-shadow:0 4px 12px rgba(4,15,35,0.25) }
+.ai-result-header { font-size:15px; font-weight:700; color:#0da2e7; margin-bottom:12px; letter-spacing:0.3px }
+.ai-result-content { color:#d1dae3; font-size:14px; line-height:1.7 }
+.ai-result-content p { margin:0 0 10px 0 }
+.ai-result-content p:last-child { margin-bottom:0 }
+
 /* Spinner */
 .spinner { width:22px; height:22px; border-radius:50%; border:3px solid rgba(255,255,255,0.12); border-top-color: #0da2e7; animation: spin 1s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }

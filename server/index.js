@@ -19,16 +19,74 @@ if(!OPENAI_KEY){
   console.warn('Warning: OPENAI_API_KEY not set in environment. Create .env with OPENAI_API_KEY=sk-...')
 }
 
-app.post('/api/ai', async (req, res) => {
-  try{
-    const prompt = req.body.prompt || ''
+// Chat endpoint with conversational context
+app.post('/api/chat', async (req, res) => {
+  try {
+    const messages = req.body.messages || []
+    
+    const systemPrompt = {
+      role: 'system',
+      content: `You are Soli, a friendly and knowledgeable solar energy assistant for SolarEase, a community solar platform. Your role is to help communities and individuals understand solar energy investments, ROI calculations, community solar projects, Power Purchase Agreements (PPAs), and negotiation strategies.
+
+Key responsibilities:
+- Explain solar energy concepts in simple, accessible language
+- Help users understand ROI, NPV, IRR, and payback periods
+- Guide users on community solar vs individual solar benefits
+- Explain PPA terms and negotiation strategies
+- Provide information about solar incentives and policies
+- Encourage collective action and community empowerment
+- Be encouraging and supportive of sustainable energy transitions
+
+Tone: Friendly, professional, encouraging, and informative. Keep responses concise (2-3 paragraphs max) unless more detail is specifically requested.
+
+Do not provide financial advice or make guarantees about returns. Always encourage users to consult with qualified professionals for specific decisions.`
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENAI_KEY}`
       },
-      body: JSON.stringify({ model: 'gpt-3.5-turbo', messages: [{role:'user', content: prompt}], max_tokens: 800 })
+      body: JSON.stringify({ 
+        model: 'gpt-4o-mini',
+        messages: [systemPrompt, ...messages],
+        max_tokens: 500,
+        temperature: 0.7
+      })
+    })
+    
+    const data = await response.json()
+    const text = data?.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.'
+    res.json({ result: text })
+  } catch(err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Simple AI endpoint for quick explanations (legacy)
+app.post('/api/ai', async (req, res) => {
+  try{
+    const prompt = req.body.prompt || ''
+    const context = req.body.context || 'solar energy analysis'
+    
+    const systemPrompt = `You are a helpful solar energy analyst. Provide clear, concise explanations about ${context}. Keep responses focused and practical.`
+    
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_KEY}`
+      },
+      body: JSON.stringify({ 
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 500,
+        temperature: 0.7
+      })
     })
     const data = await response.json()
     const text = data?.choices?.[0]?.message?.content || JSON.stringify(data)

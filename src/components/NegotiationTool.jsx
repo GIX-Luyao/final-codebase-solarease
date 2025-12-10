@@ -95,16 +95,24 @@ export default function NegotiationTool() {
     
     setAiLoading(true)
     try {
-      const summary = result.participants.map((p, i) => 
-        `${p.name}: Fallback=$${p.threat_point.toFixed(0)}, Allocation=$${p.allocation.toFixed(0)}, Gain=$${p.gain.toFixed(0)}`
-      ).join('; ')
+      const participantSummary = result.participants.map(p => 
+        `${p.name}: gets $${Math.round(p.allocation/1000)}K (${Math.round(p.gain/1000)}K more than going solo)`
+      ).join(', ')
       
-      const prompt = `Explain why this Nash Bargaining allocation is fair: ${summary}. Total surplus: $${result.total_surplus.toFixed(0)}. Keep it simple and emphasize fairness principles.`
+      const prompt = `You're Soli from SolarEase. Explain this Nash Bargaining result in a friendly, conversational way (under 120 words):
+
+${participantSummary}
+Total surplus: $${Math.round(result.total_surplus/1000)}K from ${ppaTerm}yr PPA
+
+Tell them why this split is fair and how everyone wins by cooperating. Be encouraging and personal. No headers, no hashtags, no bullet points - just 2-3 short paragraphs.`
       
       const res = await fetch('http://localhost:3000/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ 
+          prompt,
+          context: 'Nash Bargaining negotiation for community solar PPA'
+        })
       })
       
       const data = await res.json()
@@ -299,8 +307,13 @@ export default function NegotiationTool() {
                     
                     {showAI && aiExplanation && (
                       <div className="ai-explanation">
-                        <div className="ai-label">AI Explanation</div>
-                        <p>{aiExplanation}</p>
+                        <div className="ai-label">💡 Soli's Take on Fairness</div>
+                        <div className="ai-content">
+                          {aiExplanation.split('\n').map((line, i) => {
+                            const cleanLine = line.replace(/###|##|#/g, '').trim();
+                            return cleanLine && <p key={i}>{cleanLine}</p>
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
