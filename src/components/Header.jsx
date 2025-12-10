@@ -1,13 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 import githubIcon from '../../svg/Text input.svg';
 
 export default function Header() {
+  const navigate = useNavigate();
+
   return (
     <header className="chrome-toolbar">
       <div className="chrome-inner">
         <div className="toolbar-left">
-          <div className="brand">SolarEase</div>
+          <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>SolarEase</div>
           <nav className="nav-links">
             <div className="nav-item">About</div>
             <div className="nav-item">Negotiation Support</div>

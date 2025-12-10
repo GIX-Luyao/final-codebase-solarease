@@ -9,11 +9,6 @@ export default function LocationROI({ selectedLocation, onSelectLocation, onRunS
 
   return (
     <section className="location-roi">
-      <div className="section-header">
-        <h2 className="section-title">Ready to transform your <span className="highlight">community's energy future</span></h2>
-        <p className="section-subtitle">Select a location to run an ROI analysis and estimate solar potential</p>
-      </div>
-
       <div className="location-roi-inner">
         <div className="location-panel">
           <div className="locations-list">

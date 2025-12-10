@@ -120,11 +120,6 @@ export default function NegotiationTool() {
 
   return (
     <section className="negotiation-tool">
-      <div className="section-header">
-        <h2 className="section-title">Negotiation <span className="highlight">Tool</span></h2>
-        <p className="section-subtitle">Nash Bargaining solver for fair allocation of cooperative surplus</p>
-      </div>
-
       <div className="negotiation-inner">
         {/* Left panel: Inputs */}
         <div className="nego-left">
@@ -316,7 +311,6 @@ export default function NegotiationTool() {
 
           {!result && !loading && (
             <div className="empty-state">
-              <div className="empty-icon">📊</div>
               <h3>No Results Yet</h3>
               <p>Add participants and run Nash Bargaining to see fair allocations</p>
             </div>
