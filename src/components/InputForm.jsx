@@ -8,7 +8,7 @@ import iconNegotiate from '../../svg/Button (3).svg';
 import iconContract from '../../svg/Button (1).svg';
 
 // More exact DOM mapping for Input form container and nested frames
-export default function InputForm({ onNavigateToNegotiation }) {
+export default function InputForm({ onNavigateToNegotiation, onNavigateToContract }) {
   return (
     <section className="input-form-container">
       <div className="Input-form frame">
@@ -77,7 +77,7 @@ export default function InputForm({ onNavigateToNegotiation }) {
               <div className="Container frame feature-desc">Generate PPA scenarios and visualize benefit splits to negotiate fairly with corporate energy buyers.</div>
             </div>
 
-            <div className="Container frame feature-column">
+            <div className="Container frame feature-column clickable" onClick={onNavigateToContract}>
               <div className="Button-container frame">
                 <div className="Button frame icon-box">
                   <img src={iconContract} alt="Contract Transparency" width="24" height="24" />
