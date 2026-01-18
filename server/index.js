@@ -18,7 +18,12 @@ const cors = require('cors')
 const { spawn } = require('child_process')
 const multer = require('multer')
 const pdfParse = require('pdf-parse')
+const fs = require('fs').promises
+const path = require('path')
 require('dotenv').config()
+
+// Import evaluation harness
+const evaluation = require('./evaluation')
 
 // Configure multer for file uploads (10MB limit)
 const upload = multer({
@@ -303,6 +308,8 @@ app.post('/api/analyze-contract', upload.single('contract'), async (req, res) =>
 
     const systemPrompt = `You are an expert legal analyst specializing in Power Purchase Agreements (PPAs) for solar energy projects. Analyze contracts and provide clear, accurate information to help community members understand their agreements.
 
+CRITICAL: For every risk flag, you MUST include an "evidence" field containing an EXACT quote from the contract that supports the risk. This quote must appear verbatim in the contract text.
+
 Always respond with valid JSON in this exact format:
 {
   "summary": "A 2-3 sentence plain-language overview of what this agreement means",
@@ -321,7 +328,8 @@ Always respond with valid JSON in this exact format:
       "severity": "high|medium|low",
       "term": "Name of concerning term",
       "issue": "Brief explanation of why this is flagged",
-      "section": "Section reference if found"
+      "section": "Section reference if found",
+      "evidence": "EXACT quote from the contract supporting this risk flag"
     }
   ]
 }
@@ -329,9 +337,15 @@ Always respond with valid JSON in this exact format:
 Risk severity guidelines:
 - HIGH: Terms that could result in significant financial loss or legal liability (e.g., very high escalation rates >3%, one-sided termination clauses, missing performance guarantees)
 - MEDIUM: Terms that are less favorable than typical but not severely problematic (e.g., escalation rates 2-3%, limited warranty periods)
-- LOW: Minor concerns or areas that could be improved (e.g., vague language, missing but non-critical details)`
+- LOW: Minor concerns or areas that could be improved (e.g., vague language, missing but non-critical details)
 
-    const userPrompt = `Analyze this PPA contract and extract key terms and risk flags:
+IMPORTANT RULES:
+1. Every risk flag MUST have an "evidence" field with an exact quote from the contract
+2. If you cannot find exact supporting text for a risk, do NOT include that risk
+3. The evidence must be long enough to be meaningful (at least a full clause or sentence)
+4. Do not paraphrase - copy the exact text from the contract`
+
+    const userPrompt = `Analyze this PPA contract and extract key terms and risk flags. Remember: every risk flag MUST include an exact "evidence" quote from the contract.
 
 ---CONTRACT TEXT---
 ${contractText}
@@ -375,6 +389,204 @@ Provide your analysis as JSON.`
       return res.status(400).json({ error: err.message })
     }
     res.status(500).json({ error: 'Failed to analyze contract: ' + err.message })
+  }
+})
+
+// ============================================================================
+// EVALUATION HARNESS ENDPOINTS
+// ============================================================================
+
+/**
+ * Run evaluation on a contract with multiple sampling runs.
+ * POST /api/evaluate-contract
+ *
+ * Body (multipart/form-data):
+ * - contract: PDF or TXT file
+ * - sampleCount: Number of runs (default: 5)
+ * - temperature: LLM temperature (default: 0.3)
+ *
+ * Returns: Full evaluation report (JSON)
+ */
+app.post('/api/evaluate-contract', upload.single('contract'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' })
+    }
+
+    let contractText = ''
+
+    // Extract text from PDF or read TXT directly
+    if (req.file.mimetype === 'application/pdf') {
+      try {
+        const pdfData = await pdfParse(req.file.buffer)
+        contractText = pdfData.text
+      } catch (pdfErr) {
+        return res.status(400).json({ error: 'Could not parse PDF.' })
+      }
+    } else {
+      contractText = req.file.buffer.toString('utf-8')
+    }
+
+    if (!contractText || contractText.trim().length < 100) {
+      return res.status(400).json({ error: 'Contract appears to be empty or too short.' })
+    }
+
+    // Parse options from body
+    const sampleCount = parseInt(req.body.sampleCount) || 5
+    const temperature = parseFloat(req.body.temperature) || 0.3
+
+    console.log(`Starting evaluation: ${sampleCount} samples, temp=${temperature}`)
+
+    // Run evaluation
+    const result = await evaluation.runEvaluation(callAI, contractText, {
+      sampleCount,
+      temperature,
+      onProgress: (progress) => {
+        console.log(`Evaluation progress: ${progress.completed}/${progress.total}`)
+      }
+    })
+
+    // Return the full report
+    res.json({
+      evaluationId: result.evaluationId,
+      quickSummary: result.quickSummary,
+      ciOutput: result.ciOutput,
+      report: result.jsonReport
+    })
+
+  } catch (err) {
+    console.error('Evaluation error:', err)
+    res.status(500).json({ error: 'Evaluation failed: ' + err.message })
+  }
+})
+
+/**
+ * Compare two evaluations for regression detection.
+ * POST /api/compare-evaluations
+ *
+ * Body (JSON):
+ * - baseline: Baseline evaluation JSON report
+ * - current: Current evaluation JSON report
+ *
+ * Returns: Regression comparison results
+ */
+app.post('/api/compare-evaluations', express.json({ limit: '50mb' }), async (req, res) => {
+  try {
+    const { baseline, current } = req.body
+
+    if (!baseline || !current) {
+      return res.status(400).json({ error: 'Both baseline and current evaluations required' })
+    }
+
+    const regressionResults = evaluation.runRegressionComparison(baseline, current)
+
+    res.json({
+      overallStatus: regressionResults.overallStatus,
+      failCount: regressionResults.failCount,
+      warnCount: regressionResults.warnCount,
+      results: regressionResults.results,
+      comparison: regressionResults.comparison
+    })
+
+  } catch (err) {
+    console.error('Comparison error:', err)
+    res.status(500).json({ error: 'Comparison failed: ' + err.message })
+  }
+})
+
+/**
+ * Get human-readable report for an evaluation.
+ * POST /api/evaluation-report
+ *
+ * Body (JSON):
+ * - evaluation: Evaluation JSON report
+ * - format: 'text' | 'json' (default: 'text')
+ *
+ * Returns: Formatted report
+ */
+app.post('/api/evaluation-report', express.json({ limit: '50mb' }), async (req, res) => {
+  try {
+    const { evaluation: evalReport, format = 'text' } = req.body
+
+    if (!evalReport) {
+      return res.status(400).json({ error: 'Evaluation report required' })
+    }
+
+    if (format === 'text') {
+      const textReport = evaluation.reporter.generateHumanReadableReport(evalReport)
+      res.type('text/plain').send(textReport)
+    } else {
+      res.json(evalReport)
+    }
+
+  } catch (err) {
+    console.error('Report generation error:', err)
+    res.status(500).json({ error: 'Report generation failed: ' + err.message })
+  }
+})
+
+/**
+ * Quick single-run analysis with hallucination check.
+ * POST /api/analyze-contract-with-check
+ *
+ * Same as /api/analyze-contract but includes hallucination detection.
+ */
+app.post('/api/analyze-contract-with-check', upload.single('contract'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' })
+    }
+
+    let contractText = ''
+
+    if (req.file.mimetype === 'application/pdf') {
+      try {
+        const pdfData = await pdfParse(req.file.buffer)
+        contractText = pdfData.text
+      } catch (pdfErr) {
+        return res.status(400).json({ error: 'Could not parse PDF.' })
+      }
+    } else {
+      contractText = req.file.buffer.toString('utf-8')
+    }
+
+    if (!contractText || contractText.trim().length < 100) {
+      return res.status(400).json({ error: 'Contract appears to be empty or too short.' })
+    }
+
+    // Truncate if needed
+    const maxChars = 15000
+    if (contractText.length > maxChars) {
+      contractText = contractText.substring(0, maxChars) + '\n\n[Contract text truncated...]'
+    }
+
+    // Run single analysis using the evaluation sampler (with evidence requirement)
+    const result = await evaluation.sampler.runSingleAnalysis(callAI, contractText, {
+      maxTokens: 2000,
+      temperature: 0.3
+    })
+
+    // Check for hallucinations
+    const hallucinationCheck = evaluation.hallucination.detectAllHallucinations(result, contractText)
+
+    // Add disclaimer and filename
+    result.disclaimer = 'This analysis is informational only, not legal advice.'
+    result.fileName = req.file.originalname
+
+    res.json({
+      ...result,
+      _evaluation: {
+        hallucinationCheck: {
+          hasHallucinations: hallucinationCheck.hasHallucinations,
+          hallucinationCount: hallucinationCheck.hallucinationCount,
+          details: hallucinationCheck.detections.filter(d => d.isHallucination)
+        }
+      }
+    })
+
+  } catch (err) {
+    console.error('Analysis error:', err)
+    res.status(500).json({ error: 'Analysis failed: ' + err.message })
   }
 })
 
