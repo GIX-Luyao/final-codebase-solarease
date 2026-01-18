@@ -320,6 +320,12 @@ export default function ContractTransparency() {
                         {risk.section && (
                           <span className="risk-section">Reference: {risk.section}</span>
                         )}
+                        {risk.evidence && (
+                          <div className="risk-evidence">
+                            <span className="evidence-label">Evidence from contract:</span>
+                            <blockquote className="evidence-quote">"{risk.evidence}"</blockquote>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
