@@ -9,6 +9,7 @@
  * - Risk canonicalization for meaningful comparison
  * - Stability metrics (presence stability, severity variance)
  * - Hallucination detection (evidence grounding)
+ * - Sentinel risk evaluation (must-detect/must-not-detect correctness)
  * - Regression detection between versions
  * - Human-readable and machine-readable reports
  */
@@ -17,6 +18,7 @@ const { DEFAULT_SAMPLE_COUNT } = require('./types')
 const { runMultipleSamples, generateEvaluationId, hashContract, truncateContract } = require('./sampler')
 const { computeAllRiskStabilities, computeAllKeyTermConsistencies, computeOverallStabilityScore, getStabilitySummary } = require('./stability')
 const { aggregateHallucinationDetection } = require('./hallucination')
+const { evaluateSentinel, sentinelSpecExists } = require('./sentinel')
 const { compareEvaluations } = require('./regression')
 const { generateJsonReport, generateHumanReadableReport, generateQuickSummary, generateCIOutput } = require('./reporter')
 
@@ -30,6 +32,8 @@ const { generateJsonReport, generateHumanReadableReport, generateQuickSummary, g
  * @param {number} options.temperature - LLM temperature (default: 0.3)
  * @param {number} options.maxTokens - Max tokens (default: 2000)
  * @param {Object} options.baseline - Optional baseline evaluation for regression comparison
+ * @param {boolean} options.sentinel - Enable sentinel evaluation (default: true if spec exists)
+ * @param {string} options.sentinelSpec - Optional override path to sentinel spec file
  * @param {Function} options.onProgress - Optional progress callback
  * @returns {Promise<Object>} Evaluation results
  */
@@ -39,6 +43,8 @@ async function runEvaluation(callAI, contractText, options = {}) {
     temperature = 0.3,
     maxTokens = 2000,
     baseline = null,
+    sentinel = null, // null = auto-detect, true = require, false = disable
+    sentinelSpec = null,
     onProgress = null
   } = options
 
@@ -64,6 +70,20 @@ async function runEvaluation(callAI, contractText, options = {}) {
   // Detect hallucinations
   const hallucinationResults = aggregateHallucinationDetection(samplingResults.results, truncated.text)
 
+  // Run sentinel evaluation if enabled
+  let sentinelResults = null
+  const shouldRunSentinel = sentinel === true ||
+    (sentinel === null && sentinelSpecExists(samplingResults.contractHash, sentinelSpec))
+
+  if (shouldRunSentinel) {
+    sentinelResults = evaluateSentinel({
+      results: samplingResults.results,
+      contractHash: samplingResults.contractHash,
+      hallucinationResults: hallucinationResults.allDetections || [],
+      specPath: sentinelSpec
+    })
+  }
+
   // Generate JSON report
   const jsonReport = generateJsonReport({
     evaluationId,
@@ -74,6 +94,7 @@ async function runEvaluation(callAI, contractText, options = {}) {
     overallStabilityScore,
     stabilitySummary,
     hallucinationResults,
+    sentinelResults,
     regressionResults: null, // Will be added if baseline provided
     rawResults: samplingResults.results,
     contractText: truncated.text,
@@ -104,7 +125,8 @@ async function runEvaluation(callAI, contractText, options = {}) {
       samplingResults,
       riskStabilities,
       keyTermConsistencies,
-      hallucinationResults
+      hallucinationResults,
+      sentinelResults
     }
   }
 }
@@ -187,6 +209,7 @@ module.exports = {
   canonicalization: require('./canonicalization'),
   stability: require('./stability'),
   hallucination: require('./hallucination'),
+  sentinel: require('./sentinel'),
   regression: require('./regression'),
   sampler: require('./sampler'),
   reporter: require('./reporter')

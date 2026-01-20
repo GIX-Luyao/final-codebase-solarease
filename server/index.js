@@ -433,7 +433,14 @@ app.post('/api/evaluate-contract', upload.single('contract'), async (req, res) =
 
     // Parse options from body
     const sampleCount = parseInt(req.body.sampleCount) || 5
-    const temperature = parseFloat(req.body.temperature) || 0.3
+    const parsedTemp = parseFloat(req.body.temperature)
+    const temperature = isNaN(parsedTemp) ? 0.3 : parsedTemp
+
+    // Parse sentinel options
+    let sentinel = null // null = auto-detect
+    if (req.body.sentinel === 'true') sentinel = true
+    else if (req.body.sentinel === 'false') sentinel = false
+    const sentinelSpec = req.body.sentinelSpec || null
 
     console.log(`Starting evaluation: ${sampleCount} samples, temp=${temperature}`)
 
@@ -441,6 +448,8 @@ app.post('/api/evaluate-contract', upload.single('contract'), async (req, res) =
     const result = await evaluation.runEvaluation(callAI, contractText, {
       sampleCount,
       temperature,
+      sentinel,
+      sentinelSpec,
       onProgress: (progress) => {
         console.log(`Evaluation progress: ${progress.completed}/${progress.total}`)
       }

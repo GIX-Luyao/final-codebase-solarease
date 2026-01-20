@@ -8,6 +8,7 @@ Since LLMs are non-deterministic, the same contract can produce different analys
 
 - **Measure stability** - How consistent are the extracted terms and risk flags across runs?
 - **Detect hallucinations** - Are risk flags properly grounded in actual contract text?
+- **Sentinel correctness** - Is the AI finding the risks it should find (and not flagging false positives)?
 - **Track regressions** - Has a code/prompt change made the analysis worse?
 - **CI/CD integration** - Automated quality gates for your analysis pipeline
 
@@ -59,6 +60,9 @@ node server/evaluation/cli.js evaluate <contract-file> [options]
 | `--temperature` | | 0.3 | LLM temperature (lower = more deterministic) |
 | `--output` | `-o` | stdout | Output file path |
 | `--baseline` | `-b` | | Baseline file for regression comparison |
+| `--sentinel` | | auto | Enable sentinel evaluation (auto-detects if spec exists) |
+| `--no-sentinel` | | | Disable sentinel evaluation |
+| `--sentinel-spec` | | | Path to sentinel spec file (overrides auto-detection) |
 | `--format` | `-f` | json | Output format: `json`, `text`, `ci` |
 | `--quiet` | `-q` | | Suppress progress output |
 | `--api-url` | | localhost:3000 | API server URL |
@@ -218,6 +222,139 @@ Percentage of risk flags where the "evidence" quote doesn't appear in the contra
 | 1-10% | Minor issues |
 | >10% | Significant fabrication |
 
+## Sentinel Risk Set Evaluation
+
+Sentinel evaluation measures the **correctness** of your AI analysis against curated ground truth.
+
+### What It Does
+
+You define two types of sentinel items for each contract:
+
+1. **Must-Detect Risks** - Risks the AI should flag (e.g., "this contract has an optional performance guarantee")
+2. **Must-NOT-Detect Risks** - False positive traps (e.g., "this contract DOES include force majeure, so don't flag it as missing")
+
+The evaluation then measures:
+- **Recall** - % of must-detect risks that were found
+- **False Positive Rate** - % of traps incorrectly triggered
+- **Consistently Hallucinated** - Risks detected but with fabricated evidence
+
+### Creating a Sentinel Spec
+
+1. First, find your contract's hash by running any evaluation:
+   ```bash
+   node server/evaluation/cli.js evaluate contract.pdf -n 1
+   # Look for "contractHash" in output
+   ```
+
+2. Create a spec file at `server/evaluation/sentinel/specs/<hash>.json`:
+
+```json
+{
+  "contract_hash": "7a2a8e0aeb4d2587",
+  "contract_name": "Sample PPA Contract",
+  "must_detect": [
+    {
+      "id": "performance_guarantee_optional",
+      "aliases": ["performance guarantee", "performance guaranty", "system performance"],
+      "notes": "Performance guarantee is optional and may not be provided"
+    },
+    {
+      "id": "escalation_rate_missing",
+      "aliases": ["escalation rate", "price escalation", "annual escalation"],
+      "notes": "No escalation rate specified for 20-year term"
+    }
+  ],
+  "must_not_detect": [
+    {
+      "id": "force_majeure_missing",
+      "aliases": ["force majeure missing", "no force majeure"],
+      "notes": "Contract DOES include force majeure provisions"
+    }
+  ]
+}
+```
+
+### Spec Field Reference
+
+| Field | Description |
+|-------|-------------|
+| `contract_hash` | Must match the contract's computed hash |
+| `contract_name` | Human-readable name for reports |
+| `must_detect` | Array of risks that SHOULD be flagged |
+| `must_not_detect` | Array of risks that should NOT be flagged |
+| `id` | Stable unique identifier for the sentinel item |
+| `aliases` | Strings to match against risk terms (case-insensitive) |
+| `notes` | Explanation for why this sentinel exists |
+
+### Matching Logic
+
+A risk matches a sentinel item if any of these conditions are met:
+1. The canonical ID contains any alias (normalized)
+2. The risk term contains any alias (case-insensitive)
+3. 60%+ of alias words appear in the risk term
+
+### Running Sentinel Evaluation
+
+```bash
+# Auto-runs sentinel if spec exists for contract hash
+node server/evaluation/cli.js evaluate contract.pdf -n 10 --temperature 0
+
+# Explicitly enable (fails if no spec found)
+node server/evaluation/cli.js evaluate contract.pdf --sentinel
+
+# Explicitly disable
+node server/evaluation/cli.js evaluate contract.pdf --no-sentinel
+
+# Use custom spec file
+node server/evaluation/cli.js evaluate contract.pdf --sentinel-spec path/to/spec.json
+```
+
+### Sentinel Output
+
+The evaluation report includes a `sentinel` section:
+
+```json
+{
+  "sentinel": {
+    "recall": 1.0,
+    "false_positive_rate": 0,
+    "must_detect": [
+      {
+        "id": "performance_guarantee_optional",
+        "detected_runs": 5,
+        "total_runs": 5,
+        "detection_rate": 1.0,
+        "consistently_hallucinated": false,
+        "detections": [...]
+      }
+    ],
+    "must_not_detect": [...],
+    "summary": {
+      "total_must_detect": 5,
+      "detected_must_detect": 5,
+      "missed_must_detect": [],
+      "triggered_traps": [],
+      "consistently_hallucinated": []
+    }
+  }
+}
+```
+
+### Sentinel Metrics
+
+| Metric | Target | Meaning |
+|--------|--------|---------|
+| Recall | 100% | AI found all must-detect risks |
+| False Positive Rate | 0% | AI didn't trigger any traps |
+| Detection Rate | >80% | Risk appears in most runs (stable detection) |
+
+### Health Impact
+
+Sentinel results affect the overall health status:
+- **Recall < 80%** → Degrades to "degraded"
+- **False Positive Rate > 0%** → Degrades to "degraded"
+- **False Positive Rate > 20%** → Degrades to "unhealthy"
+
 ## Regression Testing
 
 ### Setting Up a Baseline
@@ -293,7 +430,9 @@ node server/evaluation/cli.js compare baseline.json current.json -f text
     "hallucinationRate": 0.0,
     "unreliableRisks": 2,
     "severityFlips": 0,
-    "regressionStatus": "PASS"
+    "regressionStatus": "PASS",
+    "sentinelRecall": 1.0,
+    "sentinelFalsePositiveRate": 0.0
   },
   "issues": [],
   "recommendation": "Analysis is reliable for use"
@@ -315,17 +454,22 @@ Defined in `types.js`:
 
 ```
 server/evaluation/
-├── index.js          # Main entry point, runEvaluation()
-├── cli.js            # Command-line interface
-├── types.js          # Constants and TypeScript-style type definitions
-├── sampler.js        # Multi-run sampling logic
-├── canonicalization.js # Risk term normalization
-├── stability.js      # Stability metric computation
-├── hallucination.js  # Evidence grounding checks
-├── regression.js     # Baseline comparison
-├── reporter.js       # Report generation (JSON, text, CI)
-├── baseline.json     # Saved baseline (generated)
-└── README.md         # This file
+├── index.js              # Main entry point, runEvaluation()
+├── cli.js                # Command-line interface
+├── types.js              # Constants and TypeScript-style type definitions
+├── sampler.js            # Multi-run sampling logic
+├── canonicalization.js   # Risk term normalization
+├── stability.js          # Stability metric computation
+├── hallucination.js      # Evidence grounding checks
+├── sentinel.js           # Sentinel risk set evaluation
+├── sentinel.test.js      # Sentinel unit tests
+├── regression.js         # Baseline comparison
+├── reporter.js           # Report generation (JSON, text, CI)
+├── sentinel/
+│   └── specs/            # Sentinel spec files (by contract hash)
+│       ├── README.md     # Spec format documentation
+│       └── <hash>.json   # Per-contract sentinel specs
+└── README.md             # This file
 ```
 
 ## Programmatic Usage
@@ -333,15 +477,23 @@ server/evaluation/
 ```javascript
 const evaluation = require('./server/evaluation')
 
-// Run full evaluation
+// Run full evaluation (sentinel auto-detects if spec exists)
 const result = await evaluation.runEvaluation(callAI, contractText, {
   sampleCount: 5,
   temperature: 0.3,
+  sentinel: true, // or false to disable, null to auto-detect
+  sentinelSpec: './path/to/spec.json', // optional override
   onProgress: (p) => console.log(`${p.completed}/${p.total}`)
 })
 
 console.log(result.quickSummary)
 console.log(result.humanReadableReport)
+
+// Access sentinel results
+if (result.jsonReport.sentinel) {
+  console.log(`Recall: ${result.jsonReport.sentinel.recall}`)
+  console.log(`False Positive Rate: ${result.jsonReport.sentinel.false_positive_rate}`)
+}
 
 // Compare evaluations
 const regression = evaluation.runRegressionComparison(baseline, current)
@@ -353,6 +505,14 @@ const hallCheck = evaluation.hallucination.detectAllHallucinations(
   contractText
 )
 console.log(hallCheck.hallucinationRate)
+
+// Direct sentinel evaluation
+const sentinelResult = evaluation.sentinel.evaluateSentinel({
+  results: samplingResults,
+  contractHash: 'abc123',
+  hallucinationResults: hallCheck.allDetections
+})
+console.log(sentinelResult.recall)
 ```
 
 ## Tips for Improving Stability

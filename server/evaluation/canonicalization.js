@@ -28,6 +28,7 @@ function normalizeString(str) {
 /**
  * Normalize a section reference for comparison.
  * Handles variations like "Section 4.2", "section 4.2", "§4.2", "4.2"
+ * Also normalizes exhibit references and removes descriptive suffixes.
  *
  * @param {string} section - Section reference to normalize
  * @returns {string} Normalized section reference
@@ -35,13 +36,41 @@ function normalizeString(str) {
 function normalizeSection(section) {
   if (!section || typeof section !== 'string') return 'unspecified'
 
-  // Extract just the number/identifier
-  const normalized = section
-    .toLowerCase()
-    .replace(/^(section|sec\.?|§)\s*/i, '')
-    .trim()
+  let normalized = section.toLowerCase().trim()
 
-  return normalized || 'unspecified'
+  // Remove common prefixes
+  normalized = normalized.replace(/^(section|sec\.?|§)\s*/gi, '')
+
+  // Normalize exhibit references: "exhibit 1, pricing" -> "exhibit-1"
+  // Extract exhibit number and keep it simple
+  const exhibitMatch = normalized.match(/exhibit\s*(\d+)/i)
+  const exhibitPart = exhibitMatch ? `exhibit-${exhibitMatch[1]}` : ''
+
+  // Extract section/subsection numbers, normalizing formats:
+  // "section 4(d)", "section 4.d", "section 4d", "item 4(d)" -> "4d"
+  // "section 2(c)", "section 2.c" -> "2c"
+  const sectionMatch = normalized.match(/(?:section|item|part)\s*(\d+)[\s.(-]*([a-z])?[)\s]?/i)
+  let sectionPart = ''
+  if (sectionMatch) {
+    sectionPart = sectionMatch[1] + (sectionMatch[2] || '')
+  } else {
+    // Try to extract standalone numbers like "3(d)" or "2.1" that aren't exhibit numbers
+    // Look for patterns after exhibit reference or at end of string
+    const afterExhibit = exhibitMatch
+      ? normalized.slice(normalized.indexOf(exhibitMatch[0]) + exhibitMatch[0].length)
+      : normalized
+    const numberMatch = afterExhibit.match(/(\d+)[\s.(-]*([a-z])?[)\s]?/i)
+    if (numberMatch) {
+      sectionPart = numberMatch[1] + (numberMatch[2] || '')
+    }
+  }
+
+  // Build canonical section reference
+  const parts = []
+  if (exhibitPart) parts.push(exhibitPart)
+  if (sectionPart) parts.push(sectionPart)
+
+  return parts.length > 0 ? parts.join('-') : 'unspecified'
 }
 
 /**
@@ -160,7 +189,7 @@ function getNestedValue(obj, path) {
 
 /**
  * Normalize a key term value for comparison.
- * Handles "Not specified" as a first-class value.
+ * Handles "Not specified" and extracts core semantic values.
  *
  * @param {string} value - Key term value
  * @returns {string} Normalized value
@@ -170,7 +199,8 @@ function normalizeKeyTermValue(value) {
 
   const normalized = value.trim().toLowerCase()
 
-  // Normalize variations of "not specified"
+  // Normalize variations of "not specified" - also match values that START with these phrases
+  // or contain them as the primary content (before parenthetical explanations)
   if (
     normalized === 'not specified' ||
     normalized === 'not found' ||
@@ -178,12 +208,52 @@ function normalizeKeyTermValue(value) {
     normalized === 'na' ||
     normalized === 'unknown' ||
     normalized === 'unspecified' ||
-    normalized === ''
+    normalized === '' ||
+    normalized.startsWith('not specified') ||
+    normalized.startsWith('not found') ||
+    /^(blank|to be filled|to be determined|tbd|tba)/i.test(normalized)
   ) {
     return 'not-specified'
   }
 
-  return value.trim()
+  // Extract core value for common patterns:
+  // "Optional (see Exhibit 4...)" -> "optional"
+  // "Optional, as per Exhibit 4" -> "optional"
+  if (/^optional/i.test(normalized)) {
+    return 'optional'
+  }
+
+  // "Seller (as referenced in...)" -> "seller"
+  // "Purchaser (per section...)" -> "purchaser"
+  if (/^(seller|purchaser|buyer)/i.test(normalized)) {
+    const match = normalized.match(/^(seller|purchaser|buyer)/i)
+    return match[1].toLowerCase()
+  }
+
+  // Extract numeric values with units for terms like capacity, price
+  // "500 kW DC" or "500kW" -> "500 kw"
+  const numericMatch = normalized.match(/^[\d,.]+\s*(kw|mw|kwh|mwh|years?|days?|%|\$)?/i)
+  if (numericMatch) {
+    return numericMatch[0].replace(/\s+/g, ' ').toLowerCase()
+  }
+
+  // For term length, extract just the years/term structure
+  // "Twenty (20) years initial term with..." -> "20 years initial term"
+  const termMatch = normalized.match(
+    /(?:twenty\s*\(?20\)?|twenty|20)\s*years?\s*(?:initial\s*)?term/i
+  )
+  if (termMatch) {
+    return '20 years initial term'
+  }
+
+  // Remove parenthetical explanations for comparison
+  // "Value (additional context)" -> "value"
+  const withoutParens = value.trim().replace(/\s*\([^)]*\)\s*/g, ' ').trim()
+  if (withoutParens.length > 0 && withoutParens.length < value.length * 0.7) {
+    return withoutParens.toLowerCase()
+  }
+
+  return value.trim().toLowerCase()
 }
 
 /**

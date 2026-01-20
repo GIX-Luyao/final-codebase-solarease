@@ -1,0 +1,1072 @@
+{
+  "evaluationId": "eval-mkm7pjjo-61993b5b",
+  "quickSummary": {
+    "health": "healthy",
+    "stabilityScore": 0.73,
+    "hallucinationRate": 0.06060606060606061,
+    "unreliableRiskCount": 7,
+    "regressionStatus": "N/A",
+    "sentinelRecall": 1,
+    "sentinelFalsePositiveRate": 0,
+    "issues": [],
+    "recommendation": "Analysis is reliable for use"
+  },
+  "ciOutput": {
+    "exitCode": 0,
+    "status": "HEALTHY",
+    "evaluationId": "eval-mkm7pjjo-61993b5b",
+    "metrics": {
+      "stabilityScore": 0.73,
+      "hallucinationRate": 0.06060606060606061,
+      "unreliableRisks": 7,
+      "severityFlips": 0,
+      "regressionStatus": "N/A",
+      "sentinelRecall": 1,
+      "sentinelFalsePositiveRate": 0
+    },
+    "issues": [],
+    "recommendation": "Analysis is reliable for use"
+  },
+  "report": {
+    "evaluationId": "eval-mkm7pjjo-61993b5b",
+    "timestamp": "2026-01-20T06:28:34.186Z",
+    "version": "1.0.0",
+    "contractHash": "7a2a8e0aeb4d2587",
+    "sampleCount": 5,
+    "options": {
+      "temperature": 0.3,
+      "maxTokens": 2000
+    },
+    "stability": {
+      "overallScore": 0.73,
+      "risks": [
+        {
+          "canonicalId": "performance-guarantee@exhibit-1-4d",
+          "term": "Performance Guarantee Optional",
+          "presenceCount": 5,
+          "totalRuns": 5,
+          "stability": 1,
+          "severitiesObserved": [
+            "high"
+          ],
+          "consensusSeverity": "high",
+          "severityVariance": 0,
+          "isReliable": true,
+          "sections": [
+            "exhibit-1-4d"
+          ],
+          "issueVariants": [
+            "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or recourse if the system underperforms.",
+            "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or remedies if the system underperforms.",
+            "The Performance Guaranty is optional and may not be provided, which exposes the Purchaser to risk if the system underperforms."
+          ]
+        },
+        {
+          "canonicalId": "termination@exhibit-1-6",
+          "term": "Termination Payment Schedule Undefined",
+          "presenceCount": 5,
+          "totalRuns": 5,
+          "stability": 1,
+          "severitiesObserved": [
+            "high"
+          ],
+          "consensusSeverity": "high",
+          "severityVariance": 0,
+          "isReliable": true,
+          "sections": [
+            "exhibit-1-6"
+          ],
+          "issueVariants": [
+            "The termination payment amounts for each contract year are left blank, creating uncertainty about the financial consequences of early termination.",
+            "Termination payments are required if the agreement is terminated early, but the amounts are unspecified, potentially exposing the Purchaser to significant financial penalties.",
+            "Termination payments are listed but all amounts are blank, creating uncertainty about financial obligations if the contract is terminated early."
+          ]
+        },
+        {
+          "canonicalId": "escalation-rate@exhibit-1-3",
+          "term": "Escalation Rate Missing",
+          "presenceCount": 4,
+          "totalRuns": 5,
+          "stability": 0.8,
+          "severitiesObserved": [
+            "high"
+          ],
+          "consensusSeverity": "high",
+          "severityVariance": 0,
+          "isReliable": true,
+          "sections": [
+            "exhibit-1-3"
+          ],
+          "issueVariants": [
+            "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which may expose the Purchaser to price uncertainty or the Seller to inflation risk.",
+            "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which could lead to unexpected price increases or lack of price adjustment for inflation.",
+            "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which could expose the Purchaser to price risk if prices escalate unexpectedly or the Seller to revenue risk if prices do not escalate."
+          ]
+        },
+        {
+          "canonicalId": "seller-retains-recs-and-incentives@exhibit-3-4",
+          "term": "Seller Retains RECs and Incentives",
+          "presenceCount": 3,
+          "totalRuns": 5,
+          "stability": 0.6,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": true,
+          "sections": [
+            "exhibit-3-4"
+          ],
+          "issueVariants": [
+            "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or use RECs for compliance or marketing.",
+            "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits.",
+            "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or incentives."
+          ]
+        },
+        {
+          "canonicalId": "termination@exhibit-3-2d",
+          "term": "Termination by Purchaser for Delay",
+          "presenceCount": 3,
+          "totalRuns": 5,
+          "stability": 0.6,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": true,
+          "sections": [
+            "exhibit-3-2d"
+          ],
+          "issueVariants": [
+            "Purchaser may terminate if installation does not commence within a specified number of days after the Effective Date, but the exact number of days is left blank, creating uncertainty about the Purchaser's rights.",
+            "Purchaser may terminate if installation does not commence within a specified number of days after the Effective Date, but the exact number of days is left blank, creating ambiguity."
+          ]
+        },
+        {
+          "canonicalId": "capacity@exhibit-2",
+          "term": "Undefined System Size and Description",
+          "presenceCount": 3,
+          "totalRuns": 5,
+          "stability": 0.6,
+          "severitiesObserved": [
+            "medium",
+            "low"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 1,
+          "isReliable": true,
+          "sections": [
+            "exhibit-2"
+          ],
+          "issueVariants": [
+            "The contract does not specify the system size or detailed description, which may lead to ambiguity about the expected energy production and system scope.",
+            "The contract does not specify the system size or detailed system description, which may cause ambiguity about the expected system capacity and performance.",
+            "The System Size (DC kW) and System Location are not specified, which may cause ambiguity regarding the scale and placement of the solar installation."
+          ]
+        },
+        {
+          "canonicalId": "purchaser-responsible-for-certain-taxes@exhibit-3-3d",
+          "term": "Purchaser Responsible for Certain Taxes",
+          "presenceCount": 2,
+          "totalRuns": 5,
+          "stability": 0.4,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-3-3d"
+          ],
+          "issueVariants": [
+            "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could increase costs unexpectedly."
+          ]
+        },
+        {
+          "canonicalId": "seller-retains-ownership-of-recs-and-incentives@exhibit-3-4",
+          "term": "Seller Retains Ownership of RECs and Incentives",
+          "presenceCount": 2,
+          "totalRuns": 5,
+          "stability": 0.4,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-3-4"
+          ],
+          "issueVariants": [
+            "Seller retains all rights to Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or use credits for compliance or marketing.",
+            "Seller retains all ownership interests in Renewable Energy Credits (RECs) and Incentives, which may limit Purchaser's ability to claim environmental benefits or incentives."
+          ]
+        },
+        {
+          "canonicalId": "o&m-responsibility-not-specified@unspecified",
+          "term": "O&M Responsibility Not Specified",
+          "presenceCount": 2,
+          "totalRuns": 5,
+          "stability": 0.4,
+          "severitiesObserved": [
+            "low"
+          ],
+          "consensusSeverity": "low",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "unspecified"
+          ],
+          "issueVariants": [
+            "The agreement does not clearly state who is responsible for operation and maintenance of the system, which could cause disputes or service issues.",
+            "The agreement does not specify who is responsible for operation and maintenance of the system, which could lead to disputes or unclear expectations."
+          ]
+        },
+        {
+          "canonicalId": "escalation-rate@exhibit-1",
+          "term": "Escalation Rate Not Specified",
+          "presenceCount": 1,
+          "totalRuns": 5,
+          "stability": 0.2,
+          "severitiesObserved": [
+            "high"
+          ],
+          "consensusSeverity": "high",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-1"
+          ],
+          "issueVariants": [
+            "The contract does not specify any escalation rate for the contract price over the 20-year term, which may expose the Purchaser to unexpected price increases or lack of price adjustment for inflation."
+          ]
+        },
+        {
+          "canonicalId": "taxes-responsibility@exhibit-3-3d",
+          "term": "Taxes Responsibility",
+          "presenceCount": 1,
+          "totalRuns": 5,
+          "stability": 0.2,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-3-3d"
+          ],
+          "issueVariants": [
+            "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could result in unexpected tax liabilities."
+          ]
+        },
+        {
+          "canonicalId": "purchaser-responsible-for-additional-costs@exhibit-3-3a",
+          "term": "Purchaser Responsible for Additional Costs",
+          "presenceCount": 1,
+          "totalRuns": 5,
+          "stability": 0.2,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-3-3a"
+          ],
+          "issueVariants": [
+            "Purchaser is responsible for additional costs that differ from assumptions, which may lead to unexpected expenses."
+          ]
+        },
+        {
+          "canonicalId": "purchaser-taxes-responsibility@exhibit-3-3d",
+          "term": "Purchaser Taxes Responsibility",
+          "presenceCount": 1,
+          "totalRuns": 5,
+          "stability": 0.2,
+          "severitiesObserved": [
+            "medium"
+          ],
+          "consensusSeverity": "medium",
+          "severityVariance": 0,
+          "isReliable": false,
+          "sections": [
+            "exhibit-3-3d"
+          ],
+          "issueVariants": [
+            "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could result in unexpected tax liabilities."
+          ]
+        }
+      ],
+      "keyTerms": [
+        {
+          "field": "parties.buyer",
+          "specifiedCount": 5,
+          "notSpecifiedCount": 0,
+          "consistencyScore": 1,
+          "isConsistent": true,
+          "mostCommonValue": "purchaser",
+          "variants": []
+        },
+        {
+          "field": "parties.seller",
+          "specifiedCount": 5,
+          "notSpecifiedCount": 0,
+          "consistencyScore": 1,
+          "isConsistent": true,
+          "mostCommonValue": "seller",
+          "variants": []
+        },
+        {
+          "field": "termLength",
+          "specifiedCount": 5,
+          "notSpecifiedCount": 0,
+          "consistencyScore": 1,
+          "isConsistent": true,
+          "mostCommonValue": "20 years",
+          "variants": []
+        },
+        {
+          "field": "capacity",
+          "specifiedCount": 3,
+          "notSpecifiedCount": 2,
+          "consistencyScore": 0.4,
+          "isConsistent": false,
+          "mostCommonValue": "not-specified",
+          "variants": [
+            "system size (dc kw) - not specified in provided text",
+            "system size (dc kw): not specified"
+          ]
+        },
+        {
+          "field": "pricePerKwh",
+          "specifiedCount": 4,
+          "notSpecifiedCount": 1,
+          "consistencyScore": 0.4,
+          "isConsistent": false,
+          "mostCommonValue": "contract year $/kwh: not specified",
+          "variants": [
+            "not-specified",
+            "contract year $/kwh - not specified in provided text",
+            "contract year $/kwh rates to be filled in exhibit 1"
+          ]
+        },
+        {
+          "field": "escalationRate",
+          "specifiedCount": 0,
+          "notSpecifiedCount": 5,
+          "consistencyScore": 1,
+          "isConsistent": true,
+          "mostCommonValue": "not-specified",
+          "variants": []
+        },
+        {
+          "field": "performanceGuarantee",
+          "specifiedCount": 5,
+          "notSpecifiedCount": 0,
+          "consistencyScore": 1,
+          "isConsistent": true,
+          "mostCommonValue": "optional",
+          "variants": []
+        },
+        {
+          "field": "omResponsibility",
+          "specifiedCount": 2,
+          "notSpecifiedCount": 3,
+          "consistencyScore": 0.6,
+          "isConsistent": true,
+          "mostCommonValue": "not-specified",
+          "variants": [
+            "seller"
+          ]
+        }
+      ],
+      "summary": {
+        "unreliableRiskCount": 7,
+        "severityFlipCount": 0,
+        "inconsistentTermCount": 2,
+        "reliableRiskRatio": "6/13",
+        "consistentTermRatio": "6/8"
+      }
+    },
+    "hallucinations": {
+      "totalRisks": 33,
+      "hallucinationCount": 2,
+      "hallucinationRate": 0.06060606060606061,
+      "detected": [
+        {
+          "term": "O&M Responsibility Not Specified",
+          "severity": "low",
+          "section": "Not explicitly specified in provided text",
+          "reasons": [
+            "Evidence too short (13 chars < 20 minimum)"
+          ],
+          "runIndex": 0
+        },
+        {
+          "term": "O&M Responsibility Not Specified",
+          "severity": "low",
+          "section": "Not explicitly stated",
+          "reasons": [
+            "Moderate word overlap (67%) - may be inaccurate paraphrase"
+          ],
+          "runIndex": 3
+        }
+      ],
+      "recurringHallucinations": [
+        {
+          "term": "O&M Responsibility Not Specified",
+          "occurrences": 2,
+          "uniqueRuns": 2,
+          "reasons": [
+            "Evidence too short (13 chars < 20 minimum)",
+            "Moderate word overlap (67%) - may be inaccurate paraphrase"
+          ]
+        }
+      ]
+    },
+    "sentinel": {
+      "contract_hash": "7a2a8e0aeb4d2587",
+      "contract_name": "Sample PPA Contract",
+      "recall": 1,
+      "false_positive_rate": 0,
+      "must_detect": [
+        {
+          "id": "performance_guarantee_optional",
+          "notes": "Performance guarantee is optional and may not be provided",
+          "aliases": [
+            "performance guarantee",
+            "performance guaranty",
+            "system performance"
+          ],
+          "detected_runs": 5,
+          "total_runs": 5,
+          "detection_rate": 1,
+          "consistently_hallucinated": false,
+          "detections": [
+            {
+              "runIndex": 0,
+              "term": "Performance Guarantee Optional",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 4(d)",
+              "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+            },
+            {
+              "runIndex": 1,
+              "term": "Performance Guarantee",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing, Section 4(d)",
+              "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+            },
+            {
+              "runIndex": 2,
+              "term": "Performance Guarantee Optional",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 4(d)",
+              "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+            },
+            {
+              "runIndex": 3,
+              "term": "Performance Guarantee Optional",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 4(d)",
+              "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+            },
+            {
+              "runIndex": 4,
+              "term": "Performance Guarantee Optional",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing, Section 4(d)",
+              "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+            }
+          ]
+        },
+        {
+          "id": "termination_payment_undefined",
+          "notes": "Termination payment amounts are blank/undefined",
+          "aliases": [
+            "termination payment",
+            "termination fee",
+            "early termination"
+          ],
+          "detected_runs": 5,
+          "total_runs": 5,
+          "detection_rate": 1,
+          "consistently_hallucinated": false,
+          "detections": [
+            {
+              "runIndex": 0,
+              "term": "Termination Payment Schedule Undefined",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 6",
+              "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_..."
+            },
+            {
+              "runIndex": 1,
+              "term": "Termination Payment Schedule",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing, Section 6",
+              "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_..."
+            },
+            {
+              "runIndex": 1,
+              "term": "Termination by Purchaser for Delay",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 2(d)",
+              "evidence": "d. Termination by Purchaser for Delay.   If Commencement  of Installation has not occurred [_____] d..."
+            },
+            {
+              "runIndex": 2,
+              "term": "Termination Payment Schedule Undefined",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 6",
+              "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_..."
+            },
+            {
+              "runIndex": 2,
+              "term": "Termination by Purchaser for Delay",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 2(d)",
+              "evidence": "If Commencement of Installation has not occurred [_____] days after the Effective Date, Purchaser ma..."
+            },
+            {
+              "runIndex": 3,
+              "term": "Termination Payment Schedule Undefined",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 6",
+              "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_..."
+            },
+            {
+              "runIndex": 4,
+              "term": "Termination Payment Schedule Undefined",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing, Section 6",
+              "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_..."
+            },
+            {
+              "runIndex": 4,
+              "term": "Termination for Delay Notice Period",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 2(d)",
+              "evidence": "If Commencement of Installation has not occurred [_____] days after the Effective Date, Purchaser ma..."
+            }
+          ]
+        },
+        {
+          "id": "escalation_rate_missing",
+          "notes": "No escalation rate specified for 20-year term",
+          "aliases": [
+            "escalation rate",
+            "price escalation",
+            "annual escalation"
+          ],
+          "detected_runs": 5,
+          "total_runs": 5,
+          "detection_rate": 1,
+          "consistently_hallucinated": false,
+          "detections": [
+            {
+              "runIndex": 0,
+              "term": "Escalation Rate Missing",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 3",
+              "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 ..."
+            },
+            {
+              "runIndex": 1,
+              "term": "Escalation Rate Not Specified",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing",
+              "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 ..."
+            },
+            {
+              "runIndex": 2,
+              "term": "Escalation Rate Missing",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 3",
+              "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 ..."
+            },
+            {
+              "runIndex": 3,
+              "term": "Escalation Rate Missing",
+              "severity": "high",
+              "section": "Exhibit 1 Pricing, Section 3",
+              "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 ..."
+            },
+            {
+              "runIndex": 4,
+              "term": "Escalation Rate Missing",
+              "severity": "high",
+              "section": "Exhibit 1, Pricing, Section 3",
+              "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 ..."
+            }
+          ]
+        },
+        {
+          "id": "seller_retains_recs",
+          "notes": "Seller retains ownership of RECs and incentives",
+          "aliases": [
+            "recs",
+            "renewable energy credits",
+            "incentives",
+            "environmental benefits"
+          ],
+          "detected_runs": 5,
+          "total_runs": 5,
+          "detection_rate": 1,
+          "consistently_hallucinated": false,
+          "detections": [
+            {
+              "runIndex": 0,
+              "term": "Seller Retains Ownership of RECs and Incentives",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 4",
+              "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership inte..."
+            },
+            {
+              "runIndex": 1,
+              "term": "Seller Retains RECs and Incentives",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 4",
+              "evidence": "4. RECs and Incentives.  As the owner of the System, Seller is entitled to the benefit of, and will ..."
+            },
+            {
+              "runIndex": 2,
+              "term": "Seller Retains RECs and Incentives",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 4",
+              "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership inte..."
+            },
+            {
+              "runIndex": 3,
+              "term": "Seller Retains Ownership of RECs and Incentives",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 4",
+              "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership inte..."
+            },
+            {
+              "runIndex": 4,
+              "term": "Seller Retains RECs and Incentives",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 4",
+              "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership inte..."
+            }
+          ]
+        },
+        {
+          "id": "purchaser_tax_responsibility",
+          "notes": "Purchaser responsible for various taxes",
+          "aliases": [
+            "taxes",
+            "tax responsibility",
+            "property taxes"
+          ],
+          "detected_runs": 4,
+          "total_runs": 5,
+          "detection_rate": 0.8,
+          "consistently_hallucinated": false,
+          "detections": [
+            {
+              "runIndex": 0,
+              "term": "Purchaser Responsible for Certain Taxes",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 3(d)(i)",
+              "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on ..."
+            },
+            {
+              "runIndex": 1,
+              "term": "Taxes Responsibility",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 3(d)",
+              "evidence": "d. Taxes.\n  i. Purchaser’s Taxes.    Purchaser  is  responsible  for:  (1)  payment  of,  or  reimbu..."
+            },
+            {
+              "runIndex": 3,
+              "term": "Purchaser Responsible for Certain Taxes",
+              "severity": "medium",
+              "section": "Exhibit 3 General Terms and Conditions, Section 3(d)(i)",
+              "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on ..."
+            },
+            {
+              "runIndex": 4,
+              "term": "Purchaser Taxes Responsibility",
+              "severity": "medium",
+              "section": "Exhibit 3, General Terms and Conditions, Section 3(d)(i)",
+              "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on ..."
+            }
+          ]
+        }
+      ],
+      "must_not_detect": [
+        {
+          "id": "force_majeure_missing",
+          "notes": "Contract does include force majeure provisions - should not flag as missing",
+          "aliases": [
+            "force majeure missing",
+            "no force majeure"
+          ],
+          "detected_runs": 0,
+          "total_runs": 5,
+          "detection_rate": 0,
+          "consistently_hallucinated": false,
+          "detections": []
+        },
+        {
+          "id": "insurance_missing",
+          "notes": "Contract does include insurance requirements - should not flag as missing",
+          "aliases": [
+            "insurance missing",
+            "no insurance requirement"
+          ],
+          "detected_runs": 0,
+          "total_runs": 5,
+          "detection_rate": 0,
+          "consistently_hallucinated": false,
+          "detections": []
+        }
+      ],
+      "summary": {
+        "total_must_detect": 5,
+        "detected_must_detect": 5,
+        "total_must_not_detect": 2,
+        "detected_must_not_detect": 0,
+        "missed_must_detect": [],
+        "triggered_traps": [],
+        "consistently_hallucinated": []
+      }
+    },
+    "regression": null,
+    "rawResults": [
+      {
+        "runIndex": 0,
+        "summary": "This Solar Power Purchase Agreement (PPA) establishes a 20-year contract (with up to three 5-year extensions) under which the Purchaser agrees to buy all electricity generated by the Seller's solar system at specified rates. The Seller retains ownership of the system and associated renewable energy credits (RECs), while the Purchaser is responsible for paying monthly invoices based on actual energy production and certain taxes.",
+        "keyTerms": {
+          "parties": {
+            "buyer": "Purchaser Name",
+            "seller": "Seller Name"
+          },
+          "termLength": "Twenty (20) years initial term with up to three (3) additional five (5) year terms",
+          "capacity": "Not specified",
+          "pricePerKwh": "Not specified (to be filled in Exhibit 1 Pricing table)",
+          "escalationRate": "Not specified",
+          "performanceGuarantee": "Optional (see Exhibit 4 Performance Guaranty)",
+          "omResponsibility": "Not specified",
+          "terminationClause": "Termination allowed prior to installation under certain conditions; Purchaser may terminate for delay if installation does not commence within a specified number of days; termination payments apply as per Exhibit 1 and Exhibit 3 Section 11(b)"
+        },
+        "riskFlags": [
+          {
+            "severity": "high",
+            "term": "Escalation Rate Missing",
+            "issue": "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which may expose the Purchaser to price uncertainty or the Seller to inflation risk.",
+            "section": "Exhibit 1 Pricing, Section 3",
+            "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "high",
+            "term": "Performance Guarantee Optional",
+            "issue": "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or recourse if the system underperforms.",
+            "section": "Exhibit 1 Pricing, Section 4(d)",
+            "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+          },
+          {
+            "severity": "high",
+            "term": "Termination Payment Schedule Undefined",
+            "issue": "The termination payment amounts for each contract year are left blank, creating uncertainty about the financial consequences of early termination.",
+            "section": "Exhibit 1 Pricing, Section 6",
+            "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "medium",
+            "term": "Purchaser Responsible for Certain Taxes",
+            "issue": "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could increase costs unexpectedly.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 3(d)(i)",
+            "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on the generation, sale, delivery or consumption of electricity produced by the System or the interconnection of the System to the utility’s electricity distribution system; and (2) real property taxes."
+          },
+          {
+            "severity": "medium",
+            "term": "Seller Retains Ownership of RECs and Incentives",
+            "issue": "Seller retains all rights to Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or use credits for compliance or marketing.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 4",
+            "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership interests in the RECs and Incentives. Purchaser shall cooperate with Seller in obtaining, securing and transferring any and all RECs and Incentives."
+          },
+          {
+            "severity": "medium",
+            "term": "Undefined System Size and Description",
+            "issue": "The contract does not specify the system size or detailed description, which may lead to ambiguity about the expected energy production and system scope.",
+            "section": "Exhibit 2 System Description, Delivery Point and Premises",
+            "evidence": "1. System Location:  \n2. System Size (DC kW):  \n3. System Description (Expected Structure, Etc.):  "
+          },
+          {
+            "severity": "low",
+            "term": "O&M Responsibility Not Specified",
+            "issue": "The agreement does not clearly state who is responsible for operation and maintenance of the system, which could cause disputes or service issues.",
+            "section": "Not explicitly specified in provided text",
+            "evidence": "Not specified"
+          }
+        ]
+      },
+      {
+        "runIndex": 1,
+        "summary": "This Solar Power Purchase Agreement (PPA) establishes a 20-year contract (with up to three 5-year extensions) under which the Purchaser agrees to buy all electricity generated by the Seller's solar system at specified rates. The agreement outlines responsibilities for installation, operation, maintenance, billing, taxes, and ownership of renewable energy credits (RECs), with detailed terms on termination and pricing assumptions.",
+        "keyTerms": {
+          "parties": {
+            "buyer": "Purchaser Name",
+            "seller": "Seller Name"
+          },
+          "termLength": "Twenty (20) years initial term, with up to three (3) additional five (5) year terms",
+          "capacity": "System Size (DC kW) - Not specified in provided text",
+          "pricePerKwh": "Contract Year $/kWh - Not specified in provided text",
+          "escalationRate": "Not specified",
+          "performanceGuarantee": "Optional, as per Exhibit 4 (Performance Guaranty)",
+          "omResponsibility": "Seller responsible for installation, operation, and maintenance (implied in Section 6, not fully shown)",
+          "terminationClause": "Termination allowed prior to installation under certain conditions; Purchaser may terminate for delay; termination payments specified in Exhibit 1, Section 6"
+        },
+        "riskFlags": [
+          {
+            "severity": "high",
+            "term": "Escalation Rate Not Specified",
+            "issue": "The contract does not specify any escalation rate for the contract price over the 20-year term, which may expose the Purchaser to unexpected price increases or lack of price adjustment for inflation.",
+            "section": "Exhibit 1, Pricing",
+            "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "high",
+            "term": "Performance Guarantee",
+            "issue": "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or remedies if the system underperforms.",
+            "section": "Exhibit 1, Pricing, Section 4(d)",
+            "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+          },
+          {
+            "severity": "high",
+            "term": "Termination Payment Schedule",
+            "issue": "Termination payments are required if the agreement is terminated early, but the amounts are unspecified, potentially exposing the Purchaser to significant financial penalties.",
+            "section": "Exhibit 1, Pricing, Section 6",
+            "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "medium",
+            "term": "Taxes Responsibility",
+            "issue": "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could result in unexpected tax liabilities.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 3(d)",
+            "evidence": "d. Taxes.\n  i. Purchaser’s Taxes.    Purchaser  is  responsible  for:  (1)  payment  of,  or  reimbursement  of  Seller,  for  all  taxes \nassessed  on  the  generation,  sale,  delivery  or  consumption  of  electricity  produced  by  the  System  or  the \ninterconnection of the System to the utility’s electricity distribution system; and (2) real property taxes."
+          },
+          {
+            "severity": "medium",
+            "term": "Seller Retains RECs and Incentives",
+            "issue": "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or use RECs for compliance or marketing.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 4",
+            "evidence": "4. RECs and Incentives.  As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership interests \nin the RECs and Incentives. Purchaser shall cooperate with Seller in obtaining, securing and transferring any and all RECs and \nIncentives. Purchaser is not  obligated  to incur any  out–of–pocket costs  or  expenses in connection with such actions unless \nreimbursed by Seller."
+          },
+          {
+            "severity": "medium",
+            "term": "Termination by Purchaser for Delay",
+            "issue": "Purchaser may terminate if installation does not commence within a specified number of days after the Effective Date, but the exact number of days is left blank, creating uncertainty about the Purchaser's rights.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 2(d)",
+            "evidence": "d. Termination by Purchaser for Delay.   If Commencement  of Installation has not occurred [_____] days after the \nEffective Date, Purchaser may terminate this Agreement by providing thirty (30) days’ prior written notice to Seller; \nprovided that this Agreement will not terminate pursuant to this Section 2(d) if Seller achieves Commencement  of \nInstallation on or before the end of such thirty (30) day notice period."
+          },
+          {
+            "severity": "low",
+            "term": "System Size and Description Not Specified",
+            "issue": "The contract does not specify the system size or detailed system description, which may cause ambiguity about the expected system capacity and performance.",
+            "section": "Exhibit 2, System Description, Delivery Point and Premises",
+            "evidence": "1. System Location:  \n2. System Size (DC kW):  \n3. System Description (Expected Structure, Etc.):  "
+          }
+        ]
+      },
+      {
+        "runIndex": 2,
+        "summary": "This Solar Power Purchase Agreement (PPA) establishes a 20-year contract (with up to three 5-year extensions) under which the Purchaser agrees to buy all electricity generated by the Seller's solar system at specified rates. The agreement outlines responsibilities for installation, operation, maintenance, billing, taxes, and ownership of renewable energy credits (RECs), with detailed terms on termination and pricing assumptions.",
+        "keyTerms": {
+          "parties": {
+            "buyer": "Purchaser Name",
+            "seller": "Seller Name"
+          },
+          "termLength": "Twenty (20) years initial term, with up to three (3) additional five (5) year terms",
+          "capacity": "Not specified",
+          "pricePerKwh": "Contract Year $/kWh rates to be filled in Exhibit 1",
+          "escalationRate": "Not specified",
+          "performanceGuarantee": "Optional, as per Exhibit 4",
+          "omResponsibility": "Seller responsible for installation, operation, and maintenance",
+          "terminationClause": "Termination allowed prior to installation under certain conditions; termination payments specified in Exhibit 1; termination by Purchaser for delay if installation not commenced within specified days"
+        },
+        "riskFlags": [
+          {
+            "severity": "high",
+            "term": "Escalation Rate Missing",
+            "issue": "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which could lead to unexpected price increases or lack of price adjustment for inflation.",
+            "section": "Exhibit 1 Pricing, Section 3",
+            "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "high",
+            "term": "Performance Guarantee Optional",
+            "issue": "The Performance Guaranty is optional and may not be provided, which exposes the Purchaser to risk if the system underperforms.",
+            "section": "Exhibit 1 Pricing, Section 4(d)",
+            "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+          },
+          {
+            "severity": "high",
+            "term": "Termination Payment Schedule Undefined",
+            "issue": "Termination payments are listed but all amounts are blank, creating uncertainty about financial obligations if the contract is terminated early.",
+            "section": "Exhibit 1 Pricing, Section 6",
+            "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "medium",
+            "term": "Purchaser Responsible for Additional Costs",
+            "issue": "Purchaser is responsible for additional costs that differ from assumptions, which may lead to unexpected expenses.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 3(a)",
+            "evidence": "Additional costs for items differing from the assumptions in Exhibit 1, Item 4 are Purchaser’s responsibility."
+          },
+          {
+            "severity": "medium",
+            "term": "Seller Retains RECs and Incentives",
+            "issue": "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 4",
+            "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership interests in the RECs and Incentives. Purchaser shall cooperate with Seller in obtaining, securing and transferring any and all RECs and Incentives."
+          },
+          {
+            "severity": "medium",
+            "term": "Termination by Purchaser for Delay",
+            "issue": "Purchaser may terminate if installation does not commence within a specified number of days after the Effective Date, but the exact number of days is left blank, creating ambiguity.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 2(d)",
+            "evidence": "If Commencement of Installation has not occurred [_____] days after the Effective Date, Purchaser may terminate this Agreement by providing thirty (30) days’ prior written notice to Seller; provided that this Agreement will not terminate pursuant to this Section 2(d) if Seller achieves Commencement of Installation on or before the end of such thirty (30) day notice period."
+          }
+        ]
+      },
+      {
+        "runIndex": 3,
+        "summary": "This Solar Power Purchase Agreement (PPA) establishes a 20-year contract (with up to three 5-year extensions) under which the Purchaser agrees to buy all electricity generated by the Seller's solar system at specified rates. The Seller retains ownership of the system and associated renewable energy credits (RECs), while the Purchaser is responsible for paying monthly invoices based on actual electricity production and certain taxes.",
+        "keyTerms": {
+          "parties": {
+            "buyer": "Purchaser Name",
+            "seller": "Seller Name"
+          },
+          "termLength": "Twenty (20) years initial term with up to three (3) additional five (5) year terms",
+          "capacity": "System Size (DC kW): Not specified",
+          "pricePerKwh": "Contract Year $/kWh: Not specified (to be filled in Exhibit 1)",
+          "escalationRate": "Not specified",
+          "performanceGuarantee": "Optional, as per Exhibit 4 (Performance Guaranty)",
+          "omResponsibility": "Not specified",
+          "terminationClause": "Termination allowed prior to installation under certain conditions; Purchaser may terminate for delay if installation does not commence within a specified number of days; termination payments apply as per Exhibit 1 and Exhibit 3 Section 11(b)"
+        },
+        "riskFlags": [
+          {
+            "severity": "high",
+            "term": "Escalation Rate Missing",
+            "issue": "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which may expose the Purchaser to price uncertainty or the Seller to inflation risk.",
+            "section": "Exhibit 1 Pricing, Section 3",
+            "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "high",
+            "term": "Performance Guarantee Optional",
+            "issue": "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or remedies if the system underperforms.",
+            "section": "Exhibit 1 Pricing, Section 4(d)",
+            "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+          },
+          {
+            "severity": "high",
+            "term": "Termination Payment Schedule Undefined",
+            "issue": "Termination payments are listed but all amounts are blank, creating uncertainty about financial obligations if the Purchaser terminates early.",
+            "section": "Exhibit 1 Pricing, Section 6",
+            "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "medium",
+            "term": "Purchaser Responsible for Certain Taxes",
+            "issue": "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could increase costs unexpectedly.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 3(d)(i)",
+            "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on the generation, sale, delivery or consumption of electricity produced by the System or the interconnection of the System to the utility’s electricity distribution system; and (2) real property taxes."
+          },
+          {
+            "severity": "medium",
+            "term": "Seller Retains Ownership of RECs and Incentives",
+            "issue": "Seller retains all ownership interests in Renewable Energy Credits (RECs) and Incentives, which may limit Purchaser's ability to claim environmental benefits or incentives.",
+            "section": "Exhibit 3 General Terms and Conditions, Section 4",
+            "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership interests in the RECs and Incentives. Purchaser shall cooperate with Seller in obtaining, securing and transferring any and all RECs and Incentives."
+          },
+          {
+            "severity": "medium",
+            "term": "Undefined System Size and Location",
+            "issue": "The System Size (DC kW) and System Location are not specified, which may cause ambiguity regarding the scale and placement of the solar installation.",
+            "section": "Exhibit 2 System Description, Delivery Point and Premises",
+            "evidence": "1. System Location:  \n2. System Size (DC kW):  \n3. System Description (Expected Structure, Etc.):  "
+          },
+          {
+            "severity": "low",
+            "term": "O&M Responsibility Not Specified",
+            "issue": "The agreement does not specify who is responsible for operation and maintenance of the system, which could lead to disputes or unclear expectations.",
+            "section": "Not explicitly stated",
+            "evidence": "Not specified in the provided contract text."
+          }
+        ]
+      },
+      {
+        "runIndex": 4,
+        "summary": "This Solar Power Purchase Agreement (PPA) establishes a 20-year initial term for the purchase and sale of electricity generated by a solar system installed on the Purchaser's premises, with options for up to three additional 5-year terms. The Purchaser agrees to pay the Seller a specified price per kWh of electricity generated, with detailed terms on billing, taxes, and ownership of renewable energy credits (RECs). The agreement includes provisions for termination, performance guarantees, and responsibilities for operation and maintenance.",
+        "keyTerms": {
+          "parties": {
+            "buyer": "Purchaser Name",
+            "seller": "Seller Name"
+          },
+          "termLength": "Twenty (20) years initial term with up to three (3) additional five (5) year terms",
+          "capacity": "System Size (DC kW): Not specified",
+          "pricePerKwh": "Contract Year $/kWh: Not specified (to be filled in Exhibit 1)",
+          "escalationRate": "Not specified",
+          "performanceGuarantee": "Optional, as per Exhibit 4 (Performance Guaranty)",
+          "omResponsibility": "Not specified in provided text",
+          "terminationClause": "Termination allowed prior to installation under certain conditions; Purchaser may terminate for delay if installation does not commence within a specified number of days; termination payments specified in Exhibit 1"
+        },
+        "riskFlags": [
+          {
+            "severity": "high",
+            "term": "Escalation Rate Missing",
+            "issue": "The contract does not specify any escalation rate for the price per kWh over the 20-year term, which could expose the Purchaser to price risk if prices escalate unexpectedly or the Seller to revenue risk if prices do not escalate.",
+            "section": "Exhibit 1, Pricing, Section 3",
+            "evidence": "Contract Year $/kWh \n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "high",
+            "term": "Performance Guarantee Optional",
+            "issue": "The Performance Guaranty is optional and may not be provided, which could leave the Purchaser without assurance of system performance or recourse if the system underperforms.",
+            "section": "Exhibit 1, Pricing, Section 4(d)",
+            "evidence": "d. A Performance Guaranty is _____ is not_____ being provided."
+          },
+          {
+            "severity": "high",
+            "term": "Termination Payment Schedule Undefined",
+            "issue": "The termination payment amounts for each contract year are left blank, creating uncertainty about the financial consequences of early termination.",
+            "section": "Exhibit 1, Pricing, Section 6",
+            "evidence": "Termination Payment Schedule (Exhibit 3, Section 11(b)):\nContract Year Termination Payment ($)\n1 [$_____]\n2 [$_____]\n3 [$_____]\n4 [$_____]\n5 [$_____]\n6 [$_____]\n7 [$_____]\n8 [$_____]\n9 [$_____]\n10 [$_____]\n11 [$_____]\n12 [$_____]\n13 [$_____]\n14 [$_____]\n15 [$_____]\n16 [$_____]\n17 [$_____]\n18 [$_____]\n19 [$_____]\n20 [$_____]"
+          },
+          {
+            "severity": "medium",
+            "term": "Purchaser Taxes Responsibility",
+            "issue": "Purchaser is responsible for all taxes related to generation, sale, delivery, or consumption of electricity and real property taxes, which could result in unexpected tax liabilities.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 3(d)(i)",
+            "evidence": "Purchaser is responsible for: (1) payment of, or reimbursement of Seller, for all taxes assessed on the generation, sale, delivery or consumption of electricity produced by the System or the interconnection of the System to the utility’s electricity distribution system; and (2) real property taxes."
+          },
+          {
+            "severity": "medium",
+            "term": "Seller Retains RECs and Incentives",
+            "issue": "Seller retains ownership of all Renewable Energy Credits (RECs) and incentives, which may limit Purchaser's ability to claim environmental benefits or incentives.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 4",
+            "evidence": "As the owner of the System, Seller is entitled to the benefit of, and will retain all ownership interests in the RECs and Incentives. Purchaser shall cooperate with Seller in obtaining, securing and transferring any and all RECs and Incentives."
+          },
+          {
+            "severity": "medium",
+            "term": "Termination for Delay Notice Period",
+            "issue": "Purchaser may terminate if installation does not commence within a specified number of days after the Effective Date, but the exact number of days is left blank, creating ambiguity.",
+            "section": "Exhibit 3, General Terms and Conditions, Section 2(d)",
+            "evidence": "If Commencement of Installation has not occurred [_____] days after the Effective Date, Purchaser may terminate this Agreement by providing thirty (30) days’ prior written notice to Seller; provided that this Agreement will not terminate pursuant to this Section 2(d) if Seller achieves Commencement of Installation on or before the end of such thirty (30) day notice period."
+          }
+        ]
+      }
+    ]
+  }
+}
