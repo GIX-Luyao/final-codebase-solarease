@@ -11,7 +11,7 @@ export default function CTASection() {
         <h2 className="cta-title">Ready to Transform Your <span className="highlight">Community's Energy Future?</span></h2>
         <p className="cta-subtitle">Advanced map-based interface for precise solar ROI calculations with community aggregation analysis</p>
         
-        <button className="cta-button" onClick={() => navigate('/roi-simulator')}>
+        <button className="cta-button" onClick={() => navigate('/roi-calculator')}>
           Start ROI Calculator
           <span className="arrow">→</span>
         </button>
