@@ -1,0 +1,43 @@
+{
+  "contract_hash": "7a2a8e0aeb4d2587",
+  "contract_name": "Sample PPA Contract",
+  "must_detect": [
+    {
+      "id": "performance_guarantee_optional",
+      "aliases": ["performance guarantee", "performance guaranty", "system performance"],
+      "notes": "Performance guarantee is optional and may not be provided"
+    },
+    {
+      "id": "termination_payment_undefined",
+      "aliases": ["termination payment", "termination fee", "early termination"],
+      "notes": "Termination payment amounts are blank/undefined"
+    },
+    {
+      "id": "escalation_rate_missing",
+      "aliases": ["escalation rate", "price escalation", "annual escalation"],
+      "notes": "No escalation rate specified for 20-year term"
+    },
+    {
+      "id": "seller_retains_recs",
+      "aliases": ["recs", "renewable energy credits", "incentives", "environmental benefits"],
+      "notes": "Seller retains ownership of RECs and incentives"
+    },
+    {
+      "id": "purchaser_tax_responsibility",
+      "aliases": ["taxes", "tax responsibility", "property taxes"],
+      "notes": "Purchaser responsible for various taxes"
+    }
+  ],
+  "must_not_detect": [
+    {
+      "id": "force_majeure_missing",
+      "aliases": ["force majeure missing", "no force majeure"],
+      "notes": "Contract does include force majeure provisions - should not flag as missing"
+    },
+    {
+      "id": "insurance_missing",
+      "aliases": ["insurance missing", "no insurance requirement"],
+      "notes": "Contract does include insurance requirements - should not flag as missing"
+    }
+  ]
+}

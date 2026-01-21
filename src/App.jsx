@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ROISimulatorPage from './pages/ROISimulatorPage'
+import ROICalculatorPage from './pages/ROICalculatorPage'
 import NegotiationToolPage from './pages/NegotiationToolPage'
 import ContractTransparencyPage from './pages/ContractTransparencyPage'
 import AIChatbot from './components/AIChatbot'
@@ -14,6 +15,7 @@ export default function App(){
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/roi-simulator" element={<ROISimulatorPage />} />
+          <Route path="/roi-calculator" element={<ROICalculatorPage />} />
           <Route path="/negotiation-tool" element={<NegotiationToolPage />} />
           <Route path="/contract-transparency" element={<ContractTransparencyPage />} />
         </Routes>

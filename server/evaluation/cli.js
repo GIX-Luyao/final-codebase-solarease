@@ -13,6 +13,9 @@
  *   --temperature    LLM temperature (default: 0.3)
  *   --output, -o     Output file path (default: stdout)
  *   --baseline, -b   Baseline evaluation file for regression comparison
+ *   --sentinel       Enable sentinel evaluation (default: auto-detect)
+ *   --no-sentinel    Disable sentinel evaluation
+ *   --sentinel-spec  Path to sentinel spec file (overrides auto-detection)
  *   --format, -f     Output format: json, text, ci (default: json)
  *   --quiet, -q      Suppress progress output
  *   --help, -h       Show help
@@ -32,6 +35,8 @@ function parseArgs(args) {
       temperature: 0.3,
       output: null,
       baseline: null,
+      sentinel: null, // null = auto-detect, true = enable, false = disable
+      sentinelSpec: null,
       format: 'json',
       quiet: false,
       help: false,
@@ -50,7 +55,8 @@ function parseArgs(args) {
     } else if (arg === '--samples' || arg === '-n') {
       parsed.options.samples = parseInt(args[++i]) || 5
     } else if (arg === '--temperature') {
-      parsed.options.temperature = parseFloat(args[++i]) || 0.3
+      const temp = parseFloat(args[++i])
+      parsed.options.temperature = isNaN(temp) ? 0.3 : temp
     } else if (arg === '--output' || arg === '-o') {
       parsed.options.output = args[++i]
     } else if (arg === '--baseline' || arg === '-b') {
@@ -59,6 +65,13 @@ function parseArgs(args) {
       parsed.options.format = args[++i] || 'json'
     } else if (arg === '--api-url') {
       parsed.options.apiUrl = args[++i]
+    } else if (arg === '--sentinel') {
+      parsed.options.sentinel = true
+    } else if (arg === '--no-sentinel') {
+      parsed.options.sentinel = false
+    } else if (arg === '--sentinel-spec') {
+      parsed.options.sentinelSpec = args[++i]
+      parsed.options.sentinel = true // Specifying a spec implies enabling sentinel
     } else if (!arg.startsWith('-')) {
       if (!parsed.command) {
         parsed.command = arg
@@ -87,6 +100,9 @@ Options:
   --temperature <number>        LLM temperature (default: 0.3)
   --output, -o <file>           Output file path (default: stdout)
   --baseline, -b <file>         Baseline evaluation for regression comparison
+  --sentinel                    Enable sentinel evaluation (default: auto-detect if spec exists)
+  --no-sentinel                 Disable sentinel evaluation
+  --sentinel-spec <path>        Path to sentinel spec file (overrides auto-detection)
   --format, -f <format>         Output format: json, text, ci (default: json)
   --api-url <url>               API URL (default: http://localhost:3000)
   --quiet, -q                   Suppress progress output
@@ -151,6 +167,14 @@ async function runEvaluate(files, opts) {
   })
   formData.append('sampleCount', opts.samples.toString())
   formData.append('temperature', opts.temperature.toString())
+
+  // Add sentinel options
+  if (opts.sentinel !== null) {
+    formData.append('sentinel', opts.sentinel.toString())
+  }
+  if (opts.sentinelSpec) {
+    formData.append('sentinelSpec', opts.sentinelSpec)
+  }
 
   await log(`Running evaluation (${opts.samples} samples, temp=${opts.temperature})...`, opts)
 

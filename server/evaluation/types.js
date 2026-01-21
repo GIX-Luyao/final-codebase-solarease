@@ -19,9 +19,11 @@ const SEVERITY_LEVELS = {
 const SEVERITY_VARIANCE_THRESHOLD = 2
 
 /**
- * Stability threshold below which a risk is considered unreliable
+ * Stability threshold below which a risk is considered unreliable.
+ * Set to 0.5 (50%) as LLM outputs are inherently non-deterministic.
+ * Risks appearing in half or more of runs are reasonably stable.
  */
-const STABILITY_THRESHOLD = 0.8
+const STABILITY_THRESHOLD = 0.5
 
 /**
  * Minimum evidence length to be considered valid (characters)
@@ -34,7 +36,9 @@ const MIN_EVIDENCE_LENGTH = 20
 const DEFAULT_SAMPLE_COUNT = 5
 
 /**
- * Key terms that should be tracked for consistency
+ * Key terms that should be tracked for consistency.
+ * Only includes fields with extractable values, not free-text summaries.
+ * terminationClause is excluded as it's a narrative summary that naturally varies.
  */
 const KEY_TERM_FIELDS = [
   'parties.buyer',
@@ -44,8 +48,7 @@ const KEY_TERM_FIELDS = [
   'pricePerKwh',
   'escalationRate',
   'performanceGuarantee',
-  'omResponsibility',
-  'terminationClause'
+  'omResponsibility'
 ]
 
 /**

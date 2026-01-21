@@ -1,0 +1,172 @@
+.participant-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(13, 162, 231, 0.22);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.participant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 162, 231, 0.2);
+  border-color: rgba(13, 162, 231, 0.35);
+}
+
+.participant-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(163, 179, 194, 0.1);
+}
+
+.participant-num {
+  color: #0da2e7;
+  font-weight: 800;
+  font-size: 15px;
+  background: rgba(13, 162, 231, 0.12);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.participant-name-badge {
+  color: #f8fafc;
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.participant-remove-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.25);
+  color: #ff6b6b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.participant-remove-btn:hover {
+  background: rgba(255, 80, 80, 0.2);
+  transform: scale(1.05);
+}
+
+.participant-remove-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.participant-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-row label {
+  color: #a3b3c2;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.field-row input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(163, 179, 194, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc;
+  font-size: 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.field-row input:focus {
+  outline: none;
+  border-color: rgba(13, 162, 231, 0.5);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(13, 162, 231, 0.1);
+}
+
+.field-row input::placeholder {
+  color: #5a6a7a;
+}
+
+.field-row input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ROI Section */
+.participant-roi-section {
+  margin-top: 16px;
+}
+
+.roi-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(13, 162, 231, 0.3), transparent);
+  margin-bottom: 16px;
+}
+
+.roi-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.roi-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: rgba(13, 162, 231, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(13, 162, 231, 0.15);
+}
+
+.roi-metric-label {
+  color: #7a8a9a;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.roi-metric-value {
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.roi-metric-value.highlight {
+  color: #07c0d5;
+}
+
+@media (max-width: 640px) {
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .roi-metrics {
+    grid-template-columns: 1fr;
+  }
+}

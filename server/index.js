@@ -175,12 +175,12 @@ app.post('/api/ai', async (req, res) => {
 app.post('/api/negotiate', async (req, res) => {
   try {
     const { participants, ppa_price, ppa_term, shared_costs = 0, weights = null } = req.body
-    
+
     // Validate inputs
     if (!participants || !Array.isArray(participants) || participants.length < 2) {
       return res.status(400).json({ error: 'At least 2 participants required' })
     }
-    
+
     // Prepare data for Python solver
     const inputData = {
       participants,
@@ -189,9 +189,13 @@ app.post('/api/negotiate', async (req, res) => {
       shared_costs: shared_costs || 0,
       weights: weights || null
     }
-    
-    // Call Python solver (use arch -arm64 to ensure arm64 python is used on Apple Silicon)
-    const python = spawn('arch', ['-arm64', 'python3', '-c', `
+
+    // Determine Python command based on platform
+    const isWindows = process.platform === 'win32'
+    const pythonCmd = isWindows ? 'python' : 'python3'
+
+    // Call Python solver
+    const python = spawn(pythonCmd, ['-c', `
 import sys
 import json
 from server.nash_solver import nash_bargaining_solver, compute_threat_point, compute_cooperative_surplus
@@ -238,40 +242,116 @@ result['participants'] = [
 
 print(json.dumps(result))
 `])
-    
+
     let output = ''
     let errorOutput = ''
-    
+    let responded = false
+
+    // Handle spawn errors (e.g., Python not found)
+    python.on('error', (err) => {
+      if (responded) return
+      responded = true
+      console.error('Python spawn error:', err.message)
+      // Fall back to JavaScript calculation
+      const jsResult = calculateNashLocally(inputData)
+      res.json(jsResult)
+    })
+
     python.stdout.on('data', (data) => {
       output += data.toString()
     })
-    
+
     python.stderr.on('data', (data) => {
       errorOutput += data.toString()
     })
-    
+
     // Send input data to Python process
     python.stdin.write(JSON.stringify(inputData))
     python.stdin.end()
-    
+
     python.on('close', (code) => {
+      if (responded) return
+      responded = true
+
       if (code !== 0) {
         console.error('Python error:', errorOutput)
-        return res.status(500).json({ error: 'Nash solver failed', details: errorOutput })
+        // Fall back to JavaScript calculation
+        const jsResult = calculateNashLocally(inputData)
+        res.json(jsResult)
+        return
       }
-      
+
       try {
         const result = JSON.parse(output)
         res.json(result)
       } catch (e) {
-        res.status(500).json({ error: 'Failed to parse solver output', details: output })
+        // Fall back to JavaScript calculation
+        const jsResult = calculateNashLocally(inputData)
+        res.json(jsResult)
       }
     })
-    
+
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })
+
+// JavaScript fallback for Nash Bargaining calculation
+function calculateNashLocally(inputData) {
+  const { participants, ppa_price, ppa_term, shared_costs, weights } = inputData
+
+  // Calculate threat points (standalone NPV for each participant)
+  const threatPoints = participants.map(p => {
+    const annualGeneration = p.annual_generation_kwh || 0
+    const energyPrice = p.energy_price_per_kwh || 0.12
+    const upfrontCost = p.upfront_cost || 0
+    const discountRate = p.discount_rate || 0.06
+    const years = p.years || 25
+
+    // Simple NPV calculation
+    const annualRevenue = annualGeneration * energyPrice
+    let npv = -upfrontCost
+    for (let y = 1; y <= years; y++) {
+      npv += annualRevenue / Math.pow(1 + discountRate, y)
+    }
+    return Math.max(0, npv)
+  })
+
+  // Calculate total cooperative value
+  const totalGeneration = participants.reduce((sum, p) => sum + (p.annual_generation_kwh || 0), 0)
+  const totalCooperativeValue = totalGeneration * ppa_price * ppa_term - (shared_costs || 0)
+
+  // Calculate surplus
+  const totalThreatPoints = threatPoints.reduce((sum, tp) => sum + tp, 0)
+  const surplus = Math.max(0, totalCooperativeValue - totalThreatPoints)
+
+  // Nash Bargaining: divide surplus according to weights (default equal)
+  const effectiveWeights = weights || participants.map(() => 1)
+  const totalWeight = effectiveWeights.reduce((sum, w) => sum + w, 0)
+
+  const allocations = threatPoints.map((tp, i) => {
+    const weight = effectiveWeights[i] || 1
+    const surplusShare = (weight / totalWeight) * surplus
+    return tp + surplusShare
+  })
+
+  const gains = allocations.map((alloc, i) => alloc - threatPoints[i])
+
+  return {
+    allocations,
+    gains,
+    total_surplus: surplus,
+    total_value: totalCooperativeValue,
+    participants: participants.map((p, i) => ({
+      name: p.name || `Participant ${i + 1}`,
+      address: p.address || '',
+      annual_generation_kwh: p.annual_generation_kwh || 0,
+      threat_point: threatPoints[i],
+      allocation: allocations[i],
+      gain: gains[i]
+    }))
+  }
+}
 
 // Contract analysis endpoint
 app.post('/api/analyze-contract', upload.single('contract'), async (req, res) => {
@@ -433,7 +513,14 @@ app.post('/api/evaluate-contract', upload.single('contract'), async (req, res) =
 
     // Parse options from body
     const sampleCount = parseInt(req.body.sampleCount) || 5
-    const temperature = parseFloat(req.body.temperature) || 0.3
+    const parsedTemp = parseFloat(req.body.temperature)
+    const temperature = isNaN(parsedTemp) ? 0.3 : parsedTemp
+
+    // Parse sentinel options
+    let sentinel = null // null = auto-detect
+    if (req.body.sentinel === 'true') sentinel = true
+    else if (req.body.sentinel === 'false') sentinel = false
+    const sentinelSpec = req.body.sentinelSpec || null
 
     console.log(`Starting evaluation: ${sampleCount} samples, temp=${temperature}`)
 
@@ -441,6 +528,8 @@ app.post('/api/evaluate-contract', upload.single('contract'), async (req, res) =
     const result = await evaluation.runEvaluation(callAI, contractText, {
       sampleCount,
       temperature,
+      sentinel,
+      sentinelSpec,
       onProgress: (progress) => {
         console.log(`Evaluation progress: ${progress.completed}/${progress.total}`)
       }

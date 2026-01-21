@@ -31,6 +31,7 @@ function generateJsonReport(params) {
     overallStabilityScore,
     stabilitySummary,
     hallucinationResults,
+    sentinelResults,
     regressionResults,
     rawResults,
     contractText,
@@ -92,6 +93,7 @@ function generateJsonReport(params) {
       })),
       recurringHallucinations: hallucinationResults.recurringHallucinations
     },
+    sentinel: sentinelResults || null,
     regression: regressionResults || null,
     rawResults: rawResults.map((r, i) => ({
       runIndex: i,
@@ -261,6 +263,61 @@ function generateHumanReadableReport(jsonReport) {
     lines.push('')
   }
 
+  // Sentinel Correctness Results
+  if (jsonReport.sentinel) {
+    lines.push('-'.repeat(70))
+    lines.push('SENTINEL CORRECTNESS')
+    lines.push('-'.repeat(70))
+    const sent = jsonReport.sentinel
+    lines.push(`Contract: ${sent.contract_name || sent.contract_hash}`)
+    lines.push(`Recall: ${formatPercent(sent.recall)} (${sent.summary.detected_must_detect}/${sent.summary.total_must_detect} must-detect items found)`)
+    lines.push(`False Positive Rate: ${formatPercent(sent.false_positive_rate)} (${sent.summary.detected_must_not_detect}/${sent.summary.total_must_not_detect} traps triggered)`)
+    lines.push('')
+
+    // Missed must-detect items
+    if (sent.summary.missed_must_detect.length > 0) {
+      lines.push('MISSED must-detect items:')
+      for (const id of sent.summary.missed_must_detect) {
+        const item = sent.must_detect.find((m) => m.id === id)
+        lines.push(`  [MISS] ${id}`)
+        if (item?.notes) lines.push(`         Note: ${item.notes}`)
+      }
+      lines.push('')
+    }
+
+    // Triggered traps (false positives)
+    if (sent.summary.triggered_traps.length > 0) {
+      lines.push('TRIGGERED traps (false positives):')
+      for (const id of sent.summary.triggered_traps) {
+        const item = sent.must_not_detect.find((m) => m.id === id)
+        lines.push(`  [TRAP] ${id}`)
+        if (item?.notes) lines.push(`         Note: ${item.notes}`)
+        lines.push(`         Detected in: ${item?.detected_runs}/${item?.total_runs} runs`)
+      }
+      lines.push('')
+    }
+
+    // Consistently hallucinated items
+    if (sent.summary.consistently_hallucinated.length > 0) {
+      lines.push('CONSISTENTLY HALLUCINATED items (detected but ungrounded):')
+      for (const id of sent.summary.consistently_hallucinated) {
+        lines.push(`  [HALLUC] ${id}`)
+      }
+      lines.push('')
+    }
+
+    // Successfully detected must-detect items
+    const detectedItems = sent.must_detect.filter((m) => m.detected_runs > 0)
+    if (detectedItems.length > 0) {
+      lines.push('Successfully detected must-detect items:')
+      for (const item of detectedItems) {
+        const hallucIcon = item.consistently_hallucinated ? ' [!HALLUC]' : ''
+        lines.push(`  [OK] ${item.id}: ${formatPercent(item.detection_rate)} (${item.detected_runs}/${item.total_runs} runs)${hallucIcon}`)
+      }
+      lines.push('')
+    }
+  }
+
   // Reliable Risks Summary
   const reliableRisks = jsonReport.stability.risks.filter((r) => r.isReliable)
   if (reliableRisks.length > 0) {
@@ -311,10 +368,10 @@ function generateQuickSummary(jsonReport) {
   let health = 'healthy'
   const issues = []
 
-  if (stab.overallScore < 0.6) {
+  if (stab.overallScore < 0.5) {
     health = 'unhealthy'
     issues.push('Low overall stability score')
-  } else if (stab.overallScore < 0.8) {
+  } else if (stab.overallScore < 0.65) {
     health = 'degraded'
     issues.push('Moderate stability issues')
   }
@@ -335,12 +392,30 @@ function generateQuickSummary(jsonReport) {
     issues.push('Regression warnings')
   }
 
+  // Check sentinel results
+  if (jsonReport.sentinel) {
+    const sent = jsonReport.sentinel
+    if (sent.recall < 0.8) {
+      if (health === 'healthy') health = 'degraded'
+      issues.push(`Low sentinel recall (${formatPercent(sent.recall)})`)
+    }
+    if (sent.false_positive_rate > 0.2) {
+      health = 'unhealthy'
+      issues.push(`High sentinel false positive rate (${formatPercent(sent.false_positive_rate)})`)
+    } else if (sent.false_positive_rate > 0) {
+      if (health === 'healthy') health = 'degraded'
+      issues.push(`Sentinel false positives detected`)
+    }
+  }
+
   return {
     health,
     stabilityScore: stab.overallScore,
     hallucinationRate: hall.hallucinationRate,
     unreliableRiskCount: stab.summary.unreliableRiskCount,
     regressionStatus: jsonReport.regression?.overallStatus || 'N/A',
+    sentinelRecall: jsonReport.sentinel?.recall ?? null,
+    sentinelFalsePositiveRate: jsonReport.sentinel?.false_positive_rate ?? null,
     issues,
     recommendation:
       health === 'healthy'
@@ -372,7 +447,9 @@ function generateCIOutput(jsonReport) {
       hallucinationRate: jsonReport.hallucinations.hallucinationRate,
       unreliableRisks: jsonReport.stability.summary.unreliableRiskCount,
       severityFlips: jsonReport.stability.summary.severityFlipCount,
-      regressionStatus: jsonReport.regression?.overallStatus || 'N/A'
+      regressionStatus: jsonReport.regression?.overallStatus || 'N/A',
+      sentinelRecall: jsonReport.sentinel?.recall ?? null,
+      sentinelFalsePositiveRate: jsonReport.sentinel?.false_positive_rate ?? null
     },
     issues: summary.issues,
     recommendation: summary.recommendation

@@ -1,0 +1,71 @@
+.roi-calculator-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Section */
+.calc-hero {
+  width: 100%;
+  padding: 120px 16px 60px;
+  background: radial-gradient(circle at 20% 20%, rgba(13, 162, 231, 0.12), transparent 50%),
+              radial-gradient(circle at 80% 0%, rgba(7, 192, 213, 0.08), transparent 55%);
+  text-align: center;
+}
+
+.calc-hero-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.calc-hero-title {
+  font-family: Poppins, sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0 0 20px 0;
+  line-height: 1.15;
+}
+
+.calc-hero-title .highlight {
+  background: linear-gradient(90deg, #0da2e7, #07c0d5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.calc-hero-subtitle {
+  font-size: 17px;
+  color: #a3b3c2;
+  margin: 0;
+  line-height: 1.7;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Content Section */
+.calc-content {
+  flex: 1;
+  width: 100%;
+  padding: 40px 0 80px;
+  background: radial-gradient(circle at 50% 0%, rgba(13, 162, 231, 0.06), transparent 60%);
+}
+
+@media (max-width: 768px) {
+  .calc-hero {
+    padding: 100px 16px 40px;
+  }
+
+  .calc-hero-title {
+    font-size: 32px;
+  }
+
+  .calc-hero-subtitle {
+    font-size: 15px;
+  }
+
+  .calc-content {
+    padding: 24px 0 60px;
+  }
+}

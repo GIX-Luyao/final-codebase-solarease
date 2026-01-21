@@ -1,0 +1,226 @@
+.roi-wizard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.wizard-content {
+  width: 100%;
+  animation: fadeSlideIn 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Common step container styles */
+.step-container {
+  background: linear-gradient(165deg, rgba(13, 162, 231, 0.12), rgba(7, 192, 213, 0.06));
+  border: 1px solid rgba(13, 162, 231, 0.3);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 18px 36px rgba(4, 15, 35, 0.4);
+}
+
+.step-header {
+  margin-bottom: 28px;
+}
+
+.step-title {
+  font-family: Poppins, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 8px 0;
+}
+
+.step-subtitle {
+  color: #a3b3c2;
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Navigation buttons */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(163, 179, 194, 0.12);
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn.back {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(163, 179, 194, 0.2);
+  color: #a3b3c2;
+}
+
+.nav-btn.back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(163, 179, 194, 0.3);
+  color: #f8fafc;
+}
+
+.nav-btn.next {
+  background: linear-gradient(90deg, #0da2e7, #07c0d5);
+  border: none;
+  color: #071124;
+  box-shadow: 0 6px 20px rgba(7, 192, 213, 0.35);
+}
+
+.nav-btn.next:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(7, 192, 213, 0.45);
+}
+
+.nav-btn.next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.nav-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Loading state */
+.step-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 20px;
+}
+
+.step-loading .spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #0da2e7;
+  animation: spin 1s linear infinite;
+}
+
+.step-loading p {
+  color: #a3b3c2;
+  font-size: 15px;
+  margin: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Custom number input styling */
+.roi-wizard input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.roi-wizard input[type="number"]::-webkit-inner-spin-button,
+.roi-wizard input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Custom increment/decrement wrapper */
+.number-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.number-input-wrapper input {
+  flex: 1;
+  padding-right: 40px !important;
+}
+
+.number-input-controls {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.number-input-controls button {
+  width: 28px;
+  height: 16px;
+  border: none;
+  background: rgba(13, 162, 231, 0.15);
+  color: #0da2e7;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.number-input-controls button:hover {
+  background: rgba(13, 162, 231, 0.3);
+  color: #07c0d5;
+}
+
+.number-input-controls button:active {
+  background: rgba(13, 162, 231, 0.4);
+  transform: scale(0.95);
+}
+
+.number-input-controls svg {
+  width: 12px;
+  height: 12px;
+}
+
+@media (max-width: 768px) {
+  .step-container {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .step-title {
+    font-size: 22px;
+  }
+
+  .step-navigation {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

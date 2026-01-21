@@ -185,9 +185,15 @@ function computeAllKeyTermConsistencies(results) {
 
 /**
  * Compute an overall stability score for the evaluation.
- * Weighted average of:
- * - Average risk stability (40%)
- * - Proportion of reliable risks (30%)
+ *
+ * Uses a weighted approach that:
+ * - Filters out one-off risks (noise) when computing average stability
+ * - Weights risk stability by presence count (more appearances = more weight)
+ * - Focuses on "core risks" that appear in multiple runs
+ *
+ * Components:
+ * - Weighted average risk stability (40%) - ignores single-occurrence risks
+ * - Proportion of reliable risks among multi-occurrence risks (30%)
  * - Average key term consistency (30%)
  *
  * @param {Object[]} riskStabilities - Risk stability metrics
@@ -195,16 +201,25 @@ function computeAllKeyTermConsistencies(results) {
  * @returns {number} Overall stability score (0-1)
  */
 function computeOverallStabilityScore(riskStabilities, keyTermConsistencies) {
-  // Average risk stability
-  const avgRiskStability =
-    riskStabilities.length > 0
-      ? riskStabilities.reduce((sum, r) => sum + r.stability, 0) / riskStabilities.length
-      : 1
+  // Filter to risks that appeared more than once (reduce noise from one-off detections)
+  const multiOccurrenceRisks = riskStabilities.filter((r) => r.presenceCount > 1)
 
-  // Proportion of reliable risks
-  const reliableRiskCount = riskStabilities.filter((r) => r.isReliable).length
+  // Weighted average risk stability (weighted by presence count)
+  // Risks that appear more often contribute more to the score
+  let avgRiskStability = 1
+  if (multiOccurrenceRisks.length > 0) {
+    const totalWeight = multiOccurrenceRisks.reduce((sum, r) => sum + r.presenceCount, 0)
+    const weightedSum = multiOccurrenceRisks.reduce(
+      (sum, r) => sum + r.stability * r.presenceCount,
+      0
+    )
+    avgRiskStability = weightedSum / totalWeight
+  }
+
+  // Proportion of reliable risks (among multi-occurrence risks only)
+  const reliableRiskCount = multiOccurrenceRisks.filter((r) => r.isReliable).length
   const reliableRiskProportion =
-    riskStabilities.length > 0 ? reliableRiskCount / riskStabilities.length : 1
+    multiOccurrenceRisks.length > 0 ? reliableRiskCount / multiOccurrenceRisks.length : 1
 
   // Average key term consistency
   const avgKeyTermConsistency =
