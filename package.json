@@ -9,7 +9,8 @@
     "api": "node server/index.js",
     "evaluate": "node server/evaluation/cli.js evaluate",
     "eval:compare": "node server/evaluation/cli.js compare",
-    "eval:report": "node server/evaluation/cli.js report"
+    "eval:report": "node server/evaluation/cli.js report",
+    "eval:init-spec": "node server/evaluation/cli.js init-spec"
   },
   "dependencies": {
     "cors": "^2.8.5",
