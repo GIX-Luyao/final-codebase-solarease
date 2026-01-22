@@ -299,6 +299,162 @@ function sentinelSpecExists(contractHash, specPath = null) {
   return fs.existsSync(filePath)
 }
 
+/**
+ * Generate a sentinel spec template from evaluation results.
+ *
+ * Creates a spec based on reliable risks (stability >= threshold) from the evaluation.
+ * The generated spec includes must_detect items with aliases derived from observed
+ * risk terms, and empty must_not_detect for manual curation.
+ *
+ * @param {Object} options - Generation options
+ * @param {Object} options.evaluation - Evaluation report object
+ * @param {string} [options.contractName] - Optional contract name
+ * @param {number} [options.stabilityThreshold=0.6] - Minimum stability for must_detect
+ * @returns {Object} Generated sentinel spec
+ */
+function generateSpecFromEvaluation({ evaluation, contractName, stabilityThreshold = 0.6 }) {
+  const contractHash = evaluation.contractHash
+  const stabilityRisks = evaluation.stability?.risks || []
+
+  // Filter to reliable risks based on stability threshold
+  const reliableRisks = stabilityRisks.filter((risk) => risk.stability >= stabilityThreshold)
+
+  // Group similar risks to avoid duplicates
+  const riskGroups = new Map()
+
+  for (const risk of reliableRisks) {
+    // Use normalized term as the grouping key
+    const normalizedTerm = normalizeTerm(risk.term || '')
+    const baseKey = normalizedTerm.split('-')[0] // Get first part for grouping
+
+    if (!riskGroups.has(baseKey)) {
+      riskGroups.set(baseKey, {
+        terms: new Set(),
+        issues: new Set(),
+        bestRisk: risk
+      })
+    }
+
+    const group = riskGroups.get(baseKey)
+    group.terms.add(risk.term)
+
+    // Collect issue variants as potential aliases
+    if (risk.issueVariants) {
+      for (const variant of risk.issueVariants) {
+        // Extract key phrases from the issue description
+        const keyPhrases = extractKeyPhrases(variant)
+        keyPhrases.forEach((p) => group.issues.add(p))
+      }
+    }
+
+    // Keep the risk with highest stability
+    if (risk.stability > group.bestRisk.stability) {
+      group.bestRisk = risk
+    }
+  }
+
+  // Build must_detect items
+  const mustDetect = []
+  for (const [key, group] of riskGroups) {
+    const risk = group.bestRisk
+    const id = normalizeTerm(risk.term || key).replace(/\s+/g, '_')
+
+    // Build aliases from term variants
+    const aliases = new Set()
+    for (const term of group.terms) {
+      aliases.add(term.toLowerCase())
+      // Add simplified versions
+      const simplified = term.toLowerCase()
+        .replace(/[\/\-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+      if (simplified !== term.toLowerCase()) {
+        aliases.add(simplified)
+      }
+    }
+
+    // Extract key words from the term
+    const termWords = risk.term.toLowerCase().split(/[\s\/\-]+/).filter((w) => w.length > 3)
+    termWords.forEach((w) => aliases.add(w))
+
+    mustDetect.push({
+      id,
+      aliases: Array.from(aliases).slice(0, 8), // Limit aliases
+      notes: risk.issueVariants?.[0]?.substring(0, 100) || `Detected with ${Math.round(risk.stability * 100)}% stability`
+    })
+  }
+
+  return {
+    contract_hash: contractHash,
+    contract_name: contractName || 'Contract',
+    must_detect: mustDetect,
+    must_not_detect: [
+      {
+        id: 'example_false_positive',
+        aliases: ['example term that should not be flagged'],
+        notes: 'PLACEHOLDER: Add terms that exist in the contract but should NOT be flagged as risks'
+      }
+    ]
+  }
+}
+
+/**
+ * Extract key phrases from an issue description.
+ *
+ * @param {string} text - Issue description text
+ * @returns {string[]} Key phrases
+ */
+function extractKeyPhrases(text) {
+  if (!text) return []
+
+  const phrases = []
+
+  // Look for quoted terms
+  const quoted = text.match(/"([^"]+)"/g)
+  if (quoted) {
+    phrases.push(...quoted.map((q) => q.replace(/"/g, '').toLowerCase()))
+  }
+
+  // Look for terms in common patterns
+  const patterns = [
+    /(?:the\s+)?(\w+(?:\s+\w+){0,2})\s+(?:is|are)\s+(?:not\s+)?(?:specified|defined|provided)/gi,
+    /(?:no|missing|undefined)\s+(\w+(?:\s+\w+){0,2})/gi,
+    /(\w+(?:\s+\w+){0,2})\s+(?:missing|undefined|blank)/gi
+  ]
+
+  for (const pattern of patterns) {
+    let match
+    while ((match = pattern.exec(text)) !== null) {
+      const phrase = match[1].toLowerCase().trim()
+      if (phrase.length > 3 && phrase.length < 40) {
+        phrases.push(phrase)
+      }
+    }
+  }
+
+  return phrases
+}
+
+/**
+ * Save a sentinel spec to the specs directory.
+ *
+ * @param {Object} spec - Sentinel spec object
+ * @param {string} [outputPath] - Optional override path
+ * @returns {string} Path where spec was saved
+ */
+function saveSentinelSpec(spec, outputPath = null) {
+  const filePath = outputPath || path.join(SENTINEL_SPECS_DIR, `${spec.contract_hash}.json`)
+
+  // Ensure directory exists
+  const dir = path.dirname(filePath)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+
+  fs.writeFileSync(filePath, JSON.stringify(spec, null, 2))
+  return filePath
+}
+
 module.exports = {
   loadSentinelSpec,
   evaluateSentinel,
@@ -306,5 +462,7 @@ module.exports = {
   riskMatchesSentinel,
   findMatchingRisks,
   isConsistentlyHallucinated,
+  generateSpecFromEvaluation,
+  saveSentinelSpec,
   SENTINEL_SPECS_DIR
 }

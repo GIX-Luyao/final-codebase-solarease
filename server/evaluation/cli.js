@@ -40,7 +40,9 @@ function parseArgs(args) {
       format: 'json',
       quiet: false,
       help: false,
-      apiUrl: process.env.API_URL || 'http://localhost:3000'
+      apiUrl: process.env.API_URL || 'http://localhost:3000',
+      contractName: null,
+      stabilityThreshold: 0.6
     }
   }
 
@@ -72,6 +74,11 @@ function parseArgs(args) {
     } else if (arg === '--sentinel-spec') {
       parsed.options.sentinelSpec = args[++i]
       parsed.options.sentinel = true // Specifying a spec implies enabling sentinel
+    } else if (arg === '--contract-name') {
+      parsed.options.contractName = args[++i]
+    } else if (arg === '--stability-threshold') {
+      const threshold = parseFloat(args[++i])
+      parsed.options.stabilityThreshold = isNaN(threshold) ? 0.6 : threshold
     } else if (!arg.startsWith('-')) {
       if (!parsed.command) {
         parsed.command = arg
@@ -94,11 +101,12 @@ Commands:
   evaluate <contract-file>      Run evaluation on a contract
   compare <baseline> <new>      Compare two evaluations for regression
   report <evaluation-file>      Generate report from saved evaluation
+  init-spec <file>              Generate sentinel spec from contract or evaluation
 
 Options:
-  --samples, -n <number>        Number of sampling runs (default: 5)
+  --samples, -n <number>        Number of sampling runs (default: 5, init-spec default: 3)
   --temperature <number>        LLM temperature (default: 0.3)
-  --output, -o <file>           Output file path (default: stdout)
+  --output, -o <file>           Output file path (default: stdout or auto for init-spec)
   --baseline, -b <file>         Baseline evaluation for regression comparison
   --sentinel                    Enable sentinel evaluation (default: auto-detect if spec exists)
   --no-sentinel                 Disable sentinel evaluation
@@ -107,6 +115,10 @@ Options:
   --api-url <url>               API URL (default: http://localhost:3000)
   --quiet, -q                   Suppress progress output
   --help, -h                    Show this help
+
+Init-spec Options:
+  --contract-name <name>        Name for the contract in the spec
+  --stability-threshold <num>   Min stability for must_detect items (default: 0.6)
 
 Examples:
   # Run evaluation with 10 samples
@@ -120,6 +132,17 @@ Examples:
 
   # Generate text report from saved evaluation
   node cli.js report eval.json --format text
+
+  # Generate sentinel spec from a contract (runs quick evaluation first)
+  node cli.js init-spec contract.pdf --contract-name "My PPA Contract"
+
+  # Generate sentinel spec from existing evaluation
+  node cli.js init-spec evaluation.json
+
+  # Full workflow: init spec, edit it, then run with sentinel
+  node cli.js init-spec contract.pdf
+  # Edit the generated spec file to add must_not_detect items
+  node cli.js evaluate contract.pdf --sentinel --format text
 
 Environment Variables:
   API_URL       API server URL (default: http://localhost:3000)
@@ -371,6 +394,111 @@ async function runReport(files, opts) {
   }
 }
 
+async function runInitSpec(files, opts) {
+  const { generateSpecFromEvaluation, saveSentinelSpec, SENTINEL_SPECS_DIR } = require('./sentinel')
+
+  let evaluation
+
+  if (files.length === 0) {
+    console.error('Error: Contract file or evaluation file required')
+    console.error('Usage: init-spec <contract.pdf>  OR  init-spec --from-eval <evaluation.json>')
+    process.exit(1)
+  }
+
+  const inputPath = files[0]
+
+  // Check if input is an evaluation file or a contract
+  const isEvalFile = inputPath.endsWith('.json')
+
+  if (isEvalFile) {
+    // Load existing evaluation
+    await log(`Loading evaluation from: ${inputPath}`, opts)
+    const evalData = JSON.parse(await fs.readFile(inputPath, 'utf-8'))
+    evaluation = evalData.report || evalData
+  } else {
+    // Run a quick evaluation on the contract
+    await log(`Running evaluation on: ${inputPath}`, opts)
+
+    // Check if file exists
+    try {
+      await fs.access(inputPath)
+    } catch {
+      console.error(`Error: File not found: ${inputPath}`)
+      process.exit(1)
+    }
+
+    // Read file
+    const fileBuffer = await fs.readFile(inputPath)
+    const fileName = path.basename(inputPath)
+    const mimeType = fileName.toLowerCase().endsWith('.pdf')
+      ? 'application/pdf'
+      : 'text/plain'
+
+    // Create form data
+    const FormData = require('form-data')
+    const formData = new FormData()
+    formData.append('contract', fileBuffer, {
+      filename: fileName,
+      contentType: mimeType
+    })
+    // Use fewer samples for spec generation (faster)
+    const samples = opts.samples || 3
+    formData.append('sampleCount', samples.toString())
+    formData.append('temperature', opts.temperature.toString())
+    formData.append('sentinel', 'false') // Disable sentinel for initial run
+
+    await log(`Running evaluation (${samples} samples) to analyze contract risks...`, opts)
+
+    const response = await fetch(`${opts.apiUrl}/api/evaluate-contract`, {
+      method: 'POST',
+      body: formData,
+      headers: formData.getHeaders()
+    })
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }))
+      console.error(`Error: ${error.error || response.statusText}`)
+      process.exit(1)
+    }
+
+    const result = await response.json()
+    evaluation = result.report
+  }
+
+  if (!evaluation || !evaluation.contractHash) {
+    console.error('Error: Invalid evaluation data - missing contractHash')
+    process.exit(1)
+  }
+
+  // Generate spec from evaluation
+  await log(`Generating sentinel spec from evaluation...`, opts)
+
+  const spec = generateSpecFromEvaluation({
+    evaluation,
+    contractName: opts.contractName || path.basename(inputPath, path.extname(inputPath)),
+    stabilityThreshold: opts.stabilityThreshold || 0.6
+  })
+
+  // Save the spec
+  const specPath = opts.output || path.join(SENTINEL_SPECS_DIR, `${evaluation.contractHash}.json`)
+  const savedPath = saveSentinelSpec(spec, specPath)
+
+  await log(`\nSentinel spec created: ${savedPath}`, opts)
+  await log(`Contract hash: ${evaluation.contractHash}`, opts)
+  await log(`Must-detect items: ${spec.must_detect.length}`, opts)
+  await log(``, opts)
+  await log(`Next steps:`, opts)
+  await log(`  1. Review and edit the spec file to refine aliases`, opts)
+  await log(`  2. Add must_not_detect items for known false positives`, opts)
+  await log(`  3. Run evaluation with sentinel:`, opts)
+  await log(`     node cli.js evaluate <contract> --sentinel`, opts)
+
+  // Output the spec if format is json
+  if (opts.format === 'json' && !opts.output) {
+    console.log(JSON.stringify(spec, null, 2))
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2)
   const parsed = parseArgs(args)
@@ -390,6 +518,9 @@ async function main() {
         break
       case 'report':
         await runReport(parsed.files, parsed.options)
+        break
+      case 'init-spec':
+        await runInitSpec(parsed.files, parsed.options)
         break
       default:
         console.error(`Unknown command: ${parsed.command}`)
