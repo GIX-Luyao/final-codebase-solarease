@@ -17,11 +17,15 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'File name required' })
     }
 
+    // Ensure JSONB fields are properly formatted
+    const keyTermsJson = keyTerms ? JSON.stringify(keyTerms) : null
+    const riskFlagsJson = riskFlags ? JSON.stringify(riskFlags) : null
+
     const result = await pool.query(
       `INSERT INTO contract_analyses (user_id, file_name, summary, key_terms, risk_flags)
-       VALUES ($1, $2, $3, $4, $5)
+       VALUES ($1, $2, $3, $4::jsonb, $5::jsonb)
        RETURNING id, file_name, summary, key_terms, risk_flags, created_at`,
-      [userId, fileName, summary || null, keyTerms || null, riskFlags || null]
+      [userId, fileName, summary || null, keyTermsJson, riskFlagsJson]
     )
 
     res.status(201).json({ contract: result.rows[0] })
