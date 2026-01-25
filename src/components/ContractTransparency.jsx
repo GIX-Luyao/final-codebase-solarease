@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react'
+import { useAuth } from '../context/AuthContext'
 import './ContractTransparency.css'
 
 export default function ContractTransparency() {
@@ -7,7 +8,10 @@ export default function ContractTransparency() {
   const [analyzing, setAnalyzing] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const fileInputRef = useRef(null)
+  const { isAuthenticated, authFetch } = useAuth()
 
   const handleDrag = (e) => {
     e.preventDefault()
@@ -59,6 +63,7 @@ export default function ContractTransparency() {
     setFile(null)
     setResult(null)
     setError(null)
+    setSaved(false)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -70,6 +75,7 @@ export default function ContractTransparency() {
     setAnalyzing(true)
     setError(null)
     setResult(null)
+    setSaved(false)
 
     try {
       const formData = new FormData()
@@ -97,6 +103,34 @@ export default function ContractTransparency() {
   const copyShareLink = () => {
     navigator.clipboard.writeText(window.location.href)
     alert('Link copied to clipboard!')
+  }
+
+  const saveAnalysis = async () => {
+    if (!result || !isAuthenticated) return
+
+    setSaving(true)
+    try {
+      const res = await authFetch('http://localhost:3000/api/contracts', {
+        method: 'POST',
+        body: JSON.stringify({
+          fileName: result.fileName || file?.name || 'Untitled Contract',
+          summary: result.summary,
+          keyTerms: result.keyTerms,
+          riskFlags: result.riskFlags
+        })
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to save')
+      }
+
+      setSaved(true)
+    } catch (err) {
+      setError(err.message || 'Failed to save analysis')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const formatFileSize = (bytes) => {
@@ -334,6 +368,33 @@ export default function ContractTransparency() {
 
               {/* Action Buttons */}
               <div className="action-buttons">
+                {isAuthenticated && (
+                  <button
+                    className={`action-btn save-btn ${saved ? 'saved' : ''}`}
+                    onClick={saveAnalysis}
+                    disabled={saving || saved}
+                  >
+                    {saved ? (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Saved
+                      </>
+                    ) : saving ? (
+                      'Saving...'
+                    ) : (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                          <polyline points="17 21 17 13 7 13 7 21" />
+                          <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Save Analysis
+                      </>
+                    )}
+                  </button>
+                )}
                 <button className="action-btn" onClick={copyShareLink}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />

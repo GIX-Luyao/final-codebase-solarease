@@ -40,5 +40,58 @@
 
 .toolbar-right { display:flex; align-items:center; gap:16px; }
 .auth-wrap { display:flex; gap:12px; align-items:center }
+
+.user-email {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #a3b3c2;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.login-btn {
+  background: transparent;
+  border: 1px solid rgba(163, 179, 194, 0.3);
+  color: #a3b3c2;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
+
+.register-btn {
+  background: linear-gradient(135deg, #0da2e7 0%, #07c0d5 100%);
+  color: #fff;
+}
+
+.register-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(13, 162, 231, 0.4);
+}
+
+.logout-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
 .github-icon { display:flex; align-items:center; justify-content:center; padding:8px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(163,179,194,0.15); transition: all 0.2s ease; text-decoration:none; }
 .github-icon:hover { background:rgba(13,162,231,0.15); border-color:rgba(13,162,231,0.3); }
