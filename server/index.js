@@ -15,12 +15,17 @@
 const express = require('express')
 const fetch = require('node-fetch')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const { spawn } = require('child_process')
 const multer = require('multer')
 const pdfParse = require('pdf-parse')
 const fs = require('fs').promises
 const path = require('path')
 require('dotenv').config()
+
+// Import routes
+const authRoutes = require('./routes/auth')
+const contractRoutes = require('./routes/contracts')
 
 // Import evaluation harness
 const evaluation = require('./evaluation')
@@ -40,8 +45,18 @@ const upload = multer({
 })
 
 const app = express()
-app.use(cors())
+
+// CORS configuration with credentials support
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}))
+app.use(cookieParser())
 app.use(express.json())
+
+// Mount auth and contract routes
+app.use('/api/auth', authRoutes)
+app.use('/api/contracts', contractRoutes)
 
 // OpenAI configuration
 const OPENAI_KEY = process.env.OPENAI_API_KEY
