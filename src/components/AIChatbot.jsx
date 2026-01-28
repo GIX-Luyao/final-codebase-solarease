@@ -1,18 +1,67 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './AIChatbot.css';
+import SolarAIAgent from '../lib/SolarAIAgent';
+import AIPersonalizationPanel from './AIPersonalizationPanel';
+import AIEvaluationPanel from './AIEvaluationPanel';
+import UsabilityTestRunner from './UsabilityTestRunner';
 
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [aiAgent] = useState(() => new SolarAIAgent());
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm Soli, your solar energy assistant. How can I help you today?"
+      content: "Hi! I'm Soli, your personalized solar energy agent. I'll learn your preferences as we chat and help you make the best solar decisions for your situation. How can I help you today?"
     }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [followUps, setFollowUps] = useState([]);
+  const [insights, setInsights] = useState([]);
+  const [showPersonalization, setShowPersonalization] = useState(false);
+  const [showEvaluation, setShowEvaluation] = useState(false);
+  const [showUsabilityTest, setShowUsabilityTest] = useState(false);
+  const [userContracts, setUserContracts] = useState([]);
+  const [contractsLoaded, setContractsLoaded] = useState(false);
+  const [dbStatus, setDbStatus] = useState({ connected: false, source: 'unknown' });
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+
+  // Get personalized greeting based on user profile
+  function getPersonalizedGreeting() {
+    const profile = aiAgent?.userProfile;
+    if (!profile || profile.interactions === 0) {
+      return "Hi! I'm Soli, your personalized solar energy agent. I'll learn your preferences as we chat and help you make the best solar decisions for your situation. I can also help analyze any existing contracts you've uploaded. How can I help you today?";
+    } else if (profile.name) {
+      return `Welcome back, ${profile.name}! I remember our previous conversations${userContracts.length > 0 ? ` and can access your ${userContracts.length} uploaded contract${userContracts.length > 1 ? 's' : ''}` : ''}. What would you like to explore today?`;
+    } else {
+      return `Good to see you again! Based on our previous chats, I'm here to help with your solar journey${userContracts.length > 0 ? ' and can analyze your contract data' : ''}. What's on your mind?`;
+    }
+  }
+
+  // Load user contracts from database
+  const loadUserContracts = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/contracts?userId=1');
+      const data = await response.json();
+      
+      if (response.ok && data.contracts) {
+        setUserContracts(data.contracts);
+        
+        // Update AI agent with contract context
+        if (aiAgent && typeof aiAgent.updateUserContracts === 'function') {
+          aiAgent.updateUserContracts(data.contracts);
+        }
+      }
+    } catch (err) {
+      console.log('Contract database not available, continuing without contract integration');
+      setUserContracts([]);
+    } finally {
+      setContractsLoaded(true);
+    }
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,11 +71,50 @@ export default function AIChatbot() {
     scrollToBottom();
   }, [messages]);
 
-  const recommendedQuestions = [
-    "What's the ROI for solar in my area?",
-    "How do community solar projects work?",
-    "What incentives are available?"
-  ];
+  const [recommendedQuestions, setRecommendedQuestions] = useState([]);
+
+  // Update recommended questions based on user profile
+  useEffect(() => {
+    // Load contracts when component mounts
+    if (!contractsLoaded && aiAgent) {
+      loadUserContracts();
+    }
+
+    if (aiAgent) {
+      try {
+        const personalizedQuestions = aiAgent.getPersonalizedSuggestions();
+        setRecommendedQuestions(personalizedQuestions);
+        
+        // Get proactive insights
+        const proactiveInsights = aiAgent.getProactiveInsights();
+        setInsights(proactiveInsights);
+      } catch (err) {
+        console.log('Error loading AI suggestions:', err);
+      }
+    }
+    
+    // Listen for context updates from other components
+    const handleContextUpdate = () => {
+      if (aiAgent) {
+        try {
+          const newInsights = aiAgent.getProactiveInsights();
+          setInsights(newInsights);
+          const newQuestions = aiAgent.getPersonalizedSuggestions();
+          setRecommendedQuestions(newQuestions);
+        } catch (err) {
+          console.log('Error updating context:', err);
+        }
+      }
+    };
+    
+    window.addEventListener('roiDataUpdated', handleContextUpdate);
+    window.addEventListener('negotiationCompleted', handleContextUpdate);
+    
+    return () => {
+      window.removeEventListener('roiDataUpdated', handleContextUpdate);
+      window.removeEventListener('negotiationCompleted', handleContextUpdate);
+    };
+  }, [aiAgent, contractsLoaded]);
 
   async function sendMessage(messageText = input) {
     if (!messageText.trim() || isLoading) return;
@@ -37,28 +125,66 @@ export default function AIChatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/chat', {
+      // Enhanced prompt that includes contract context
+      let systemPrompt = `You are Soli, an intelligent solar energy agent. `;
+      
+      // Add contract context if available
+      if (userContracts.length > 0) {
+        const contractSummary = userContracts.map(c => 
+          `"${c.filename}" (uploaded ${new Date(c.created_at).toLocaleDateString()})`
+        ).join(', ');
+        systemPrompt += `The user has uploaded ${userContracts.length} contract(s): ${contractSummary}. You can reference these contracts and provide specific analysis about their terms, rates, and how they compare to market standards. `;
+      }
+      
+      systemPrompt += `Be helpful, specific, and reference their uploaded contracts when relevant. If they ask about contract analysis, provide detailed insights about typical solar contract terms and how to evaluate them.`;
+
+      // Use enhanced API call with contract context
+      const response = await fetch('http://localhost:3000/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [...messages, userMessage]
+          prompt: systemPrompt + "\n\nUser message: " + messageText,
+          context: userContracts.length > 0 ? 'contract_analysis' : 'general_chat'
         })
       });
 
       const data = await response.json();
       
-      if (data.result) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.result }]);
-      } else {
-        throw new Error('No response from AI');
-      }
-    } catch (err) {
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again.' 
+        content: data.result || "I'm here to help with your solar journey! What would you like to know?"
+      }]);
+      
+    } catch (err) {
+      console.error('Chat Error:', err);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI simulator or negotiation tool?' 
       }]);
     } finally {
       setIsLoading(false);
+    }
+  }
+  
+  // Handle suggestion clicks
+  function handleSuggestionClick(suggestion) {
+    if (suggestion.includes('ROI') || suggestion.includes('Calculate')) {
+      // Navigate to ROI simulator
+      window.location.href = '/roi-simulator';
+    } else if (suggestion.includes('Negotiation') || suggestion.includes('Tool')) {
+      // Navigate to negotiation tool
+      window.location.href = '/negotiation-tool';
+    } else if (suggestion.includes('contract') || suggestion.includes('Analyze my')) {
+      // Handle contract analysis requests
+      if (userContracts.length > 0) {
+        const contractDetails = userContracts.map(c => `"${c.filename}" (${new Date(c.created_at).toLocaleDateString()})`).join(', ');
+        sendMessage(`Please analyze my uploaded contracts: ${contractDetails}. What are the key terms and how do they compare to market rates?`);
+      } else {
+        sendMessage('I don\'t see any uploaded contracts yet. Can you help me understand what to look for in solar contracts?');
+      }
+    } else {
+      // Send as message
+      sendMessage(suggestion);
     }
   }
 
@@ -73,7 +199,28 @@ export default function AIChatbot() {
     <>
       <button 
         className={`chatbot-fab ${isOpen ? 'open' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) {
+            // Update AI agent context when opening
+            const currentPath = window.location.pathname;
+            const contextData = {};
+            
+            // Detect current page context
+            if (currentPath.includes('roi-simulator')) {
+              contextData.currentPage = 'roi-simulator';
+              // Try to get ROI data from URL or localStorage
+              const params = new URLSearchParams(window.location.search);
+              if (params.get('location')) {
+                contextData.location = params.get('location');
+              }
+            } else if (currentPath.includes('negotiation-tool')) {
+              contextData.currentPage = 'negotiation-tool';
+            }
+            
+            aiAgent.updateContext(contextData);
+          }
+          setIsOpen(!isOpen);
+        }}
         aria-label="AI Assistant"
       >
         {isOpen ? (
@@ -103,10 +250,51 @@ export default function AIChatbot() {
             </div>
             <div className="chatbot-header-text">
               <h3>AI Assistant <span className="soli-name">Soli</span></h3>
-              <p>Hi! I'm Soli, your solar energy assistant. How can I help you today?</p>
+              <p>Your personalized solar energy agent</p>
+              
+              {aiAgent.userProfile.interactions > 0 && (
+                <div className="user-stats">
+                  <span className="interaction-count">{aiAgent.userProfile.interactions} interactions</span>
+                  {aiAgent.userProfile.preferences.topics.length > 0 && (
+                    <span className="user-interests">
+                      Interested in: {aiAgent.userProfile.preferences.topics.slice(0, 2).join(', ')}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <button className="chatbot-close" onClick={() => setIsOpen(false)}>
               ✕
+            </button>
+            <button 
+              className="chatbot-settings" 
+              onClick={() => setShowUsabilityTest(true)}
+              title="Run Usability Test"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 14l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button 
+              className="chatbot-settings" 
+              onClick={() => setShowEvaluation(true)}
+              title="Evaluate AI Performance"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button 
+              className="chatbot-settings" 
+              onClick={() => setShowPersonalization(true)}
+              title="Personalize Soli"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </button>
           </div>
 
@@ -128,7 +316,13 @@ export default function AIChatbot() {
                     </svg>
                   </div>
                 )}
-                <div className="message-content">{msg.content}</div>
+                <div className="message-content">
+                  {msg.role === 'assistant' ? (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  ) : (
+                    msg.content
+                  )}
+                </div>
               </div>
             ))}
             {isLoading && (
@@ -155,20 +349,78 @@ export default function AIChatbot() {
           </div>
 
           {messages.length === 1 && (
-            <div className="recommended-questions">
-              <div className="rec-header">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#0DA2E7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Recommended Questions
+            <>
+              {insights.length > 0 && (
+                <div className="insights-section">
+                  <div className="insights-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="#FDB813"/>
+                    </svg>
+                    Insights for You
+                  </div>
+                  {insights.map((insight, i) => (
+                    <div key={i} className={`insight-card ${insight.type}`}>
+                      <p className="insight-message">{insight.message}</p>
+                      {insight.action && (
+                        <button 
+                          className="insight-action"
+                          onClick={() => handleSuggestionClick(insight.action)}
+                        >
+                          {insight.action}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              <div className="recommended-questions">
+                <div className="rec-header">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#0DA2E7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {aiAgent.userProfile.interactions === 0 ? 'Suggested Questions' : 'Based on Your Interests'}
+                </div>
+                {recommendedQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    className="rec-question"
+                    onClick={() => handleSuggestionClick(q)}
+                  >
+                    {q}
+                  </button>
+                ))}
               </div>
-              {recommendedQuestions.map((q, i) => (
+            </>
+          )}
+
+          {/* Dynamic suggestions after messages */}
+          {suggestions.length > 0 && messages.length > 1 && (
+            <div className="dynamic-suggestions">
+              <div className="suggestions-header">Quick Actions</div>
+              {suggestions.map((suggestion, i) => (
                 <button
                   key={i}
-                  className="rec-question"
-                  onClick={() => sendMessage(q)}
+                  className="suggestion-btn"
+                  onClick={() => handleSuggestionClick(suggestion)}
                 >
-                  {q}
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Follow-up questions */}
+          {followUps.length > 0 && messages.length > 1 && (
+            <div className="follow-ups">
+              <div className="followup-header">Continue exploring:</div>
+              {followUps.map((followUp, i) => (
+                <button
+                  key={i}
+                  className="followup-btn"
+                  onClick={() => sendMessage(followUp)}
+                >
+                  {followUp}
                 </button>
               ))}
             </div>
@@ -193,6 +445,34 @@ export default function AIChatbot() {
                 <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
+          </div>
+        </div>
+      )}
+      
+      {showPersonalization && (
+        <AIPersonalizationPanel
+          aiAgent={aiAgent}
+          onClose={() => setShowPersonalization(false)}
+        />
+      )}
+
+      {showEvaluation && (
+        <AIEvaluationPanel
+          isOpen={showEvaluation}
+          onClose={() => setShowEvaluation(false)}
+        />
+      )}
+
+      {showUsabilityTest && (
+        <div className="panel-overlay">
+          <div className="panel-container">
+            <button 
+              className="panel-close" 
+              onClick={() => setShowUsabilityTest(false)}
+            >
+              ✕
+            </button>
+            <UsabilityTestRunner />
           </div>
         </div>
       )}

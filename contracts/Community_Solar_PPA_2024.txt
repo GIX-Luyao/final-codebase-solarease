@@ -1,0 +1,118 @@
+COMMUNITY SOLAR POWER PURCHASE AGREEMENT (PPA)
+=============================================
+
+Contract ID: CS-PPA-2024-001
+Date: January 15, 2026
+Effective Period: 25 Years
+
+PARTIES:
+--------
+Solar Provider: SolarShare Community Energy LLC
+Address: 1234 Green Energy Blvd, Seattle, WA 98101
+
+Subscriber: Community Solar Group - Bellingham
+Address: 5678 Community Drive, Bellingham, WA 98225
+Contact: John Henderson (Group Coordinator)
+
+SOLAR FACILITY DETAILS:
+-----------------------
+Project Name: Whatcom County Solar Farm Phase II
+Location: Ferndale, WA
+System Size: 2.5 MW (Community Allocation: 500 kW)
+Expected Annual Generation: 625,000 kWh
+Technology: Monocrystalline Silicon Panels with Single-axis Tracking
+
+PRICING STRUCTURE:
+-----------------
+Base Rate: $0.085 per kWh (Year 1)
+Annual Escalation: 2.9% per year
+Subscriber Discount: 15% below retail utility rate
+Guaranteed Savings: Minimum 10% annually vs. PSE standard rate
+
+PAYMENT TERMS:
+-------------
+Billing Cycle: Monthly
+Payment Due: Net 30 days
+Late Fee: 1.5% per month on overdue amounts
+Security Deposit: $2,500 (refundable after 12 months good standing)
+
+ALLOCATION & CREDITS:
+--------------------
+Community Share: 20% of total facility output
+Monthly Allocation: ~52,083 kWh (estimated)
+Credit Mechanism: Net metering credits applied to member utility bills
+Excess Credit Handling: Carried forward up to 12 months
+
+PERFORMANCE GUARANTEES:
+----------------------
+Annual Production Guarantee: 90% of estimated generation
+Performance Monitoring: Real-time via web portal
+Maintenance: Included in PPA rate
+Equipment Warranty: 25 years panels, 20 years inverters
+
+TERMS & CONDITIONS:
+------------------
+Contract Term: 25 years from Commercial Operation Date
+Early Termination: Permitted with 180-day notice + termination fee
+Termination Fee Schedule:
+- Years 1-5: $15,000
+- Years 6-10: $10,000
+- Years 11-15: $5,000
+- Years 16-25: No fee
+
+SUBSCRIBER RESPONSIBILITIES:
+---------------------------
+- Maintain good standing with local utility
+- Provide 60-day notice for any changes in utility account
+- Participate in quarterly community meetings
+- Comply with utility interconnection requirements
+
+RENEWABLE ENERGY CERTIFICATES (RECs):
+------------------------------------
+REC Ownership: Retained by Solar Provider for first 10 years
+REC Transfer: RECs transfer to community after Year 10
+Environmental Benefits: Subscriber may claim carbon offset benefits
+
+INSURANCE & LIABILITY:
+---------------------
+General Liability: $2,000,000 per occurrence
+Property Insurance: Full replacement value of equipment
+Subscriber Liability: Limited to monthly subscription amount
+
+DISPUTE RESOLUTION:
+------------------
+Governing Law: State of Washington
+Dispute Process: Mediation first, then binding arbitration
+Venue: King County Superior Court
+Attorney Fees: Prevailing party entitled to reasonable fees
+
+SPECIAL PROVISIONS:
+------------------
+Community Expansion: Right of first refusal for additional capacity
+Technology Upgrades: Cost-neutral improvements included at no charge
+Force Majeure: Standard provisions for uncontrollable events
+Regulatory Changes: Good faith renegotiation if laws change materially
+
+SIGNATURES:
+----------
+Solar Provider Representative: _________________________ Date: _________
+Sarah Mitchell, VP Community Development
+SolarShare Community Energy LLC
+
+Community Representative: _________________________ Date: _________
+John Henderson, Group Coordinator
+Community Solar Group - Bellingham
+
+Witness: _________________________ Date: _________
+
+APPENDIX A: FACILITY SPECIFICATIONS
+APPENDIX B: PAYMENT SCHEDULE
+APPENDIX C: INTERCONNECTION AGREEMENT
+APPENDIX D: COMMUNITY MEMBER LIST
+
+---
+This contract represents a binding agreement subject to all terms and conditions outlined above. Both parties acknowledge receipt and understanding of all provisions.
+
+Contract Reference: CS-PPA-2024-001
+File Date: January 15, 2026
+Page 1 of 1

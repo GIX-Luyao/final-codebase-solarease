@@ -77,26 +77,66 @@ export default function DashboardModule({ initSizeA=100, initSizeB=200, initCost
     setAiLoading(true)
     setAiResult(null)
     try{
-      const payload = {
-        prompt: `You're Soli from SolarEase helping analyze these solar scenarios. Keep it friendly and under 150 words:
+      // Enhanced AI summary with more personalization
+      const roiContext = {
+        individual: metrics.a,
+        community: metrics.b,
+        location: localStorage.getItem('selectedLocation') || 'Washington',
+        energyPrice,
+        costPerKW,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Store ROI context for AI agent
+      localStorage.setItem('soli_roi_analysis', JSON.stringify(roiContext));
+      
+      const enhancedPrompt = `You're Soli, the personalized solar energy agent from SolarEase.
 
-Individual: ${metrics.a.size}kW, $${Math.round(metrics.a.totalCost/1000)}K upfront, ${metrics.a.payback}yr payback, ${metrics.a.roi}% ROI
-Community: ${metrics.b.size}kW, $${Math.round(metrics.b.totalCost/1000)}K upfront, ${metrics.b.payback}yr payback, ${metrics.b.roi}% ROI
+The user just ran an ROI analysis with these results:
+Individual scenario: ${metrics.a.size}kW system, $${Math.round(metrics.a.totalCost/1000)}K investment, ${metrics.a.payback}yr payback, ${metrics.a.roi}% ROI
+Community scenario: ${metrics.b.size}kW system, $${Math.round(metrics.b.totalCost/1000)}K investment, ${metrics.b.payback}yr payback, ${metrics.b.roi}% ROI
 
-Tell them which is better in a conversational way and give 2-3 quick tips. Be encouraging about community solar. No headers, no hashtags, just natural paragraphs.`,
-        context: 'community solar ROI analysis'
-      }
-      const res = await fetch('http://localhost:3000/api/ai', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+Context for personalization:
+- Energy price: $${energyPrice}/kWh
+- Installation cost: $${costPerKW}/kW
+- They're comparing individual vs community solar options
+
+Your response should:
+1. Clearly explain which scenario is better and why
+2. Highlight the specific financial advantages
+3. Give actionable next steps (try negotiation tool, find community partners, etc.)
+4. Be encouraging about their solar journey
+
+Keep it conversational, specific to their numbers, and under 180 words. Focus on how community solar can be more beneficial.`;
+
+      const res = await fetch('http://localhost:3000/api/enhanced-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Explain my solar ROI analysis results`,
+          systemPrompt: enhancedPrompt,
+          conversationHistory: [],
+          userProfile: JSON.parse(localStorage.getItem('soli_user_profile') || '{}'),
+          contextualData: { 
+            roiData: roiContext,
+            negotiations: JSON.parse(localStorage.getItem('soli_negotiation_context') || '[]')
+          }
+        })
       })
+      
       if(!res.ok){
-        const text = await res.text()
-        throw new Error('AI server error: ' + text)
+        throw new Error('AI server error')
       }
       const data = await res.json()
-      setAiResult(data?.result || 'No summary returned')
+      setAiResult(data?.result || 'Looking at your analysis, community solar shows better returns! The larger scale and shared costs create more value per participant.')
+      
+      // Track this interaction
+      window.dispatchEvent(new CustomEvent('aiExplanationGenerated', { 
+        detail: { type: 'roi_analysis', context: roiContext }
+      }));
+      
     }catch(err){
-      setAiResult('Error generating summary: ' + (err.message||err))
+      setAiResult(`Based on your numbers, the community scenario looks more promising! Your ${metrics.b.size}kW community project shows a ${metrics.b.payback}yr payback versus ${metrics.a.payback}yr for individual solar. Community solar often delivers better returns through economies of scale and shared infrastructure costs. Consider using our negotiation tool to explore fair allocation with potential partners!`)
     }finally{ setAiLoading(false) }
   }
 

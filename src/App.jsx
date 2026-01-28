@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ROISimulatorPage from './pages/ROISimulatorPage'
 import NegotiationToolPage from './pages/NegotiationToolPage'
+import AdminPage from './pages/AdminPage'
 import AIChatbot from './components/AIChatbot'
 import './index.css'
 
@@ -14,6 +15,7 @@ export default function App(){
           <Route path="/" element={<HomePage />} />
           <Route path="/roi-simulator" element={<ROISimulatorPage />} />
           <Route path="/negotiation-tool" element={<NegotiationToolPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
         <AIChatbot />
       </div>
