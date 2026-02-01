@@ -1,73 +1,31 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { API_URL } from '../config'
+import { useContracts, useContract, useDeleteContract } from '../hooks/useContracts'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import './SavedContractsPage.css'
 
 export default function SavedContractsPage() {
-  const [contracts, setContracts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedContract, setSelectedContract] = useState(null)
-  const [detailLoading, setDetailLoading] = useState(false)
+  const [selectedContractId, setSelectedContractId] = useState(null)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
-
-  const { authFetch } = useAuth()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    fetchContracts()
-  }, [])
+  // React Query hooks
+  const { data: contracts = [], isLoading, error: listError } = useContracts()
+  const { data: selectedContract, isLoading: detailLoading } = useContract(selectedContractId)
+  const deleteContractMutation = useDeleteContract()
 
-  const fetchContracts = async () => {
-    try {
-      setLoading(true)
-      const res = await authFetch(`${API_URL}/api/contracts`)
-      if (!res.ok) {
-        throw new Error('Failed to fetch contracts')
-      }
-      const data = await res.json()
-      setContracts(data.contracts)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const error = listError?.message || deleteContractMutation.error?.message
 
-  const viewContract = async (id) => {
+  const handleDelete = async (id) => {
     try {
-      setDetailLoading(true)
-      const res = await authFetch(`${API_URL}/api/contracts/${id}`)
-      if (!res.ok) {
-        throw new Error('Failed to fetch contract details')
-      }
-      const data = await res.json()
-      setSelectedContract(data.contract)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setDetailLoading(false)
-    }
-  }
-
-  const deleteContract = async (id) => {
-    try {
-      const res = await authFetch(`${API_URL}/api/contracts/${id}`, {
-        method: 'DELETE'
-      })
-      if (!res.ok) {
-        throw new Error('Failed to delete contract')
-      }
-      setContracts(contracts.filter(c => c.id !== id))
-      if (selectedContract?.id === id) {
-        setSelectedContract(null)
+      await deleteContractMutation.mutateAsync(id)
+      if (selectedContractId === id) {
+        setSelectedContractId(null)
       }
       setDeleteConfirm(null)
     } catch (err) {
-      setError(err.message)
+      // Error handled by mutation
     }
   }
 
@@ -117,14 +75,13 @@ export default function SavedContractsPage() {
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               {error}
-              <button onClick={() => setError(null)}>Dismiss</button>
             </div>
           )}
 
           <div className="contracts-layout">
             {/* Contract List */}
             <div className="contracts-list">
-              {loading ? (
+              {isLoading ? (
                 <div className="loading-state">
                   <div className="spinner" />
                   <p>Loading contracts...</p>
@@ -150,8 +107,8 @@ export default function SavedContractsPage() {
                 contracts.map((contract) => (
                   <div
                     key={contract.id}
-                    className={`contract-item ${selectedContract?.id === contract.id ? 'active' : ''}`}
-                    onClick={() => viewContract(contract.id)}
+                    className={`contract-item ${selectedContractId === contract.id ? 'active' : ''}`}
+                    onClick={() => setSelectedContractId(contract.id)}
                   >
                     <div className="contract-item-header">
                       <div className="contract-icon">
@@ -294,8 +251,12 @@ export default function SavedContractsPage() {
                 <button className="cancel-btn" onClick={() => setDeleteConfirm(null)}>
                   Cancel
                 </button>
-                <button className="confirm-delete-btn" onClick={() => deleteContract(deleteConfirm)}>
-                  Delete
+                <button
+                  className="confirm-delete-btn"
+                  onClick={() => handleDelete(deleteConfirm)}
+                  disabled={deleteContractMutation.isPending}
+                >
+                  {deleteContractMutation.isPending ? 'Deleting...' : 'Delete'}
                 </button>
               </div>
             </div>

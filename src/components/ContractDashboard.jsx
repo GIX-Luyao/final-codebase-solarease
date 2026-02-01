@@ -1,8 +1,10 @@
 // Contract Analysis Dashboard - Database Integration Demo
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
+import { useAuth } from '../context/AuthContext';
 
 export default function ContractDashboard() {
+  const { isAuthenticated, authFetch } = useAuth();
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,13 +13,18 @@ export default function ContractDashboard() {
   const [analyzing, setAnalyzing] = useState(false);
 
   const fetchContracts = async () => {
+    if (!isAuthenticated) {
+      setContracts([]);
+      return;
+    }
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`${API_URL}/api/contracts?userId=1`);
+      const response = await authFetch(`${API_URL}/api/contracts`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setContracts(data.contracts || []);
         console.log('✓ Database Integration:', data);
