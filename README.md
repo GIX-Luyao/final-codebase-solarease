@@ -46,9 +46,12 @@ SolarEase is a comprehensive web application that helps communities:
 - Complementary energy profile analysis
 
 ###  **Contract Transparency**
-- Auto-generated PPA summaries
-- Plain-language term explanations
-- Benefit split visualizations
+- **AI-powered contract analysis** for PPA documents
+- **Plain-language summaries** explaining what agreements mean
+- **Key term extraction**: parties, term length, capacity, pricing, escalation rates
+- **Risk flag identification** with severity ratings (High/Medium/Low)
+- **Drag-and-drop upload** for PDF and TXT files
+- **Legal disclaimer** reminding users to consult attorneys
 
 ---
 
@@ -69,7 +72,8 @@ SolarEase is a comprehensive web application that helps communities:
 
 ### Backend
 - **Server**: Express.js (Node)
-- **API Proxy**: OpenAI integration for AI features
+- **AI Integration**: OpenAI or Azure OpenAI (configurable)
+- **Contract Analysis**: PDF parsing with AI-powered extraction
 - **Negotiation Endpoint**: `/api/negotiate` (Python subprocess)
 - **Nash Solver**: CVXPY-based convex optimization
 
@@ -112,10 +116,18 @@ SolarEase is a comprehensive web application that helps communities:
    - `numpy>=1.24.0` - Numerical computing
 
 4. **Configure environment** (optional)
-   
+
    Create `.env` file in project root:
    ```env
+   # Option 1: OpenAI
    OPENAI_API_KEY=sk-your-key-here
+
+   # Option 2: Azure OpenAI (takes priority if all are set)
+   AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+   AZURE_OPENAI_KEY=your-azure-key
+   AZURE_OPENAI_DEPLOYMENT=your-deployment-name
+   AZURE_OPENAI_API_VERSION=2024-02-15-preview
+
    PORT=3000
    ```
 
@@ -185,6 +197,38 @@ Generate AI explanations and recommendations.
 }
 ```
 
+### `POST /api/analyze-contract`
+Analyze a PPA contract document and extract key terms and risk flags.
+
+**Request:** `multipart/form-data` with file field `contract`
+- Accepts: PDF, TXT files (max 10MB)
+
+**Response:**
+```json
+{
+  "summary": "This is a 20-year PPA between...",
+  "keyTerms": {
+    "parties": { "buyer": "Acme Corp", "seller": "Solar Provider Inc" },
+    "termLength": "20 years",
+    "capacity": "500 kW",
+    "pricePerKwh": "$0.12",
+    "escalationRate": "2% annually",
+    "performanceGuarantee": "90% system uptime",
+    "omResponsibility": "Seller maintains system",
+    "terminationClause": "30-day notice required"
+  },
+  "riskFlags": [
+    {
+      "severity": "high",
+      "term": "Escalation Rate",
+      "issue": "3% annual escalation exceeds typical 1-2%",
+      "section": "Section 4.2"
+    }
+  ],
+  "disclaimer": "This analysis is informational only..."
+}
+```
+
 ### `POST /api/negotiate`
 Compute fair allocations using Nash Bargaining.
 
@@ -226,21 +270,24 @@ Compute fair allocations using Nash Bargaining.
 solarease/
 ├── src/
 │   ├── components/
-│   │   ├── Header.jsx/css          # Site header with branding
-│   │   ├── Hero.jsx/css            # Hero section with stats
-│   │   ├── InputForm.jsx/css       # Features grid (6 cards)
-│   │   ├── LocationROI.jsx/css     # Location selector + quick ROI
-│   │   ├── DashboardModule.jsx/css # Full simulator with charts
-│   │   ├── NegotiationTool.jsx/css # Nash Bargaining interface
-│   │   ├── Pagination.jsx/css      # Regional Impact Map
-│   │   ├── SuccessfulCases.jsx/css # Project carousel
-│   │   └── Footer.jsx/css          # Site footer
+│   │   ├── Header.jsx/css              # Site header with branding
+│   │   ├── Hero.jsx/css                # Hero section with stats
+│   │   ├── InputForm.jsx/css           # Features grid (6 cards)
+│   │   ├── LocationROI.jsx/css         # Location selector + quick ROI
+│   │   ├── DashboardModule.jsx/css     # Full simulator with charts
+│   │   ├── NegotiationTool.jsx/css     # Nash Bargaining interface
+│   │   ├── ContractTransparency.jsx/css # Contract analysis interface
+│   │   ├── Pagination.jsx/css          # Regional Impact Map
+│   │   ├── SuccessfulCases.jsx/css     # Project carousel
+│   │   └── Footer.jsx/css              # Site footer
 │   ├── pages/
-│   │   └── HomePage.jsx/css        # Main page composition
+│   │   ├── HomePage.jsx/css            # Main page composition
+│   │   ├── NegotiationToolPage.jsx/css # Negotiation tool page
+│   │   └── ContractTransparencyPage.jsx/css # Contract analysis page
 │   └── lib/
-│       └── finance.js              # Financial calculations (NPV, IRR, cashflow)
+│       └── finance.js                  # Financial calculations (NPV, IRR, cashflow)
 ├── server/
-│   ├── index.js                    # Express API server
+│   ├── index.js                    # Express API server (OpenAI/Azure OpenAI)
 │   └── nash_solver.py              # CVXPY Nash Bargaining solver
 ├── svg/                            # Feature icons
 ├── requirements.txt                # Python dependencies
@@ -271,7 +318,9 @@ solarease/
 ### Libraries
 - **CVXPY** - Convex optimization (Nash Bargaining)
 - **NumPy** - Numerical computing (threat points, surplus)
-- **OpenAI API** - AI explanations
+- **OpenAI API** / **Azure OpenAI** - AI explanations and contract analysis
+- **pdf-parse** - PDF text extraction for contract analysis
+- **multer** - File upload handling
 
 ### Design System
 - **Blue Gradient Theme**: `rgba(13,162,231)` + `rgba(7,192,213)`
