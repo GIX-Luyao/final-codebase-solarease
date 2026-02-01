@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Header.css';
-import githubIcon from '../../svg/Text input.svg';
+const githubIcon = '/svg/Text input.svg';
 
 export default function Header() {
   const navigate = useNavigate();

@@ -1,5 +1,6 @@
 // Contract Analysis Dashboard - Database Integration Demo
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 export default function ContractDashboard() {
   const [contracts, setContracts] = useState([]);
@@ -14,7 +15,7 @@ export default function ContractDashboard() {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:3000/api/contracts?userId=1');
+      const response = await fetch(`${API_URL}/api/contracts?userId=1`);
       const data = await response.json();
       
       if (response.ok) {
@@ -35,7 +36,7 @@ export default function ContractDashboard() {
     setAiAnalysis('');
     
     try {
-      const response = await fetch('http://localhost:3000/api/ai', {
+      const response = await fetch(`${API_URL}/api/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

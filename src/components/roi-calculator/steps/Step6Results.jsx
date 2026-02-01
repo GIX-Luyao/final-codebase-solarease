@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './Step6Results.css'
 import SummaryCard from '../shared/SummaryCard'
+import { API_URL } from '../../../config'
 
 export default function Step6Results({
   participants,
@@ -34,7 +35,7 @@ Surplus created: $${Math.round(nashResults?.total_surplus / 1000)}K
 
 Explain why this is a good deal for everyone, celebrate the cooperation benefits, and give 2 quick tips for moving forward. Be encouraging! No headers, no hashtags, just natural paragraphs.`
 
-      const res = await fetch('http://localhost:3000/api/ai', {
+      const res = await fetch(`${API_URL}/api/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

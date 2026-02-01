@@ -1,6 +1,8 @@
 // Enhanced AI Agent System for SolarEase
 // Provides personalized, contextual AI interactions with memory and tool integration
 
+import { API_URL } from '../config'
+
 class SolarAIAgent {
   constructor() {
     this.userProfile = this.loadUserProfile();
@@ -304,7 +306,7 @@ Current message context: ${intent.complexity} complexity, ${intent.urgency} urge
       // Use enhanced prompt that includes contract context
       const systemPrompt = await this.generateContextualPromptWithContracts(message, '1');
       
-      const response = await fetch('http://localhost:3000/api/enhanced-chat', {
+      const response = await fetch(`${API_URL}/api/enhanced-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -577,7 +579,7 @@ Current message context: ${intent.complexity} complexity, ${intent.urgency} urge
   // Fetch user's uploaded contracts from database
   async fetchUserContracts(userId = '1') {
     try {
-      const response = await fetch(`http://localhost:3000/api/contracts?userId=${userId}`);
+      const response = await fetch(`${API_URL}/api/contracts?userId=${userId}`);
       const data = await response.json();
       
       if (response.ok) {

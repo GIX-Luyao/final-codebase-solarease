@@ -168,17 +168,37 @@ const mockContracts = [
 let pool = null;
 let dbConnected = false;
 
+// Build database config from DATABASE_URL or individual variables
+function getDatabaseConfig() {
+  const connectionString = process.env.DATABASE_URL;
+  const isAzure = connectionString?.includes('azure.com') || process.env.DB_HOST?.includes('azure.com');
+  const sslConfig = isAzure ? { rejectUnauthorized: false } : false;
+
+  if (connectionString) {
+    const url = new URL(connectionString);
+    return {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: url.pathname.slice(1),
+      user: url.username,
+      password: url.password,
+      ssl: sslConfig
+    };
+  }
+
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT) || 5432,
+    database: process.env.DB_NAME || 'solarease',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    ssl: sslConfig
+  };
+}
+
 async function initializeDatabase() {
   try {
-    const dbConfig = {
-      host: process.env.DB_HOST || 'solarease-db.postgres.database.azure.com',
-      port: process.env.DB_PORT || 5432,
-      database: process.env.DB_NAME || 'solarease',
-      user: process.env.DB_USER || 'solarease_admin',
-      password: process.env.DB_PASSWORD || 'SolarEase2024!',
-      ssl: { rejectUnauthorized: false }
-    };
-
+    const dbConfig = getDatabaseConfig();
     pool = new Pool(dbConfig);
     
     // Test connection

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import './SavedContractsPage.css'
@@ -23,7 +24,7 @@ export default function SavedContractsPage() {
   const fetchContracts = async () => {
     try {
       setLoading(true)
-      const res = await authFetch('http://localhost:3000/api/contracts')
+      const res = await authFetch(`${API_URL}/api/contracts`)
       if (!res.ok) {
         throw new Error('Failed to fetch contracts')
       }
@@ -39,7 +40,7 @@ export default function SavedContractsPage() {
   const viewContract = async (id) => {
     try {
       setDetailLoading(true)
-      const res = await authFetch(`http://localhost:3000/api/contracts/${id}`)
+      const res = await authFetch(`${API_URL}/api/contracts/${id}`)
       if (!res.ok) {
         throw new Error('Failed to fetch contract details')
       }
@@ -54,7 +55,7 @@ export default function SavedContractsPage() {
 
   const deleteContract = async (id) => {
     try {
-      const res = await authFetch(`http://localhost:3000/api/contracts/${id}`, {
+      const res = await authFetch(`${API_URL}/api/contracts/${id}`, {
         method: 'DELETE'
       })
       if (!res.ok) {

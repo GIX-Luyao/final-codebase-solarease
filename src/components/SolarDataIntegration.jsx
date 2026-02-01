@@ -1,5 +1,6 @@
 // Solar Data Integration - Real-time API Demo
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 export default function SolarDataIntegration() {
   const [solarData, setSolarData] = useState(null);
@@ -39,7 +40,7 @@ export default function SolarDataIntegration() {
 
   const generateAIInsight = async (data) => {
     try {
-      const response = await fetch('http://localhost:3000/api/ai', {
+      const response = await fetch(`${API_URL}/api/ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

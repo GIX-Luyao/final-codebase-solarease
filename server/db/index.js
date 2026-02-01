@@ -1,8 +1,35 @@
 const { Pool } = require('pg')
 require('dotenv').config()
 
-const isAzure = process.env.DB_HOST?.includes('azure.com')
+// Support DATABASE_URL or individual variables
+const connectionString = process.env.DATABASE_URL
+const isAzure = connectionString?.includes('azure.com') || process.env.DB_HOST?.includes('azure.com')
 const sslConfig = isAzure ? { rejectUnauthorized: false } : false
+
+// Build connection config
+function getConnectionConfig(database) {
+  if (connectionString) {
+    // Parse DATABASE_URL and optionally override database
+    const url = new URL(connectionString)
+    return {
+      host: url.hostname,
+      port: parseInt(url.port) || 5432,
+      database: database || url.pathname.slice(1),
+      user: url.username,
+      password: url.password,
+      ssl: sslConfig
+    }
+  }
+  // Fallback to individual variables
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: database || process.env.DB_NAME || 'solarease',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    ssl: sslConfig
+  }
+}
 
 // Main connection pool (will be set after setup)
 let pool = null
@@ -39,17 +66,11 @@ CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id ON refresh_tokens(user_id)
 `
 
 async function setupDatabase() {
-  const targetDb = process.env.DB_NAME || 'solarease'
+  const config = getConnectionConfig()
+  const targetDb = config.database
 
   // First connect to 'postgres' default database to create our database
-  const setupPool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    database: 'postgres',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    ssl: sslConfig
-  })
+  const setupPool = new Pool(getConnectionConfig('postgres'))
 
   try {
     // Check if our database exists
@@ -73,14 +94,7 @@ async function setupDatabase() {
   }
 
   // Now connect to our target database
-  pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    database: targetDb,
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    ssl: sslConfig
-  })
+  pool = new Pool(getConnectionConfig(targetDb))
 
   // Create tables
   try {
