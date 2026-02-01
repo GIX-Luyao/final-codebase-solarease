@@ -1,11 +1,12 @@
 import React from 'react';
 import './InputForm.css';
-import iconRoi from '../../svg/Button.svg';
-import iconAi from '../../svg/Button (2).svg';
-import iconMap from '../../svg/Container.svg';
-import iconCollab from '../../svg/Horizontal container.svg';
-import iconNegotiate from '../../svg/Button (3).svg';
-import iconContract from '../../svg/Button (1).svg';
+
+const iconRoi = '/svg/Button.svg';
+const iconAi = '/svg/Button (2).svg';
+const iconMap = '/svg/Container.svg';
+const iconCollab = '/svg/Horizontal container.svg';
+const iconNegotiate = '/svg/Button (3).svg';
+const iconContract = '/svg/Button (1).svg';
 
 // More exact DOM mapping for Input form container and nested frames
 export default function InputForm({ onNavigateToNegotiation, onNavigateToContract }) {
