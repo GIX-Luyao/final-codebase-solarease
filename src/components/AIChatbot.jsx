@@ -49,13 +49,19 @@ export default function AIChatbot() {
 
   // Load user contracts from database
   const loadUserContracts = async () => {
+    // Only load contracts if user is authenticated
+    if (!isAuthenticated) {
+      setContractsLoaded(true);
+      return;
+    }
+
     try {
-      const response = await fetch(`${API_URL}/api/contracts?userId=1`);
+      const response = await authFetch(`${API_URL}/api/contracts`);
       const data = await response.json();
-      
+
       if (response.ok && data.contracts) {
         setUserContracts(data.contracts);
-        
+
         // Update AI agent with contract context
         if (aiAgent && typeof aiAgent.updateUserContracts === 'function') {
           aiAgent.updateUserContracts(data.contracts);
