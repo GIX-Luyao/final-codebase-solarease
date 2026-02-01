@@ -12,6 +12,8 @@ on:
 
 jobs:
   build-and-push:
+    # Only run on the forked repo, not the original
+    if: github.repository == 'Xiao-Hannah/microgrid'
     runs-on: ubuntu-latest
 
     steps:
