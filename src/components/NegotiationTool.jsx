@@ -1,7 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './NegotiationTool.css'
+import SolarAIAgent from '../lib/SolarAIAgent'
 
 export default function NegotiationTool() {
+  const [aiAgent] = useState(() => new SolarAIAgent());
+  const [smartRecommendations, setSmartRecommendations] = useState([]);
+  const [showAutoFill, setShowAutoFill] = useState(false);
+  
   const [participants, setParticipants] = useState([
     { name: '', address: '', annual_generation_kwh: '', energy_price_per_kwh: 0.12, upfront_cost: '' },
     { name: '', address: '', annual_generation_kwh: '', energy_price_per_kwh: 0.12, upfront_cost: '' }
@@ -16,6 +21,98 @@ export default function NegotiationTool() {
   const [aiExplanation, setAiExplanation] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
 
+  // Initialize smart features
+  useEffect(() => {
+    const recommendations = aiAgent.getContextualRecommendations('negotiation-tool');
+    setSmartRecommendations(recommendations);
+    
+    const autoData = aiAgent.shouldAutoCalculate();
+    if (autoData.autoNegotiation && autoData.prefillData.name) {
+      setShowAutoFill(true);
+    }
+    
+    // Listen for navigation from ROI tool
+    const handleROINavigation = (event) => {
+      if (event.detail.fromROI) {
+        handleAutoFillFromROI(event.detail.roiData);
+      }
+    };
+    
+    window.addEventListener('navigateToNegotiation', handleROINavigation);
+    return () => window.removeEventListener('navigateToNegotiation', handleROINavigation);
+  }, []);
+
+  // Auto-fill from ROI data
+  function handleAutoFillFromROI(roiData) {
+    if (!roiData) return;
+    
+    const prefillData = aiAgent.getSmartPreFillData();
+    const estimatedParticipants = Math.min(4, Math.max(2, Math.round(roiData.estimatedRooftops / 30))); // Estimate participants
+    
+    // Create participants based on ROI analysis
+    const newParticipants = [];
+    for (let i = 0; i < estimatedParticipants; i++) {
+      newParticipants.push({
+        name: i === 0 && prefillData.name ? prefillData.name : '',
+        address: i === 0 && prefillData.address ? prefillData.address : '',
+        annual_generation_kwh: roiData.averageSystemSize * 1200, // kWh/year estimate
+        energy_price_per_kwh: 0.12,
+        upfront_cost: roiData.averageSystemSize * roiData.costPerKW
+      });
+    }
+    
+    setParticipants(newParticipants);
+    
+    // Show smart suggestion
+    setSmartRecommendations(prev => [{
+      type: 'auto-fill',
+      message: `I've set up a ${estimatedParticipants}-participant negotiation based on your ${roiData.location} ROI analysis!`,
+      action: 'review-setup'
+    }, ...prev]);
+    
+    aiAgent.trackInteraction('auto_fill_from_roi', { participantCount: estimatedParticipants });
+  }
+
+  // Handle smart auto-fill
+  function handleAutoFill() {
+    const prefillData = aiAgent.getSmartPreFillData();
+    
+    if (prefillData.name || prefillData.systemSize) {
+      const updatedParticipants = [...participants];
+      
+      // Fill first participant with user data
+      if (prefillData.name) updatedParticipants[0].name = prefillData.name;
+      if (prefillData.address) updatedParticipants[0].address = prefillData.address;
+      if (prefillData.annualGeneration) updatedParticipants[0].annual_generation_kwh = prefillData.annualGeneration;
+      if (prefillData.upfrontCost) updatedParticipants[0].upfront_cost = prefillData.upfrontCost;
+      
+      setParticipants(updatedParticipants);
+    }
+    
+    setShowAutoFill(false);
+    aiAgent.trackInteraction('auto_fill_used', { type: 'negotiation_tool' });
+  }
+
+  // Handle smart recommendation actions
+  function handleSmartAction(recommendation) {
+    if (recommendation.action === 'auto-fill-negotiation') {
+      handleAutoFill();
+    } else if (recommendation.action === 'smart-participant-suggestion') {
+      // Add suggested number of participants
+      while (participants.length < 4) {
+        addParticipant();
+      }
+    } else if (recommendation.action === 'review-setup') {
+      // Just dismiss the recommendation
+      setSmartRecommendations(prev => prev.filter(r => r !== recommendation));
+    }
+    
+    aiAgent.trackInteraction('smart_action_used', { 
+      action: recommendation.action,
+      type: recommendation.type 
+    });
+  }
+  
   function addParticipant() {
     setParticipants([...participants, { 
       name: '', 
@@ -95,31 +192,69 @@ export default function NegotiationTool() {
     
     setAiLoading(true)
     try {
+      // Enhanced AI explanation with more context
       const participantSummary = result.participants.map(p => 
-        `${p.name}: gets $${Math.round(p.allocation/1000)}K (${Math.round(p.gain/1000)}K more than going solo)`
-      ).join(', ')
+        `${p.name}: receives $${Math.round(p.allocation/1000)}K (${Math.round(p.gain/1000)}K gain from cooperation)`
+      ).join('; ')
       
-      const prompt = `You're Soli from SolarEase. Explain this Nash Bargaining result in a friendly, conversational way (under 120 words):
+      // Store negotiation context for AI agent
+      const negotiationContext = {
+        participants: result.participants,
+        totalSurplus: result.total_surplus,
+        ppaPrice: ppaPrice,
+        ppaTerm: ppaTerm,
+        participantCount: result.participants.length,
+        timestamp: new Date().toISOString()
+      };
+      
+      localStorage.setItem('soli_negotiation_context', JSON.stringify(negotiationContext));
+      
+      const enhancedPrompt = `You're Soli, the personalized solar energy agent from SolarEase. 
 
+The user just completed a Nash Bargaining negotiation with these results:
 ${participantSummary}
-Total surplus: $${Math.round(result.total_surplus/1000)}K from ${ppaTerm}yr PPA
+Total cooperative surplus: $${Math.round(result.total_surplus/1000)}K over ${ppaTerm} years
+PPA price: $${ppaPrice}/kWh
 
-Tell them why this split is fair and how everyone wins by cooperating. Be encouraging and personal. No headers, no hashtags, no bullet points - just 2-3 short paragraphs.`
+Context for personalization:
+- This user has shown interest in community solar and fair allocation
+- They successfully used our negotiation tool with ${result.participants.length} participants
+- Focus on why this specific result is fair and beneficial
+
+Your response should:
+1. Congratulate them on running a successful negotiation
+2. Explain why the Nash solution is optimal and fair
+3. Highlight the specific benefits of their cooperation vs going solo
+4. Encourage next steps (like finding more community members or moving forward)
+
+Keep it conversational, encouraging, and under 150 words. Be specific to their numbers but avoid being too technical. Show that you understand their situation personally.`
       
-      const res = await fetch('http://localhost:3000/api/ai', {
+      const res = await fetch('http://localhost:3000/api/enhanced-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          prompt,
-          context: 'Nash Bargaining negotiation for community solar PPA'
+          message: `Explain my Nash bargaining results`,
+          systemPrompt: enhancedPrompt,
+          conversationHistory: [],
+          userProfile: JSON.parse(localStorage.getItem('soli_user_profile') || '{}'),
+          contextualData: { 
+            negotiations: [negotiationContext],
+            roiData: JSON.parse(localStorage.getItem('soli_roi_context') || 'null')
+          }
         })
       })
       
       const data = await res.json()
-      setAiExplanation(data.result || 'No explanation available')
+      setAiExplanation(data.result || 'Congratulations on running a successful Nash bargaining negotiation! This solution ensures everyone benefits fairly from cooperation.')
       setShowAI(true)
+      
+      // Track this interaction
+      window.dispatchEvent(new CustomEvent('aiExplanationGenerated', { 
+        detail: { type: 'negotiation', context: negotiationContext }
+      }));
+      
     } catch (err) {
-      setAiExplanation('Error generating explanation: ' + err.message)
+      setAiExplanation('Great job on your negotiation! The Nash bargaining solution ensures everyone gets a fair share of the cooperative benefits. Each participant receives more than they would going alone, making this a win-win situation.')
       setShowAI(true)
     } finally {
       setAiLoading(false)
@@ -129,6 +264,46 @@ Tell them why this split is fair and how everyone wins by cooperating. Be encour
   return (
     <section className="negotiation-tool">
       <div className="negotiation-inner">
+        {/* Smart Recommendations */}
+        {(smartRecommendations.length > 0 || showAutoFill) && (
+          <div className="smart-recommendations">
+            <div className="smart-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke="#FDB813" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Soli's Negotiation Insights
+            </div>
+            
+            {showAutoFill && (
+              <div className="smart-suggestion auto-fill">
+                <p>I can pre-fill your participant info from your profile!</p>
+                <div className="suggestion-actions">
+                  <button className="use-autofill" onClick={handleAutoFill}>
+                    Auto-Fill My Info
+                  </button>
+                  <button className="dismiss-autofill" onClick={() => setShowAutoFill(false)}>
+                    Not now
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {smartRecommendations.map((rec, i) => (
+              <div key={i} className={`smart-suggestion ${rec.type}`}>
+                <p>{rec.message}</p>
+                {rec.action && (
+                  <button 
+                    className="suggestion-action"
+                    onClick={() => handleSmartAction(rec)}
+                  >
+                    {rec.action.replace('auto-fill-', '').replace('-', ' ')}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        
         {/* Left panel: Inputs */}
         <div className="nego-left">
           <div className="nego-panel">

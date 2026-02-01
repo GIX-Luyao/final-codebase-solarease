@@ -1,0 +1,201 @@
+.admin-page {
+  padding: 20px;
+  background: #000f1f;
+  color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.admin-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.admin-header h1 {
+  color: #0da2e7;
+  font-size: 2.5em;
+  margin: 0;
+}
+
+.admin-header p {
+  color: #94a3b8;
+  font-size: 1.1em;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.log-card {
+  grid-column: 1 / -1;
+}
+
+.admin-card {
+  background: rgba(13, 162, 231, 0.05);
+  border: 1px solid rgba(13, 162, 231, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.admin-card h3 {
+  color: #0da2e7;
+  margin: 0 0 15px 0;
+  font-size: 1.3em;
+}
+
+.db-info {
+  margin: 15px 0;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-connected {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.refresh-btn, .add-btn, .clear-btn {
+  background: #0da2e7;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 15px;
+  transition: background 0.2s;
+}
+
+.refresh-btn:hover, .add-btn:hover, .clear-btn:hover {
+  background: #0891c7;
+}
+
+.contract-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.contract-form input,
+.contract-form select,
+.contract-form textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(13, 162, 231, 0.3);
+  background: rgba(0, 15, 31, 0.8);
+  color: #f8fafc;
+  font-family: inherit;
+}
+
+.contract-form input::placeholder,
+.contract-form textarea::placeholder {
+  color: #64748b;
+}
+
+.admin-contracts-list {
+  margin: 20px 0;
+}
+
+.admin-contracts-list h4 {
+  color: #0da2e7;
+  margin: 0 0 10px 0;
+}
+
+.admin-contract-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  background: rgba(0, 15, 31, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(13, 162, 231, 0.1);
+}
+
+.admin-contract-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-contract-meta {
+  font-size: 0.85em;
+  color: #94a3b8;
+}
+
+.admin-delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.admin-delete-btn:hover {
+  background: #dc2626;
+}
+
+.log-container {
+  background: rgba(0, 15, 31, 0.8);
+  border-radius: 6px;
+  padding: 15px;
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid rgba(13, 162, 231, 0.2);
+  font-family: 'Courier New', monospace;
+  margin: 15px 0;
+}
+
+.log-entry {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.9em;
+}
+
+.log-time {
+  color: #64748b;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.log-message {
+  color: #f8fafc;
+}
+
+.log-query .log-message {
+  color: #fbbf24;
+  font-style: italic;
+}
+
+.log-success .log-message {
+  color: #22c55e;
+}
+
+.log-error .log-message {
+  color: #ef4444;
+}
+
+.log-info .log-message {
+  color: #0da2e7;
+}
+
+.loading {
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 20px;
+}
