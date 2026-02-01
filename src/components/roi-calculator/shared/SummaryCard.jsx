@@ -11,16 +11,16 @@ export default function SummaryCard({
   className = ''
 }) {
   return (
-    <div className={`summary-card summary-card--${variant} ${className}`}>
-      {icon && <div className="summary-card-icon">{icon}</div>}
+    <div className={`roi-summary-card roi-summary-card--${variant} ${className}`}>
+      {icon && <div className="roi-summary-card-icon">{icon}</div>}
 
-      <div className="summary-card-content">
-        <div className="summary-card-title">{title}</div>
+      <div className="roi-summary-card-content">
+        <div className="roi-summary-card-title">{title}</div>
 
-        <div className="summary-card-value-row">
-          <span className="summary-card-value">{value}</span>
+        <div className="roi-summary-card-value-row">
+          <span className="roi-summary-card-value">{value}</span>
           {trend && (
-            <span className={`summary-card-trend trend--${trend.direction}`}>
+            <span className={`roi-summary-card-trend roi-trend--${trend.direction}`}>
               {trend.direction === 'up' ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -37,7 +37,7 @@ export default function SummaryCard({
           )}
         </div>
 
-        {subtitle && <div className="summary-card-subtitle">{subtitle}</div>}
+        {subtitle && <div className="roi-summary-card-subtitle">{subtitle}</div>}
       </div>
     </div>
   )

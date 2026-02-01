@@ -99,16 +99,19 @@ async function setupDatabase() {
   }
 }
 
-// Run setup
-setupDatabase()
+// Run setup and store the promise
+let setupPromise = setupDatabase()
 
 // Export a proxy that waits for pool to be ready
 module.exports = {
-  query: (...args) => {
+  query: async (...args) => {
+    // Wait for setup to complete before querying
+    await setupPromise
     if (!pool) {
-      return Promise.reject(new Error('Database not initialized'))
+      throw new Error('Database not initialized')
     }
     return pool.query(...args)
   },
-  getPool: () => pool
+  getPool: () => pool,
+  ready: () => setupPromise
 }

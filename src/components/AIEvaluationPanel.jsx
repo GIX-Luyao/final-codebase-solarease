@@ -235,28 +235,28 @@ export default function AIEvaluationPanel({ isOpen, onClose }) {
 
               {/* Summary */}
               <div className="results-summary">
-                <div className="summary-cards">
-                  <div className="summary-card">
-                    <div className="summary-label">Overall Score</div>
-                    <div className="summary-value" style={{ color: getStatusColor(results.summary.overallScore) }}>
+                <div className="eval-summary-cards">
+                  <div className="eval-summary-card">
+                    <div className="eval-summary-label">Overall Score</div>
+                    <div className="eval-summary-value" style={{ color: getStatusColor(results.summary.overallScore) }}>
                       {formatMetric(results.summary.overallScore)}
                     </div>
                   </div>
-                  <div className="summary-card">
-                    <div className="summary-label">Tests Passed</div>
-                    <div className="summary-value">
+                  <div className="eval-summary-card">
+                    <div className="eval-summary-label">Tests Passed</div>
+                    <div className="eval-summary-value">
                       {results.passedTests}/{results.totalTests}
                     </div>
                   </div>
-                  <div className="summary-card">
-                    <div className="summary-label">Pass Rate</div>
-                    <div className="summary-value" style={{ color: getStatusColor(results.summary.passRate) }}>
+                  <div className="eval-summary-card">
+                    <div className="eval-summary-label">Pass Rate</div>
+                    <div className="eval-summary-value" style={{ color: getStatusColor(results.summary.passRate) }}>
                       {formatMetric(results.summary.passRate)}
                     </div>
                   </div>
-                  <div className="summary-card">
-                    <div className="summary-label">Avg Response Time</div>
-                    <div className="summary-value">
+                  <div className="eval-summary-card">
+                    <div className="eval-summary-label">Avg Response Time</div>
+                    <div className="eval-summary-value">
                       {formatMetric(results.summary.averageResponseTime, 'time')}
                     </div>
                   </div>

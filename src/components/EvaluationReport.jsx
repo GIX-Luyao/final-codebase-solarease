@@ -106,8 +106,8 @@ export default function EvaluationReport() {
       {/* Executive Summary */}
       <section className="report-section">
         <h2>Executive Summary</h2>
-        <div className="summary-grid">
-          <div className="summary-card">
+        <div className="report-summary-grid">
+          <div className="report-summary-card">
             <h3>Overall Performance</h3>
             <div className="score-display">
               <span className="score-value" style={{ color: overallGrade.color }}>
@@ -116,14 +116,14 @@ export default function EvaluationReport() {
               <span className="score-label">Overall Score</span>
             </div>
             <p>
-              The AI agent demonstrates {report.summary.overallScore >= 0.8 ? 'excellent' : 
-                report.summary.overallScore >= 0.7 ? 'good' : 
-                report.summary.overallScore >= 0.6 ? 'acceptable' : 'poor'} 
+              The AI agent demonstrates {report.summary.overallScore >= 0.8 ? 'excellent' :
+                report.summary.overallScore >= 0.7 ? 'good' :
+                report.summary.overallScore >= 0.6 ? 'acceptable' : 'poor'}
               performance across all evaluation criteria.
             </p>
           </div>
 
-          <div className="summary-card">
+          <div className="report-summary-card">
             <h3>Test Results</h3>
             <div className="test-stats">
               <div className="stat">
@@ -141,7 +141,7 @@ export default function EvaluationReport() {
             </div>
           </div>
 
-          <div className="summary-card">
+          <div className="report-summary-card">
             <h3>Performance Highlights</h3>
             <div className="highlights">
               {report.summary.strengths.length > 0 ? (

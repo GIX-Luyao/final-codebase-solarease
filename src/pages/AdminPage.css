@@ -11,6 +11,26 @@
   margin-bottom: 30px;
 }
 
+.back-home-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(13, 162, 231, 0.1);
+  border: 1px solid rgba(13, 162, 231, 0.3);
+  color: #0da2e7;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.back-home-btn:hover {
+  background: rgba(13, 162, 231, 0.2);
+  border-color: #0da2e7;
+}
+
 .admin-header h1 {
   color: #0da2e7;
   font-size: 2.5em;
