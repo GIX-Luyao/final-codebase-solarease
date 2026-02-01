@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import './Step5NashBargaining.css'
 import SummaryCard from '../shared/SummaryCard'
 import NumberInput from '../shared/NumberInput'
+import { API_URL } from '../../../config'
 
 export default function Step5NashBargaining({
   participants,
@@ -53,7 +54,7 @@ export default function Step5NashBargaining({
         weights: weights.length > 0 ? weights : null
       }
 
-      const res = await fetch('http://localhost:3000/api/negotiate', {
+      const res = await fetch(`${API_URL}/api/negotiate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

@@ -6,6 +6,7 @@ import AIPersonalizationPanel from './AIPersonalizationPanel';
 import AIEvaluationPanel from './AIEvaluationPanel';
 import UsabilityTestRunner from './UsabilityTestRunner';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 export default function AIChatbot() {
   const { isAuthenticated, authFetch } = useAuth();
@@ -49,7 +50,7 @@ export default function AIChatbot() {
   // Load user contracts from database
   const loadUserContracts = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/contracts?userId=1');
+      const response = await fetch(`${API_URL}/api/contracts?userId=1`);
       const data = await response.json();
       
       if (response.ok && data.contracts) {
@@ -140,7 +141,7 @@ export default function AIChatbot() {
           content: m.content
         }));
 
-        const response = await authFetch('http://localhost:3000/api/chat-with-contracts', {
+        const response = await authFetch(`${API_URL}/api/chat-with-contracts`, {
           method: 'POST',
           body: JSON.stringify({
             message: messageText,
@@ -174,7 +175,7 @@ export default function AIChatbot() {
 
         systemPrompt += `Be helpful, specific, and informative about solar energy topics.`;
 
-        const response = await fetch('http://localhost:3000/api/ai', {
+        const response = await fetch(`${API_URL}/api/ai`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

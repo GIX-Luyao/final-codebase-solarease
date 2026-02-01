@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config'
 import './ContractTransparency.css'
 
 export default function ContractTransparency() {
@@ -81,7 +82,7 @@ export default function ContractTransparency() {
       const formData = new FormData()
       formData.append('contract', file)
 
-      const res = await fetch('http://localhost:3000/api/analyze-contract', {
+      const res = await fetch(`${API_URL}/api/analyze-contract`, {
         method: 'POST',
         body: formData
       })
@@ -110,7 +111,7 @@ export default function ContractTransparency() {
 
     setSaving(true)
     try {
-      const res = await authFetch('http://localhost:3000/api/contracts', {
+      const res = await authFetch(`${API_URL}/api/contracts`, {
         method: 'POST',
         body: JSON.stringify({
           fileName: result.fileName || file?.name || 'Untitled Contract',

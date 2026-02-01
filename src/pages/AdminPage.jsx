@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 import './AdminPage.css';
 
 export default function AdminPage() {
@@ -22,7 +23,7 @@ export default function AdminPage() {
   const fetchDbStatus = async () => {
     try {
       addLog('Executing: SELECT version(), current_timestamp, pg_database_size(current_database())', 'query');
-      const response = await fetch('http://localhost:3000/api/admin/database-status');
+      const response = await fetch(`${API_URL}/api/admin/database-status`);
       const data = await response.json();
       setDbStatus(data);
       addLog(`Database connected: ${data.host}:${data.port}`, 'success');
@@ -35,7 +36,7 @@ export default function AdminPage() {
     setLoading(true);
     try {
       addLog('Executing: SELECT * FROM contract_analyses ORDER BY created_at DESC', 'query');
-      const response = await fetch('http://localhost:3000/api/admin/contracts');
+      const response = await fetch(`${API_URL}/api/admin/contracts`);
       const data = await response.json();
       setContracts(data.contracts || []);
       addLog(`Retrieved ${data.contracts?.length || 0} contracts from database`, 'success');
@@ -56,7 +57,7 @@ export default function AdminPage() {
       const insertQuery = `INSERT INTO contract_analyses (user_id, file_name, summary) VALUES ('${newContract.user_id}', '${newContract.filename}', '${newContract.summary}')`;
       addLog(`Executing: ${insertQuery}`, 'query');
 
-      const response = await fetch('http://localhost:3000/api/admin/contracts', {
+      const response = await fetch(`${API_URL}/api/admin/contracts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newContract)
@@ -78,7 +79,7 @@ export default function AdminPage() {
   const deleteContract = async (id) => {
     try {
       addLog(`Executing: DELETE FROM contract_analyses WHERE id = ${id}`, 'query');
-      const response = await fetch(`http://localhost:3000/api/admin/contracts/${id}`, {
+      const response = await fetch(`${API_URL}/api/admin/contracts/${id}`, {
         method: 'DELETE'
       });
       

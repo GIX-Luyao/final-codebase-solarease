@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import './DashboardModule.css'
 import { buildCashflow, npv, irr } from '../lib/finance'
+import { API_URL } from '../config'
 
 function KPI({ label, value, hint }){
   return (
@@ -109,7 +110,7 @@ Your response should:
 
 Keep it conversational, specific to their numbers, and under 180 words. Focus on how community solar can be more beneficial.`;
 
-      const res = await fetch('http://localhost:3000/api/enhanced-chat', {
+      const res = await fetch(`${API_URL}/api/enhanced-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

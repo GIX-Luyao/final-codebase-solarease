@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import './NegotiationTool.css'
 import SolarAIAgent from '../lib/SolarAIAgent'
+import { API_URL } from '../config'
 
 export default function NegotiationTool() {
   const [aiAgent] = useState(() => new SolarAIAgent());
@@ -167,7 +168,7 @@ export default function NegotiationTool() {
         shared_costs: parseFloat(sharedCosts) || 0
       }
 
-      const res = await fetch('http://localhost:3000/api/negotiate', {
+      const res = await fetch(`${API_URL}/api/negotiate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -229,7 +230,7 @@ Your response should:
 
 Keep it conversational, encouraging, and under 150 words. Be specific to their numbers but avoid being too technical. Show that you understand their situation personally.`
       
-      const res = await fetch('http://localhost:3000/api/enhanced-chat', {
+      const res = await fetch(`${API_URL}/api/enhanced-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
