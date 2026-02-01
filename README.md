@@ -2,6 +2,8 @@
 
 **Empowering local communities to make informed, collective decisions about solar energy investments.**
 
+**[Live Demo](https://gix-solarease.com)**
+
 ## Overview
 
 SolarEase is a comprehensive web application that helps communities:
