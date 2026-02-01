@@ -319,13 +319,13 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.summary-cards {
+.eval-summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 
-.summary-card {
+.eval-summary-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -333,13 +333,13 @@
   text-align: center;
 }
 
-.summary-label {
+.eval-summary-label {
   color: #64748b;
   font-size: 14px;
   margin-bottom: 8px;
 }
 
-.summary-value {
+.eval-summary-value {
   font-size: 24px;
   font-weight: 700;
 }
@@ -653,7 +653,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .summary-cards {
+  .eval-summary-cards {
     grid-template-columns: repeat(2, 1fr);
   }
   

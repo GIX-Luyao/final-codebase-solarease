@@ -27,6 +27,8 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 // Import routes
 const authRoutes = require('./routes/auth')
 const contractRoutes = require('./routes/contracts')
+const { authenticateToken } = require('./middleware/auth')
+const db = require('./db')
 
 // Import evaluation harness
 const evaluation = require('./evaluation')
@@ -275,6 +277,101 @@ app.post('/api/ai', async (req, res) => {
 
     res.json({ result: text || 'No response generated.' })
   } catch(err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Chat endpoint with user's contract context (authenticated)
+app.post('/api/chat-with-contracts', authenticateToken, async (req, res) => {
+  try {
+    const { message, conversationHistory = [] } = req.body
+    const userId = req.user.id
+
+    // Fetch user's contract analyses from database
+    let contracts = []
+    try {
+      const result = await db.query(
+        `SELECT file_name, summary, key_terms, risk_flags, created_at
+         FROM contract_analyses
+         WHERE user_id = $1
+         ORDER BY created_at DESC`,
+        [userId]
+      )
+      contracts = result.rows
+    } catch (dbErr) {
+      console.error('Error fetching contracts for chat:', dbErr.message)
+    }
+
+    // Build contract context for the AI
+    let contractContext = ''
+    if (contracts.length > 0) {
+      contractContext = `\n\n--- USER'S SAVED CONTRACTS ---\nThe user has ${contracts.length} saved contract analysis(es). Here are the details:\n\n`
+
+      contracts.forEach((contract, index) => {
+        contractContext += `CONTRACT ${index + 1}: "${contract.file_name}"\n`
+        contractContext += `Analyzed on: ${new Date(contract.created_at).toLocaleDateString()}\n`
+
+        if (contract.summary) {
+          contractContext += `Summary: ${contract.summary}\n`
+        }
+
+        if (contract.key_terms && typeof contract.key_terms === 'object') {
+          contractContext += `Key Terms:\n`
+          const terms = contract.key_terms
+          if (terms.parties) contractContext += `  - Parties: Buyer: ${terms.parties.buyer || 'N/A'}, Seller: ${terms.parties.seller || 'N/A'}\n`
+          if (terms.termLength) contractContext += `  - Term Length: ${terms.termLength}\n`
+          if (terms.pricePerKwh) contractContext += `  - Price per kWh: ${terms.pricePerKwh}\n`
+          if (terms.escalationRate) contractContext += `  - Escalation Rate: ${terms.escalationRate}\n`
+          if (terms.capacity) contractContext += `  - System Capacity: ${terms.capacity}\n`
+          if (terms.performanceGuarantee) contractContext += `  - Performance Guarantee: ${terms.performanceGuarantee}\n`
+        }
+
+        if (contract.risk_flags && Array.isArray(contract.risk_flags) && contract.risk_flags.length > 0) {
+          contractContext += `Risk Flags:\n`
+          contract.risk_flags.forEach(risk => {
+            contractContext += `  - [${risk.severity?.toUpperCase() || 'UNKNOWN'}] ${risk.term}: ${risk.issue}\n`
+          })
+        }
+        contractContext += '\n'
+      })
+
+      contractContext += `--- END OF CONTRACTS ---\n\nUse this contract information to answer the user's questions. Reference specific terms, prices, and risk flags when relevant. If the user asks about a specific contract, provide detailed information from the analysis above.`
+    }
+
+    const systemPrompt = {
+      role: 'system',
+      content: `You are Soli, a friendly and knowledgeable solar energy assistant for SolarEase, a community solar platform. Your role is to help communities and individuals understand solar energy investments, ROI calculations, community solar projects, Power Purchase Agreements (PPAs), and negotiation strategies.
+
+Key responsibilities:
+- Explain solar energy concepts in simple, accessible language
+- Help users understand ROI, NPV, IRR, and payback periods
+- Guide users on community solar vs individual solar benefits
+- Explain PPA terms and negotiation strategies
+- Provide information about solar incentives and policies
+- Answer questions about the user's specific contracts when they have them
+- Be encouraging and supportive of sustainable energy transitions
+
+Tone: Friendly, professional, encouraging, and informative. Keep responses concise (2-3 paragraphs max) unless more detail is specifically requested.
+
+Do not provide financial advice or make guarantees about returns. Always encourage users to consult with qualified professionals for specific decisions.${contractContext}`
+    }
+
+    // Build messages array
+    const messages = [
+      systemPrompt,
+      ...conversationHistory.slice(-10), // Last 10 messages for context
+      { role: 'user', content: message }
+    ]
+
+    const text = await callAI(messages, { maxTokens: 700, temperature: 0.7 })
+
+    res.json({
+      result: text || 'Sorry, I could not generate a response.',
+      hasContracts: contracts.length > 0,
+      contractCount: contracts.length
+    })
+  } catch(err) {
+    console.error('Chat with contracts error:', err)
     res.status(500).json({ error: err.message })
   }
 })
@@ -684,9 +781,9 @@ app.get('/api/admin/contracts', async (req, res) => {
     }
 
     const result = await pool.query(`
-      SELECT id, user_id, filename, content, contract_type, created_at,
-             LENGTH(content) as content_length
-      FROM contracts
+      SELECT id, user_id, file_name as filename, summary,
+             key_terms, risk_flags, created_at
+      FROM contract_analyses
       ORDER BY created_at DESC
     `);
 
@@ -710,17 +807,17 @@ app.get('/api/admin/contracts', async (req, res) => {
 // Add new contract (admin)
 app.post('/api/admin/contracts', async (req, res) => {
   try {
-    const { user_id, filename, content, contract_type } = req.body;
+    const { user_id, filename, summary } = req.body;
 
     if (!dbConnected) {
       return res.status(500).json({ error: 'Database not connected' });
     }
 
     const result = await pool.query(`
-      INSERT INTO contracts (user_id, filename, content, contract_type)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO contract_analyses (user_id, file_name, summary, key_terms, risk_flags)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING id, created_at
-    `, [user_id, filename, content || '', contract_type || 'PPA']);
+    `, [user_id, filename, summary || '', '{}', '[]']);
 
     res.json({
       success: true,
@@ -746,7 +843,7 @@ app.delete('/api/admin/contracts/:id', async (req, res) => {
     }
 
     const result = await pool.query(`
-      DELETE FROM contracts WHERE id = $1 RETURNING id
+      DELETE FROM contract_analyses WHERE id = $1 RETURNING id
     `, [id]);
 
     if (result.rowCount === 0) {

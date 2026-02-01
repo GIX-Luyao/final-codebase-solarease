@@ -128,20 +128,20 @@
 }
 
 /* Executive Summary */
-.summary-grid {
+.report-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
 }
 
-.summary-card {
+.report-summary-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
 }
 
-.summary-card h3 {
+.report-summary-card h3 {
   margin: 0 0 16px 0;
   color: #374151;
   font-weight: 600;

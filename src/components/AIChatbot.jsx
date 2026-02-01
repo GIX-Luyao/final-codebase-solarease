@@ -5,8 +5,10 @@ import SolarAIAgent from '../lib/SolarAIAgent';
 import AIPersonalizationPanel from './AIPersonalizationPanel';
 import AIEvaluationPanel from './AIEvaluationPanel';
 import UsabilityTestRunner from './UsabilityTestRunner';
+import { useAuth } from '../context/AuthContext';
 
 export default function AIChatbot() {
+  const { isAuthenticated, authFetch } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [aiAgent] = useState(() => new SolarAIAgent());
   const [messages, setMessages] = useState([
@@ -33,11 +35,14 @@ export default function AIChatbot() {
   function getPersonalizedGreeting() {
     const profile = aiAgent?.userProfile;
     if (!profile || profile.interactions === 0) {
-      return "Hi! I'm Soli, your personalized solar energy agent. I'll learn your preferences as we chat and help you make the best solar decisions for your situation. I can also help analyze any existing contracts you've uploaded. How can I help you today?";
+      if (isAuthenticated) {
+        return "Hi! I'm Soli, your personalized solar energy agent. I have access to your saved contract analyses and can answer specific questions about your contract terms, pricing, and risk flags. How can I help you today?";
+      }
+      return "Hi! I'm Soli, your personalized solar energy agent. I'll learn your preferences as we chat and help you make the best solar decisions for your situation. Sign in to let me access your saved contracts for personalized advice!";
     } else if (profile.name) {
-      return `Welcome back, ${profile.name}! I remember our previous conversations${userContracts.length > 0 ? ` and can access your ${userContracts.length} uploaded contract${userContracts.length > 1 ? 's' : ''}` : ''}. What would you like to explore today?`;
+      return `Welcome back, ${profile.name}! ${isAuthenticated && userContracts.length > 0 ? `I can access your ${userContracts.length} saved contract${userContracts.length > 1 ? 's' : ''} with full details.` : 'I remember our previous conversations.'} What would you like to explore today?`;
     } else {
-      return `Good to see you again! Based on our previous chats, I'm here to help with your solar journey${userContracts.length > 0 ? ' and can analyze your contract data' : ''}. What's on your mind?`;
+      return `Good to see you again! ${isAuthenticated ? "I have access to your contract analyses and can provide specific insights." : "Sign in to let me access your contract details."} What's on your mind?`;
     }
   }
 
@@ -125,41 +130,72 @@ export default function AIChatbot() {
     setIsLoading(true);
 
     try {
-      // Enhanced prompt that includes contract context
-      let systemPrompt = `You are Soli, an intelligent solar energy agent. `;
-      
-      // Add contract context if available
-      if (userContracts.length > 0) {
-        const contractSummary = userContracts.map(c => 
-          `"${c.filename}" (uploaded ${new Date(c.created_at).toLocaleDateString()})`
-        ).join(', ');
-        systemPrompt += `The user has uploaded ${userContracts.length} contract(s): ${contractSummary}. You can reference these contracts and provide specific analysis about their terms, rates, and how they compare to market standards. `;
+      let data;
+
+      // If authenticated, use the endpoint that includes full contract analysis
+      if (isAuthenticated) {
+        // Build conversation history for context
+        const conversationHistory = messages.map(m => ({
+          role: m.role,
+          content: m.content
+        }));
+
+        const response = await authFetch('http://localhost:3000/api/chat-with-contracts', {
+          method: 'POST',
+          body: JSON.stringify({
+            message: messageText,
+            conversationHistory
+          })
+        });
+
+        data = await response.json();
+
+        // Update contract count if returned
+        if (data.contractCount !== undefined) {
+          setUserContracts(prev => {
+            // Just update the count indicator, actual contracts loaded separately
+            if (prev.length !== data.contractCount) {
+              return Array(data.contractCount).fill({ filename: 'contract' });
+            }
+            return prev;
+          });
+        }
+      } else {
+        // Fallback for unauthenticated users - basic chat without contract details
+        let systemPrompt = `You are Soli, an intelligent solar energy agent. `;
+
+        // Add basic contract context if available (just filenames)
+        if (userContracts.length > 0) {
+          const contractSummary = userContracts.map(c =>
+            `"${c.filename}" (uploaded ${new Date(c.created_at).toLocaleDateString()})`
+          ).join(', ');
+          systemPrompt += `The user has uploaded ${userContracts.length} contract(s): ${contractSummary}. `;
+        }
+
+        systemPrompt += `Be helpful, specific, and informative about solar energy topics.`;
+
+        const response = await fetch('http://localhost:3000/api/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: systemPrompt + "\n\nUser message: " + messageText,
+            context: 'general_chat'
+          })
+        });
+
+        data = await response.json();
       }
-      
-      systemPrompt += `Be helpful, specific, and reference their uploaded contracts when relevant. If they ask about contract analysis, provide detailed insights about typical solar contract terms and how to evaluate them.`;
 
-      // Use enhanced API call with contract context
-      const response = await fetch('http://localhost:3000/api/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: systemPrompt + "\n\nUser message: " + messageText,
-          context: userContracts.length > 0 ? 'contract_analysis' : 'general_chat'
-        })
-      });
-
-      const data = await response.json();
-      
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
+      setMessages(prev => [...prev, {
+        role: 'assistant',
         content: data.result || "I'm here to help with your solar journey! What would you like to know?"
       }]);
-      
+
     } catch (err) {
       console.error('Chat Error:', err);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI simulator or negotiation tool?' 
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI simulator or negotiation tool?'
       }]);
     } finally {
       setIsLoading(false);
@@ -251,7 +287,16 @@ export default function AIChatbot() {
             <div className="chatbot-header-text">
               <h3>AI Assistant <span className="soli-name">Soli</span></h3>
               <p>Your personalized solar energy agent</p>
-              
+
+              {isAuthenticated && userContracts.length > 0 && (
+                <div className="contract-access-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>{userContracts.length} contract{userContracts.length > 1 ? 's' : ''} accessible</span>
+                </div>
+              )}
+
               {aiAgent.userProfile.interactions > 0 && (
                 <div className="user-stats">
                   <span className="interaction-count">{aiAgent.userProfile.interactions} interactions</span>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminPage.css';
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const [dbStatus, setDbStatus] = useState(null);
   const [contracts, setContracts] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -9,8 +11,7 @@ export default function AdminPage() {
   const [newContract, setNewContract] = useState({
     user_id: '1',
     filename: '',
-    content: '',
-    contract_type: 'PPA'
+    summary: ''
   });
 
   const addLog = (message, type = 'info') => {
@@ -33,7 +34,7 @@ export default function AdminPage() {
   const fetchContracts = async () => {
     setLoading(true);
     try {
-      addLog('Executing: SELECT * FROM contracts ORDER BY created_at DESC', 'query');
+      addLog('Executing: SELECT * FROM contract_analyses ORDER BY created_at DESC', 'query');
       const response = await fetch('http://localhost:3000/api/admin/contracts');
       const data = await response.json();
       setContracts(data.contracts || []);
@@ -52,18 +53,18 @@ export default function AdminPage() {
     }
 
     try {
-      const insertQuery = `INSERT INTO contracts (user_id, filename, content, contract_type) VALUES ('${newContract.user_id}', '${newContract.filename}', '${newContract.content}', '${newContract.contract_type}')`;
+      const insertQuery = `INSERT INTO contract_analyses (user_id, file_name, summary) VALUES ('${newContract.user_id}', '${newContract.filename}', '${newContract.summary}')`;
       addLog(`Executing: ${insertQuery}`, 'query');
-      
+
       const response = await fetch('http://localhost:3000/api/admin/contracts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newContract)
       });
-      
+
       if (response.ok) {
         addLog('Contract inserted successfully', 'success');
-        setNewContract({ user_id: '1', filename: '', content: '', contract_type: 'PPA' });
+        setNewContract({ user_id: '1', filename: '', summary: '' });
         fetchContracts();
       } else {
         const error = await response.text();
@@ -76,7 +77,7 @@ export default function AdminPage() {
 
   const deleteContract = async (id) => {
     try {
-      addLog(`Executing: DELETE FROM contracts WHERE id = ${id}`, 'query');
+      addLog(`Executing: DELETE FROM contract_analyses WHERE id = ${id}`, 'query');
       const response = await fetch(`http://localhost:3000/api/admin/contracts/${id}`, {
         method: 'DELETE'
       });
@@ -101,6 +102,9 @@ export default function AdminPage() {
   return (
     <div className="admin-page">
       <div className="admin-header">
+        <button className="back-home-btn" onClick={() => navigate('/')}>
+          ← Back to Home
+        </button>
         <h1>🛠️ Database Admin Panel</h1>
         <p>Live Azure PostgreSQL Database Operations</p>
       </div>
@@ -148,18 +152,10 @@ export default function AdminPage() {
               value={newContract.filename}
               onChange={(e) => setNewContract({...newContract, filename: e.target.value})}
             />
-            <select
-              value={newContract.contract_type}
-              onChange={(e) => setNewContract({...newContract, contract_type: e.target.value})}
-            >
-              <option value="PPA">PPA</option>
-              <option value="Lease">Lease</option>
-              <option value="Community Solar">Community Solar</option>
-            </select>
             <textarea
-              placeholder="Contract content/description"
-              value={newContract.content}
-              onChange={(e) => setNewContract({...newContract, content: e.target.value})}
+              placeholder="Contract summary"
+              value={newContract.summary}
+              onChange={(e) => setNewContract({...newContract, summary: e.target.value})}
               rows="3"
             />
             <button onClick={addContract} className="add-btn">
@@ -177,9 +173,12 @@ export default function AdminPage() {
                   <div className="admin-contract-info">
                     <strong>{contract.filename}</strong>
                     <span className="admin-contract-meta">
-                      ID: {contract.id} | Type: {contract.contract_type} |
+                      ID: {contract.id} |
                       Created: {new Date(contract.created_at).toLocaleString()}
                     </span>
+                    {contract.summary && (
+                      <span className="admin-contract-meta">{contract.summary.substring(0, 100)}...</span>
+                    )}
                   </div>
                   <button
                     onClick={() => deleteContract(contract.id)}

@@ -1,4 +1,4 @@
-.summary-card {
+.roi-summary-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(13, 162, 231, 0.22);
   border-radius: 14px;
@@ -12,44 +12,44 @@
   overflow: hidden;
 }
 
-.summary-card:hover {
+.roi-summary-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(13, 162, 231, 0.25);
 }
 
 /* Gradient glow effect */
-.summary-card::after {
+.roi-summary-card::after {
   content: "";
   position: absolute;
   inset: -60% -20%;
   background: radial-gradient(circle at 30% 30%, rgba(7, 192, 213, 0.12), transparent 55%);
-  animation: glowSweep 5s ease-in-out infinite;
+  animation: roiGlowSweep 5s ease-in-out infinite;
   pointer-events: none;
 }
 
-@keyframes glowSweep {
+@keyframes roiGlowSweep {
   0% { transform: translateX(-10%); opacity: 0.5; }
   50% { transform: translateX(10%); opacity: 0.2; }
   100% { transform: translateX(-10%); opacity: 0.5; }
 }
 
 /* Variants */
-.summary-card--highlight {
+.roi-summary-card--highlight {
   background: linear-gradient(135deg, rgba(13, 162, 231, 0.15), rgba(7, 192, 213, 0.08));
   border-color: rgba(13, 162, 231, 0.4);
 }
 
-.summary-card--success {
+.roi-summary-card--success {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(52, 211, 153, 0.06));
   border-color: rgba(16, 185, 129, 0.35);
 }
 
-.summary-card--warning {
+.roi-summary-card--warning {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.06));
   border-color: rgba(245, 158, 11, 0.35);
 }
 
-.summary-card-icon {
+.roi-summary-card-icon {
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -63,38 +63,38 @@
   z-index: 1;
 }
 
-.summary-card-icon svg {
+.roi-summary-card-icon svg {
   width: 22px;
   height: 22px;
   color: #0da2e7;
 }
 
-.summary-card--success .summary-card-icon {
+.roi-summary-card--success .roi-summary-card-icon {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
   border-color: rgba(16, 185, 129, 0.3);
 }
 
-.summary-card--success .summary-card-icon svg {
+.roi-summary-card--success .roi-summary-card-icon svg {
   color: #10b981;
 }
 
-.summary-card--warning .summary-card-icon {
+.roi-summary-card--warning .roi-summary-card-icon {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
   border-color: rgba(245, 158, 11, 0.3);
 }
 
-.summary-card--warning .summary-card-icon svg {
+.roi-summary-card--warning .roi-summary-card-icon svg {
   color: #f59e0b;
 }
 
-.summary-card-content {
+.roi-summary-card-content {
   flex: 1;
   min-width: 0;
   position: relative;
   z-index: 1;
 }
 
-.summary-card-title {
+.roi-summary-card-title {
   color: #a3b3c2;
   font-size: 12px;
   font-weight: 600;
@@ -103,36 +103,36 @@
   margin-bottom: 6px;
 }
 
-.summary-card-value-row {
+.roi-summary-card-value-row {
   display: flex;
   align-items: baseline;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.summary-card-value {
+.roi-summary-card-value {
   font-size: 26px;
   font-weight: 800;
   color: #f8fafc;
   line-height: 1.1;
 }
 
-.summary-card--highlight .summary-card-value {
+.roi-summary-card--highlight .roi-summary-card-value {
   background: linear-gradient(90deg, #0da2e7, #07c0d5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.summary-card--success .summary-card-value {
+.roi-summary-card--success .roi-summary-card-value {
   color: #10b981;
 }
 
-.summary-card--warning .summary-card-value {
+.roi-summary-card--warning .roi-summary-card-value {
   color: #f59e0b;
 }
 
-.summary-card-trend {
+.roi-summary-card-trend {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -142,22 +142,22 @@
   border-radius: 6px;
 }
 
-.summary-card-trend svg {
+.roi-summary-card-trend svg {
   width: 14px;
   height: 14px;
 }
 
-.trend--up {
+.roi-trend--up {
   background: rgba(16, 185, 129, 0.15);
   color: #10b981;
 }
 
-.trend--down {
+.roi-trend--down {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
 
-.summary-card-subtitle {
+.roi-summary-card-subtitle {
   margin-top: 6px;
   color: #7a8a9a;
   font-size: 13px;
@@ -165,15 +165,15 @@
 }
 
 @media (max-width: 640px) {
-  .summary-card {
+  .roi-summary-card {
     padding: 16px;
   }
 
-  .summary-card-value {
+  .roi-summary-card-value {
     font-size: 22px;
   }
 
-  .summary-card-icon {
+  .roi-summary-card-icon {
     width: 38px;
     height: 38px;
   }
