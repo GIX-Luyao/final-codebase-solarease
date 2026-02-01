@@ -18,7 +18,10 @@ export default function HomePage(){
       <Hero />
 
       <div className="content-wrapper">
-        <InputForm onNavigateToNegotiation={() => navigate('/negotiation-tool')} />
+        <InputForm
+          onNavigateToNegotiation={() => navigate('/negotiation-tool')}
+          onNavigateToContract={() => navigate('/contract-transparency')}
+        />
       </div>
 
       <div className="content-wrapper">

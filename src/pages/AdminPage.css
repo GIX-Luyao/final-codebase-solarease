@@ -104,16 +104,16 @@
   color: #64748b;
 }
 
-.contracts-list {
+.admin-contracts-list {
   margin: 20px 0;
 }
 
-.contracts-list h4 {
+.admin-contracts-list h4 {
   color: #0da2e7;
   margin: 0 0 10px 0;
 }
 
-.contract-item {
+.admin-contract-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -124,18 +124,18 @@
   border: 1px solid rgba(13, 162, 231, 0.1);
 }
 
-.contract-info {
+.admin-contract-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.contract-meta {
+.admin-contract-meta {
   font-size: 0.85em;
   color: #94a3b8;
 }
 
-.delete-btn {
+.admin-delete-btn {
   background: #ef4444;
   color: white;
   border: none;
@@ -145,7 +145,7 @@
   font-size: 0.9em;
 }
 
-.delete-btn:hover {
+.admin-delete-btn:hover {
   background: #dc2626;
 }
 

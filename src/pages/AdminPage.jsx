@@ -167,23 +167,23 @@ export default function AdminPage() {
             </button>
           </div>
           
-          <div className="contracts-list">
+          <div className="admin-contracts-list">
             <h4>Current Contracts ({contracts.length})</h4>
             {loading ? (
               <div className="loading">Executing database query...</div>
             ) : (
               contracts.map(contract => (
-                <div key={contract.id} className="contract-item">
-                  <div className="contract-info">
+                <div key={contract.id} className="admin-contract-item">
+                  <div className="admin-contract-info">
                     <strong>{contract.filename}</strong>
-                    <span className="contract-meta">
-                      ID: {contract.id} | Type: {contract.contract_type} | 
+                    <span className="admin-contract-meta">
+                      ID: {contract.id} | Type: {contract.contract_type} |
                       Created: {new Date(contract.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <button 
-                    onClick={() => deleteContract(contract.id)} 
-                    className="delete-btn"
+                  <button
+                    onClick={() => deleteContract(contract.id)}
+                    className="admin-delete-btn"
                   >
                     🗑️
                   </button>
