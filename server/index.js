@@ -65,6 +65,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint for Azure Container Apps and keep-warm pings
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() })
+})
+
 // Mount auth and contract routes
 app.use('/api/auth', authRoutes)
 app.use('/api/contracts', contractRoutes)
