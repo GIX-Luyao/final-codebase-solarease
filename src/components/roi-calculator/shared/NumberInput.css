@@ -1,0 +1,95 @@
+.number-input {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.number-input input {
+  width: 100%;
+  padding: 11px 14px;
+  padding-right: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(163, 179, 194, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: #f8fafc;
+  font-size: 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.number-input input::-webkit-inner-spin-button,
+.number-input input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.number-input input:focus {
+  outline: none;
+  border-color: rgba(13, 162, 231, 0.5);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(13, 162, 231, 0.1);
+}
+
+.number-input input::placeholder {
+  color: #5a6a7a;
+}
+
+.number-input input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.number-controls {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.number-input:hover .number-controls,
+.number-input:focus-within .number-controls {
+  opacity: 1;
+}
+
+.number-btn {
+  width: 26px;
+  height: 15px;
+  border: none;
+  background: linear-gradient(135deg, rgba(13, 162, 231, 0.2), rgba(7, 192, 213, 0.15));
+  color: #0da2e7;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.number-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(13, 162, 231, 0.35), rgba(7, 192, 213, 0.25));
+  color: #07c0d5;
+}
+
+.number-btn:active:not(:disabled) {
+  background: linear-gradient(135deg, rgba(13, 162, 231, 0.45), rgba(7, 192, 213, 0.35));
+  transform: scale(0.92);
+}
+
+.number-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.number-btn svg {
+  width: 12px;
+  height: 12px;
+}

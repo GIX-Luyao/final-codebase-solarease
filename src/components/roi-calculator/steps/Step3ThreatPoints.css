@@ -1,0 +1,226 @@
+.step-3-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Explanation Card */
+.threat-explanation {
+  display: flex;
+  gap: 18px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(251, 191, 36, 0.05));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+}
+
+.explanation-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explanation-icon svg {
+  width: 26px;
+  height: 26px;
+  color: #f59e0b;
+}
+
+.explanation-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.explanation-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #a3b3c2;
+}
+
+.explanation-content strong {
+  color: #f59e0b;
+}
+
+/* Summary Grid */
+.threat-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Threat Visualization */
+.threat-visual-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(13, 162, 231, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.section-title {
+  font-family: Poppins, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(163, 179, 194, 0.12);
+}
+
+.threat-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.threat-bar-item {
+  padding: 16px;
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.threat-bar-item:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.threat-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.threat-bar-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #f8fafc;
+  font-size: 15px;
+}
+
+.tp-num {
+  color: #f59e0b;
+  font-weight: 800;
+  font-size: 12px;
+  background: rgba(245, 158, 11, 0.15);
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.threat-bar-value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #f59e0b;
+}
+
+.share-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a3b3c2;
+  background: rgba(163, 179, 194, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.threat-bar-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.threat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.threat-bar-details {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.threat-bar-details span {
+  font-size: 12px;
+  color: #7a8a9a;
+}
+
+/* Cooperative Potential */
+.cooperative-potential {
+  display: flex;
+  gap: 18px;
+  padding: 22px 24px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
+}
+
+.potential-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.potential-icon svg {
+  width: 26px;
+  height: 26px;
+  color: #10b981;
+}
+
+.potential-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.potential-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #a3b3c2;
+}
+
+.potential-content strong {
+  color: #10b981;
+}
+
+@media (max-width: 900px) {
+  .threat-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .threat-bar-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .threat-bar-details {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

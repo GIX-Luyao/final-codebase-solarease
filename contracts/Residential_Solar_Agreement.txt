@@ -1,0 +1,157 @@
+RESIDENTIAL SOLAR ENERGY SYSTEM AGREEMENT
+==========================================
+
+Contract ID: RS-LSE-2024-002
+Date: January 10, 2026
+Agreement Type: Solar Lease with Purchase Option
+
+CUSTOMER INFORMATION:
+--------------------
+Name: Michael & Jennifer Rodriguez
+Property Address: 4521 Maple Grove Lane, Bothell, WA 98011
+Utility Provider: Puget Sound Energy (PSE)
+Account Number: PSE-2847592
+Email: mrodriguez@email.com
+Phone: (425) 555-0123
+
+SOLAR SYSTEM SPECIFICATIONS:
+----------------------------
+System Size: 8.5 kW DC
+Panel Count: 24 panels
+Panel Type: LG NeON R 355W Monocrystalline
+Inverter: SolarEdge HD-Wave 7600W with Power Optimizers
+Mounting: Roof-mounted, South-facing orientation
+Estimated Annual Production: 10,200 kWh
+Installation Date: February 15, 2026
+
+FINANCIAL TERMS:
+---------------
+Monthly Lease Payment: $127.50
+Lease Term: 20 years
+Annual Escalation: 2.5%
+Down Payment: $0
+Purchase Option: Available after Year 7
+Purchase Price Schedule:
+- Year 7: $12,500
+- Year 10: $9,800
+- Year 15: $5,200
+- Year 20: $1,000
+
+PERFORMANCE & WARRANTIES:
+------------------------
+Production Guarantee: 95% of estimated annual output
+Performance Monitoring: Included via mobile app and web portal
+System Warranty: 20 years comprehensive
+Panel Performance Warranty: 25 years (degradation <0.5% annually)
+Workmanship Warranty: 10 years
+
+INSTALLATION DETAILS:
+--------------------
+Roof Assessment: Completed December 2025 - Excellent condition
+Permits: City of Bothell electrical and building permits obtained
+Utility Interconnection: Net metering agreement in process
+Installation Timeline: 1-2 days
+Final Inspection: Within 10 business days of installation
+
+MAINTENANCE & SERVICE:
+---------------------
+System Monitoring: 24/7 remote monitoring included
+Preventive Maintenance: Annual inspection and cleaning
+Repairs: All covered under lease (excluding customer damage)
+Customer Service: Dedicated phone line (1-800-SOLAR-WA)
+Response Time: 48 hours for service calls
+
+LEASE TERMS & CONDITIONS:
+-------------------------
+Monthly Payment Due: 1st of each month
+Late Fee: $25 after 10-day grace period
+Automatic Payment: Required (bank draft or credit card)
+Insurance Requirement: Customer maintains homeowner's insurance
+Property Transfer: Lease transfers to new owner or buyout option
+
+ENERGY PRODUCTION & SAVINGS:
+---------------------------
+Expected Monthly Generation: 850 kWh (average)
+Current Utility Rate: $0.12/kWh
+Projected Monthly Savings: $85-115
+Total 20-Year Savings Estimate: $28,500
+Net Metering: Excess generation credited at retail rate
+
+REGULATORY COMPLIANCE:
+---------------------
+Washington State Sales Tax: Exempt for solar installations
+Federal Tax Credit: 30% available to system owner (installer)
+Local Incentives: Bothell Green Energy rebate program participant
+Utility Requirements: Compliant with PSE interconnection standards
+
+CUSTOMER RESPONSIBILITIES:
+-------------------------
+- Maintain clear access to electrical panel
+- Keep roof area around panels clear of debris
+- Notify installer of any roof work or modifications
+- Provide safe access for maintenance personnel
+- Maintain homeowner's insurance including solar equipment
+
+TERMINATION PROVISIONS:
+----------------------
+Early Termination: Permitted with system purchase at fair market value
+Default Remedy: 30-day cure period before acceleration
+Removal Requirements: System removal included if lease terminated
+Property Restoration: Return roof to original condition
+
+DISPUTE RESOLUTION:
+------------------
+Governing Law: Washington State
+Mediation: Required first step for disputes >$500
+Arbitration: Binding arbitration if mediation fails
+Venue: King County, Washington
+Attorney Fees: Prevailing party recovers reasonable costs
+
+ENVIRONMENTAL BENEFITS:
+----------------------
+Annual CO2 Reduction: ~4.8 tons
+20-Year Environmental Impact: 96 tons CO2 offset
+Equivalent: Planting 110 trees or removing car from road for 2.1 years
+Green Energy Certificates: Retained by installer for first 10 years
+
+CONTACT INFORMATION:
+-------------------
+Installer: SunBright Energy Solutions
+Address: 789 Solar Way, Bellevue, WA 98004
+Phone: (206) 555-SOLAR
+Email: support@sunbrightenergy.com
+License: WA Electrical Contractor #SUNBE1*042KB
+
+Emergency Contact: (206) 555-SOLAR (24/7)
+Customer Portal: www.sunbrightenergy.com/portal
+Mobile App: SunBright Monitor (iOS/Android)
+
+SIGNATURES:
+----------
+Customer: _________________________ Date: _________
+Michael Rodriguez
+
+Customer: _________________________ Date: _________
+Jennifer Rodriguez
+
+Installer Representative: _________________________ Date: _________
+David Kim, Sales Manager
+SunBright Energy Solutions
+WA Contractor License: SUNBE1*042KB
+
+Witness: _________________________ Date: _________
+
+ACKNOWLEDGMENTS:
+---------------
+☑ Customer received copy of Washington Solar Rights Act
+☑ Customer received system monitoring login credentials
+☑ Customer received maintenance schedule and warranty information
+☑ Customer received utility interconnection documentation
+☑ Customer received financing terms disclosure
+
+---
+This agreement constitutes the complete understanding between parties and supersedes all prior negotiations. Customer acknowledges 3-day right to cancel under Washington Consumer Protection Act.
+
+Document ID: RS-LSE-2024-002
+Execution Date: January 10, 2026
+Page 1 of 1

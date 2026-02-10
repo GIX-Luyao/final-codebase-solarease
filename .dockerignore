@@ -1,0 +1,30 @@
+# Dependencies - will be installed fresh
+node_modules
+
+# Frontend code (not needed in backend container)
+src
+dist
+public
+*.html
+
+# Development files
+.env
+.env.local
+.git
+.gitignore
+*.md
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+__tests__
+*.test.js
+coverage
+
+# Build artifacts
+*.log
+npm-debug.log*

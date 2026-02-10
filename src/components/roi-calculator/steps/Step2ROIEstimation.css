@@ -1,0 +1,194 @@
+.step-2-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.roi-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.roi-details-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(13, 162, 231, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.section-title {
+  font-family: Poppins, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 18px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(163, 179, 194, 0.12);
+}
+
+/* ROI Table */
+.roi-table {
+  overflow-x: auto;
+}
+
+.roi-table-header {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.5fr) repeat(6, minmax(90px, 1fr));
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(13, 162, 231, 0.08);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.roi-table-header .roi-col {
+  font-size: 11px;
+  font-weight: 700;
+  color: #a3b3c2;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.roi-table-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.5fr) repeat(6, minmax(90px, 1fr));
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.roi-table-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.roi-table-row:not(:last-child) {
+  border-bottom: 1px solid rgba(163, 179, 194, 0.08);
+}
+
+.roi-col {
+  font-size: 14px;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+}
+
+.roi-col.name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.roi-col.highlight {
+  color: #07c0d5;
+  font-weight: 700;
+}
+
+.row-num {
+  color: #0da2e7;
+  font-weight: 800;
+  font-size: 12px;
+  background: rgba(13, 162, 231, 0.12);
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+/* Financial Metrics */
+.financial-metrics {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(13, 162, 231, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  background: rgba(13, 162, 231, 0.06);
+  border: 1px solid rgba(13, 162, 231, 0.18);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.metric-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(163, 179, 194, 0.1);
+}
+
+.metric-num {
+  color: #0da2e7;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.metric-name {
+  color: #f8fafc;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.metric-row span:first-child {
+  color: #a3b3c2;
+}
+
+.metric-row span:last-child {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.metric-row .positive {
+  color: #10b981;
+}
+
+.metric-row .negative {
+  color: #ef4444;
+}
+
+.metric-row .highlight {
+  color: #07c0d5;
+}
+
+@media (max-width: 1100px) {
+  .roi-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .roi-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .roi-table-header,
+  .roi-table-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .roi-table-header .roi-col:not(.name),
+  .roi-table-row .roi-col:not(.name) {
+    display: none;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

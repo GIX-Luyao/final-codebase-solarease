@@ -1,0 +1,4 @@
+.home-page { width:1440px; margin:0 auto; box-sizing:border-box; background: #000f1f; color:#f8fafc; font-family:Poppins, sans-serif }
+
+/* Keep content centered and aligned like Figma frames */
+.home-page > * { display:block }

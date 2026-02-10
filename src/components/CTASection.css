@@ -1,0 +1,133 @@
+.cta-section {
+  width: 100%;
+  padding: 96px 0;
+  background: linear-gradient(180deg, rgba(13, 162, 231, 0.03) 0%, rgba(7, 192, 213, 0.02) 100%);
+}
+
+.cta-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cta-title {
+  font-family: Poppins, sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 1.2;
+  color: #f8fafc;
+  margin: 0 0 16px 0;
+  max-width: 800px;
+}
+
+.cta-title .highlight {
+  color: #0da2e7;
+}
+
+.cta-subtitle {
+  font-family: Poppins, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #a3b3c2;
+  margin: 0 0 32px 0;
+  max-width: 700px;
+}
+
+.cta-button {
+  background: linear-gradient(90deg, #0da2e7 0%, #07c0d5 100%);
+  color: #ffffff;
+  font-family: Poppins, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 14px 32px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(13, 162, 231, 0.3);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13, 162, 231, 0.4);
+}
+
+.cta-button .arrow {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.cta-button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.cta-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 64px;
+  width: 100%;
+}
+
+.cta-feature-card {
+  background: rgba(13, 162, 231, 0.03);
+  border: 1px solid rgba(13, 162, 231, 0.15);
+  border-radius: 16px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cta-feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(13, 162, 231, 0.3);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(13, 162, 231, 0.08);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-family: Poppins, sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #f8fafc;
+  margin: 0 0 8px 0;
+}
+
+.feature-desc {
+  font-family: Poppins, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #a3b3c2;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .cta-features {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cta-title {
+    font-size: 36px;
+  }
+}
