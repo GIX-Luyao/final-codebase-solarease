@@ -325,19 +325,31 @@
   }
 }
 
-/* Contract access badge */
+/* Data access badges */
+.data-access-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
 .contract-access-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding: 4px 8px;
+  gap: 4px;
+  padding: 3px 8px;
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.3);
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 10px;
   color: #22c55e;
   width: fit-content;
+}
+
+.contract-access-badge.roi-badge {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
 }
 
 .contract-access-badge svg {
