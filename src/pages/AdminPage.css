@@ -219,3 +219,18 @@
   font-style: italic;
   padding: 20px;
 }
+
+.empty-message {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  padding: 20px;
+}
+
+.roi-item {
+  border-left: 3px solid #10b981;
+}
+
+.roi-item .admin-contract-info strong {
+  color: #10b981;
+}

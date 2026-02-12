@@ -10,6 +10,7 @@ import ContractTransparencyPage from "./pages/ContractTransparencyPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import SavedContractsPage from "./pages/SavedContractsPage";
+import SavedROICalculationsPage from "./pages/SavedROICalculationsPage";
 import AIChatbot from "./components/AIChatbot";
 import "./index.css";
 
@@ -34,6 +35,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <SavedContractsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/saved-roi-calculations"
+              element={
+                <ProtectedRoute>
+                  <SavedROICalculationsPage />
                 </ProtectedRoute>
               }
             />

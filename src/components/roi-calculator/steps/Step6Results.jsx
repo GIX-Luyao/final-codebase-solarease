@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import './Step6Results.css'
 import SummaryCard from '../shared/SummaryCard'
 import { API_URL } from '../../../config'
+import { useAuth } from '../../../context/AuthContext'
+import { useSaveROICalculation } from '../../../hooks/useROICalculations'
 
 export default function Step6Results({
   participants,
@@ -15,6 +17,45 @@ export default function Step6Results({
   onBack
 }) {
   const [aiLoading, setAiLoading] = useState(false)
+  const [calculationName, setCalculationName] = useState('')
+  const [saveStatus, setSaveStatus] = useState(null) // null, 'saving', 'saved', 'error'
+  const [saveErrorMessage, setSaveErrorMessage] = useState('')
+
+  const { isAuthenticated } = useAuth()
+  const saveCalculationMutation = useSaveROICalculation()
+
+  const handleSaveCalculation = async () => {
+    if (!calculationName.trim()) {
+      setSaveStatus('error')
+      setSaveErrorMessage('Please enter a name for your calculation.')
+      return
+    }
+
+    setSaveStatus('saving')
+    setSaveErrorMessage('')
+    try {
+      await saveCalculationMutation.mutateAsync({
+        name: calculationName.trim(),
+        participants: participants.map((p, i) => ({
+          name: p.name || `Participant ${i + 1}`,
+          address: p.address,
+          annualUsage: p.annualUsage,
+          roofArea: p.roofArea,
+        })),
+        roiData,
+        threatPoints,
+        ppaConfig,
+        nashResults,
+        cooperativeValue,
+        aiSummary,
+      })
+      setSaveStatus('saved')
+      setCalculationName('')
+    } catch (err) {
+      setSaveStatus('error')
+      setSaveErrorMessage(err.message || 'Unable to save. Please try again.')
+    }
+  }
 
   const generateAISummary = async () => {
     setAiLoading(true)
@@ -292,6 +333,62 @@ Explain why this is a good deal for everyone, celebrate the cooperation benefits
             </button>
           </div>
         </div>
+
+        {/* Save Section (Authenticated Users Only) */}
+        {isAuthenticated && (
+          <div className="save-section">
+            <h3 className="section-title">Save to Account</h3>
+            {saveStatus === 'saved' ? (
+              <div className="save-success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                Calculation saved successfully!
+              </div>
+            ) : (
+              <div className="save-form">
+                <input
+                  type="text"
+                  className="save-name-input"
+                  placeholder="Enter a name for this calculation..."
+                  value={calculationName}
+                  onChange={(e) => {
+                    setCalculationName(e.target.value)
+                    if (saveStatus === 'error') {
+                      setSaveStatus(null)
+                      setSaveErrorMessage('')
+                    }
+                  }}
+                />
+                <button
+                  className="save-btn"
+                  onClick={handleSaveCalculation}
+                  disabled={saveStatus === 'saving' || !calculationName.trim()}
+                >
+                  {saveStatus === 'saving' ? (
+                    <>
+                      <span className="spinner-small" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                      Save Calculation
+                    </>
+                  )}
+                </button>
+                {saveStatus === 'error' && (
+                  <p className="save-error">{saveErrorMessage}</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="step-navigation">
