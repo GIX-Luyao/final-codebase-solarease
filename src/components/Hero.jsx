@@ -1,8 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Hero.css';
 
 // The structure below mirrors the Figma JSON hierarchy for the "Button" frame and nested Card
 export default function Hero() {
+  const navigate = useNavigate();
+
+  function handleStartSimulation() {
+    navigate('/roi-calculator');
+  }
+
+  function handleContactClick() {
+    const target = document.getElementById('contact');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   return (
     <section className="hero">
       <div className="hero-inner">
@@ -32,14 +46,26 @@ export default function Hero() {
 
                 {/* Button container frame with two buttons */}
                 <div className="Button-container frame">
-                  <div className="Button primary frame">
+                  <div
+                    className="Button primary frame"
+                    onClick={handleStartSimulation}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Start your simulation"
+                  >
                     <div className="start-text">Start Your Simulation</div>
                     <div className="Text-input-container frame">
                       <div className="icon-frame frame" />
                     </div>
                   </div>
 
-                  <div className="Button outline frame">
+                  <div
+                    className="Button outline frame"
+                    onClick={handleContactClick}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Contact us"
+                  >
                     <div className="contact-text">Contact us</div>
                   </div>
                 </div>
