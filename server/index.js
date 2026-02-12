@@ -27,6 +27,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 // Import routes
 const authRoutes = require('./routes/auth')
 const contractRoutes = require('./routes/contracts')
+const roiCalculationRoutes = require('./routes/roi-calculations')
 const { authenticateToken } = require('./middleware/auth')
 const db = require('./db')
 
@@ -73,6 +74,7 @@ app.get('/health', (req, res) => {
 // Mount auth and contract routes
 app.use('/api/auth', authRoutes)
 app.use('/api/contracts', contractRoutes)
+app.use('/api/roi-calculations', roiCalculationRoutes)
 
 // OpenAI configuration
 const OPENAI_KEY = process.env.OPENAI_API_KEY
@@ -306,7 +308,7 @@ app.post('/api/ai', async (req, res) => {
   }
 })
 
-// Chat endpoint with user's contract context (authenticated)
+// Chat endpoint with user's contract and ROI calculation context (authenticated)
 app.post('/api/chat-with-contracts', authenticateToken, async (req, res) => {
   try {
     const { message, conversationHistory = [] } = req.body
@@ -325,6 +327,21 @@ app.post('/api/chat-with-contracts', authenticateToken, async (req, res) => {
       contracts = result.rows
     } catch (dbErr) {
       console.error('Error fetching contracts for chat:', dbErr.message)
+    }
+
+    // Fetch user's ROI calculations from database
+    let roiCalculations = []
+    try {
+      const result = await db.query(
+        `SELECT name, participants, ppa_config, nash_results, cooperative_value, ai_summary, created_at
+         FROM roi_calculations
+         WHERE user_id = $1
+         ORDER BY created_at DESC`,
+        [userId]
+      )
+      roiCalculations = result.rows
+    } catch (dbErr) {
+      console.error('Error fetching ROI calculations for chat:', dbErr.message)
     }
 
     // Build contract context for the AI
@@ -360,7 +377,71 @@ app.post('/api/chat-with-contracts', authenticateToken, async (req, res) => {
         contractContext += '\n'
       })
 
-      contractContext += `--- END OF CONTRACTS ---\n\nUse this contract information to answer the user's questions. Reference specific terms, prices, and risk flags when relevant. If the user asks about a specific contract, provide detailed information from the analysis above.`
+      contractContext += `--- END OF CONTRACTS ---`
+    }
+
+    // Build ROI calculations context for the AI
+    let roiContext = ''
+    if (roiCalculations.length > 0) {
+      roiContext = `\n\n--- USER'S SAVED ROI CALCULATIONS ---\nThe user has ${roiCalculations.length} saved ROI calculation(s). Here are the details:\n\n`
+
+      roiCalculations.forEach((calc, index) => {
+        roiContext += `ROI CALCULATION ${index + 1}: "${calc.name}"\n`
+        roiContext += `Created on: ${new Date(calc.created_at).toLocaleDateString()}\n`
+
+        // Participants info
+        if (calc.participants && Array.isArray(calc.participants)) {
+          roiContext += `Participants: ${calc.participants.length} household(s)\n`
+          calc.participants.forEach((p, i) => {
+            roiContext += `  - ${p.name || `Participant ${i + 1}`}`
+            if (p.annualUsage) roiContext += ` (${p.annualUsage.toLocaleString()} kWh/yr)`
+            roiContext += '\n'
+          })
+        }
+
+        // PPA Configuration
+        if (calc.ppa_config) {
+          const ppa = calc.ppa_config
+          roiContext += `PPA Configuration:\n`
+          if (ppa.ppaPrice) roiContext += `  - Price: $${ppa.ppaPrice}/kWh\n`
+          if (ppa.ppaTerm) roiContext += `  - Term: ${ppa.ppaTerm} years\n`
+        }
+
+        // Nash Bargaining Results
+        if (calc.nash_results) {
+          const nash = calc.nash_results
+          if (nash.total_value) roiContext += `Total Cooperative Value: $${Math.round(nash.total_value).toLocaleString()}\n`
+          if (nash.total_surplus) roiContext += `Surplus Created: $${Math.round(nash.total_surplus).toLocaleString()}\n`
+
+          if (nash.participants && Array.isArray(nash.participants)) {
+            roiContext += `Allocations:\n`
+            nash.participants.forEach(p => {
+              roiContext += `  - ${p.name}: $${Math.round(p.allocation).toLocaleString()} (gain: +$${Math.round(p.gain).toLocaleString()})\n`
+            })
+          }
+        }
+
+        // Cooperative Value (if stored separately)
+        if (calc.cooperative_value && !calc.nash_results?.total_value) {
+          roiContext += `Cooperative Value: $${Math.round(parseFloat(calc.cooperative_value)).toLocaleString()}\n`
+        }
+
+        // AI Summary if available
+        if (calc.ai_summary) {
+          roiContext += `AI Summary: ${calc.ai_summary.substring(0, 200)}${calc.ai_summary.length > 200 ? '...' : ''}\n`
+        }
+
+        roiContext += '\n'
+      })
+
+      roiContext += `--- END OF ROI CALCULATIONS ---`
+    }
+
+    // Combine contexts
+    let userDataContext = ''
+    if (contractContext || roiContext) {
+      userDataContext = contractContext + roiContext
+      userDataContext += `\n\nUse this saved data to answer the user's questions. Reference specific calculations, terms, and results when relevant. If the user asks about their solar analysis or contracts, provide detailed information from above.`
     }
 
     const systemPrompt = {
@@ -373,12 +454,12 @@ Key responsibilities:
 - Guide users on community solar vs individual solar benefits
 - Explain PPA terms and negotiation strategies
 - Provide information about solar incentives and policies
-- Answer questions about the user's specific contracts when they have them
+- Answer questions about the user's specific contracts and ROI calculations when they have them
 - Be encouraging and supportive of sustainable energy transitions
 
 Tone: Friendly, professional, encouraging, and informative. Keep responses concise (2-3 paragraphs max) unless more detail is specifically requested.
 
-Do not provide financial advice or make guarantees about returns. Always encourage users to consult with qualified professionals for specific decisions.${contractContext}`
+Do not provide financial advice or make guarantees about returns. Always encourage users to consult with qualified professionals for specific decisions.${userDataContext}`
     }
 
     // Build messages array
@@ -393,7 +474,9 @@ Do not provide financial advice or make guarantees about returns. Always encoura
     res.json({
       result: text || 'Sorry, I could not generate a response.',
       hasContracts: contracts.length > 0,
-      contractCount: contracts.length
+      contractCount: contracts.length,
+      hasROICalculations: roiCalculations.length > 0,
+      roiCalculationCount: roiCalculations.length
     })
   } catch(err) {
     console.error('Chat with contracts error:', err)
@@ -629,8 +712,7 @@ print(json.dumps(result))
     python.on('error', (err) => {
       if (responded) return
       responded = true
-      console.error('Python spawn error:', err.message)
-      // Fall back to JavaScript calculation
+      // Silently fall back to JavaScript calculation
       const jsResult = calculateNashLocally(inputData)
       res.json(jsResult)
     })
@@ -652,8 +734,7 @@ print(json.dumps(result))
       responded = true
 
       if (code !== 0) {
-        console.error('Python error:', errorOutput)
-        // Fall back to JavaScript calculation
+        // Silently fall back to JavaScript calculation
         const jsResult = calculateNashLocally(inputData)
         res.json(jsResult)
         return
@@ -884,6 +965,71 @@ app.delete('/api/admin/contracts/:id', async (req, res) => {
     console.error('Admin contract delete error:', err);
     res.status(500).json({
       error: 'Failed to delete contract',
+      details: err.message
+    });
+  }
+});
+
+// Admin ROI calculations endpoint - list all
+app.get('/api/admin/roi-calculations', async (req, res) => {
+  try {
+    if (!dbConnected && !pool) {
+      return res.json({
+        calculations: [],
+        source: 'mock',
+        error: 'Database not connected'
+      });
+    }
+
+    const result = await pool.query(`
+      SELECT id, user_id, name, participants, ppa_config, nash_results,
+             cooperative_value, ai_summary, created_at
+      FROM roi_calculations
+      ORDER BY created_at DESC
+    `);
+
+    res.json({
+      calculations: result.rows,
+      count: result.rowCount,
+      source: 'database'
+    });
+  } catch (err) {
+    console.error('Admin ROI calculations query error:', err);
+    res.json({
+      calculations: [],
+      count: 0,
+      source: 'error',
+      error: err.message
+    });
+  }
+});
+
+// Delete ROI calculation (admin)
+app.delete('/api/admin/roi-calculations/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!dbConnected) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+
+    const result = await pool.query(`
+      DELETE FROM roi_calculations WHERE id = $1 RETURNING id
+    `, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'ROI calculation not found' });
+    }
+
+    res.json({
+      success: true,
+      deleted_id: result.rows[0].id,
+      message: 'ROI calculation deleted successfully'
+    });
+  } catch (err) {
+    console.error('Admin ROI calculation delete error:', err);
+    res.status(500).json({
+      error: 'Failed to delete ROI calculation',
       details: err.message
     });
   }

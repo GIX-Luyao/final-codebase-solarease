@@ -548,27 +548,8 @@ Current message context: ${intent.complexity} complexity, ${intent.urgency} urge
       if (this.userProfile.solarInterest === 'community') {
         recommendations.push({
           type: 'next-step',
-          message: 'After calculating individual ROI, try our negotiation tool to see community solar benefits.',
-          action: 'suggest-negotiation'
-        });
-      }
-    }
-    
-    if (currentPage === 'negotiation-tool') {
-      if (prefillData.name && prefillData.systemSize) {
-        recommendations.push({
-          type: 'auto-fill',
-          message: `I can set up your negotiation with your info: ${prefillData.name}, ${prefillData.systemSize}kW system.`,
-          action: 'auto-fill-negotiation',
-          data: prefillData
-        });
-      }
-      
-      if (this.contextualData.roiData && !this.contextualData.negotiations.length) {
-        recommendations.push({
-          type: 'smart-suggestion',
-          message: `Based on your ${this.contextualData.roiData.location} ROI analysis, I recommend starting with 3-4 participants for optimal results.`,
-          action: 'smart-participant-suggestion'
+          message: 'The ROI calculator includes Nash Bargaining to see community solar benefits and fair allocation.',
+          action: 'suggest-roi-calculator'
         });
       }
     }

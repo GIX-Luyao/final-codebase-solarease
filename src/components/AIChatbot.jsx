@@ -27,6 +27,7 @@ export default function AIChatbot() {
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [showUsabilityTest, setShowUsabilityTest] = useState(false);
   const [userContracts, setUserContracts] = useState([]);
+  const [roiCalculationsCount, setRoiCalculationsCount] = useState(0);
   const [contractsLoaded, setContractsLoaded] = useState(false);
   const [dbStatus, setDbStatus] = useState({ connected: false, source: 'unknown' });
   const messagesEndRef = useRef(null);
@@ -47,32 +48,46 @@ export default function AIChatbot() {
     }
   }
 
-  // Load user contracts from database
+  // Load user contracts and ROI calculations from database
   const loadUserContracts = async () => {
-    // Only load contracts if user is authenticated
+    // Only load data if user is authenticated
     if (!isAuthenticated) {
       setContractsLoaded(true);
       return;
     }
 
     try {
-      const response = await authFetch(`${API_URL}/api/contracts`);
-      const data = await response.json();
+      // Load contracts
+      const contractsResponse = await authFetch(`${API_URL}/api/contracts`);
+      const contractsData = await contractsResponse.json();
 
-      if (response.ok && data.contracts) {
-        setUserContracts(data.contracts);
+      if (contractsResponse.ok && contractsData.contracts) {
+        setUserContracts(contractsData.contracts);
 
         // Update AI agent with contract context
         if (aiAgent && typeof aiAgent.updateUserContracts === 'function') {
-          aiAgent.updateUserContracts(data.contracts);
+          aiAgent.updateUserContracts(contractsData.contracts);
         }
       }
     } catch (err) {
       console.log('Contract database not available, continuing without contract integration');
       setUserContracts([]);
-    } finally {
-      setContractsLoaded(true);
     }
+
+    try {
+      // Load ROI calculations count
+      const roiResponse = await authFetch(`${API_URL}/api/roi-calculations`);
+      const roiData = await roiResponse.json();
+
+      if (roiResponse.ok && roiData.calculations) {
+        setRoiCalculationsCount(roiData.calculations.length);
+      }
+    } catch (err) {
+      console.log('ROI calculations not available');
+      setRoiCalculationsCount(0);
+    }
+
+    setContractsLoaded(true);
   }
 
   const scrollToBottom = () => {
@@ -118,13 +133,20 @@ export default function AIChatbot() {
         }
       }
     };
-    
+
+    // Listen for open AI assistant event from home page feature card
+    const handleOpenAIAssistant = () => {
+      setIsOpen(true);
+    };
+
     window.addEventListener('roiDataUpdated', handleContextUpdate);
     window.addEventListener('negotiationCompleted', handleContextUpdate);
-    
+    window.addEventListener('openAIAssistant', handleOpenAIAssistant);
+
     return () => {
       window.removeEventListener('roiDataUpdated', handleContextUpdate);
       window.removeEventListener('negotiationCompleted', handleContextUpdate);
+      window.removeEventListener('openAIAssistant', handleOpenAIAssistant);
     };
   }, [aiAgent, contractsLoaded]);
 
@@ -167,6 +189,11 @@ export default function AIChatbot() {
             return prev;
           });
         }
+
+        // Update ROI calculations count if returned
+        if (data.roiCalculationCount !== undefined) {
+          setRoiCalculationsCount(data.roiCalculationCount);
+        }
       } else {
         // Fallback for unauthenticated users - basic chat without contract details
         let systemPrompt = `You are Soli, an intelligent solar energy agent. `;
@@ -202,7 +229,7 @@ export default function AIChatbot() {
       console.error('Chat Error:', err);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI simulator or negotiation tool?'
+        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI calculator?'
       }]);
     } finally {
       setIsLoading(false);
@@ -211,12 +238,9 @@ export default function AIChatbot() {
   
   // Handle suggestion clicks
   function handleSuggestionClick(suggestion) {
-    if (suggestion.includes('ROI') || suggestion.includes('Calculate')) {
-      // Navigate to ROI simulator
-      window.location.href = '/roi-simulator';
-    } else if (suggestion.includes('Negotiation') || suggestion.includes('Tool')) {
-      // Navigate to negotiation tool
-      window.location.href = '/negotiation-tool';
+    if (suggestion.includes('ROI') || suggestion.includes('Calculate') || suggestion.includes('Negotiation')) {
+      // Navigate to ROI calculator (includes Nash bargaining)
+      window.location.href = '/roi-calculator';
     } else if (suggestion.includes('contract') || suggestion.includes('Analyze my')) {
       // Handle contract analysis requests
       if (userContracts.length > 0) {
@@ -249,15 +273,13 @@ export default function AIChatbot() {
             const contextData = {};
             
             // Detect current page context
-            if (currentPath.includes('roi-simulator')) {
-              contextData.currentPage = 'roi-simulator';
+            if (currentPath.includes('roi-simulator') || currentPath.includes('roi-calculator')) {
+              contextData.currentPage = 'roi-calculator';
               // Try to get ROI data from URL or localStorage
               const params = new URLSearchParams(window.location.search);
               if (params.get('location')) {
                 contextData.location = params.get('location');
               }
-            } else if (currentPath.includes('negotiation-tool')) {
-              contextData.currentPage = 'negotiation-tool';
             }
             
             aiAgent.updateContext(contextData);
@@ -295,12 +317,26 @@ export default function AIChatbot() {
               <h3>AI Assistant <span className="soli-name">Soli</span></h3>
               <p>Your personalized solar energy agent</p>
 
-              {isAuthenticated && userContracts.length > 0 && (
-                <div className="contract-access-badge">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span>{userContracts.length} contract{userContracts.length > 1 ? 's' : ''} accessible</span>
+              {isAuthenticated && (userContracts.length > 0 || roiCalculationsCount > 0) && (
+                <div className="data-access-badges">
+                  {userContracts.length > 0 && (
+                    <div className="contract-access-badge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <polyline points="14,2 14,8 20,8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>{userContracts.length} contract{userContracts.length > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+                  {roiCalculationsCount > 0 && (
+                    <div className="contract-access-badge roi-badge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="12" y1="1" x2="12" y2="23" stroke="#10b981" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span>{roiCalculationsCount} ROI calc{roiCalculationsCount > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
                 </div>
               )}
 

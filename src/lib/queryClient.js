@@ -21,5 +21,7 @@ export const queryClient = new QueryClient({
 export const queryKeys = {
   contracts: ['contracts'],
   contract: (id) => ['contracts', id],
+  roiCalculations: ['roiCalculations'],
+  roiCalculation: (id) => ['roiCalculations', id],
   user: ['user'],
 }

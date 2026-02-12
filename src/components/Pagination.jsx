@@ -17,7 +17,7 @@ export default function Pagination() {
               <div className="active-pill">Active</div>
             </div>
             <div className="map-card-body">
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric">
                   <div className="m-label">Capacity</div>
                   <div className="m-val">12.5 MW</div>
@@ -27,7 +27,7 @@ export default function Pagination() {
                   <div className="m-val">$1.2M</div>
                 </div>
               </div>
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric">
                   <div className="m-label">CO₂ Offset</div>
                   <div className="m-val">8,500 tons</div>
@@ -46,11 +46,11 @@ export default function Pagination() {
               <div className="active-pill">Active</div>
             </div>
             <div className="map-card-body">
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric"><div className="m-label">Capacity</div><div className="m-val">8.3 MW</div></div>
                 <div className="metric"><div className="m-label">Annual Savings</div><div className="m-val">$780K</div></div>
               </div>
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric"><div className="m-label">CO₂ Offset</div><div className="m-val">5,600 tons</div></div>
                 <div className="metric"><div className="m-label">ROI</div><div className="m-val">16.2%</div></div>
               </div>
@@ -63,11 +63,11 @@ export default function Pagination() {
               <div className="active-pill pill-alt">Planning</div>
             </div>
             <div className="map-card-body">
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric"><div className="m-label">Capacity</div><div className="m-val">5.7 MW</div></div>
                 <div className="metric"><div className="m-label">Annual Savings</div><div className="m-val">$520K</div></div>
               </div>
-              <div className="metric-row">
+              <div className="metric-row-pagination">
                 <div className="metric"><div className="m-label">CO₂ Offset</div><div className="m-val">3,900 tons</div></div>
                 <div className="metric"><div className="m-label">ROI</div><div className="m-val">14.8%</div></div>
               </div>

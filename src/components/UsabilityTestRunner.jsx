@@ -187,22 +187,22 @@ export default function UsabilityTestRunner() {
               
               {testResults.aggregateFindings?.overallPerformance && (
                 <div className="metrics-dashboard">
-                  <div className="metric-card">
+                  <div className="metric-card-test-runner">
                     <div className="metric-value">{(testResults.aggregateFindings.overallPerformance.averageScore * 100).toFixed(1)}%</div>
                     <div className="metric-label">Overall Performance Score</div>
                     <div className="metric-detail">Range: {(testResults.aggregateFindings.overallPerformance.worstScore * 100).toFixed(1)}% - {(testResults.aggregateFindings.overallPerformance.bestScore * 100).toFixed(1)}%</div>
                   </div>
-                  <div className="metric-card">
+                  <div className="metric-card-test-runner">
                     <div className="metric-value">{(testResults.aggregateFindings.overallPerformance.standardDeviation * 100).toFixed(1)}%</div>
                     <div className="metric-label">Performance Variability</div>
                     <div className="metric-detail">Consistency Rating: {testResults.aggregateFindings.consistencyAnalysis?.performanceConsistency || 'Stable'}</div>
                   </div>
-                  <div className="metric-card">
+                  <div className="metric-card-test-runner">
                     <div className="metric-value">{testResults.iterations?.filter(i => !i.failed).length || numberOfRuns}/{testResults.iterations?.length || numberOfRuns}</div>
                     <div className="metric-label">Successful Test Iterations</div>
                     <div className="metric-detail">Reliability: {testResults.iterations ? ((testResults.iterations.filter(i => !i.failed).length / testResults.iterations.length) * 100).toFixed(1) : 100}%</div>
                   </div>
-                  <div className="metric-card">
+                  <div className="metric-card-test-runner">
                     <div className="metric-value">{testResults.aggregateFindings.consistencyAnalysis?.responseTimeStability?.averageResponseTime ? 
                       Math.round(testResults.aggregateFindings.consistencyAnalysis.responseTimeStability.averageResponseTime) : Math.floor(Math.random() * 800) + 400}ms</div>
                     <div className="metric-label">Average Response Time</div>
@@ -351,7 +351,7 @@ export default function UsabilityTestRunner() {
           </section>
 
           {/* Export */}
-          <div className="export-section">
+          <div className="export-section-test-runner">
             <button onClick={exportResults} className="export-btn">
               Export Complete Analysis for Assignment Submission
             </button>

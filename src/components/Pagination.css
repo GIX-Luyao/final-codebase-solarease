@@ -11,7 +11,7 @@
 .location { color:#f8fafc; font-weight:700; font-size:15px }
 .active-pill { background:#0da2e7; color:#f8fafc; padding:3px 11px; border-radius:9999px; font-size:10.7px; font-weight:700; line-height:16px; }
 .pill-alt { background:#07c0d5 }
-.metric-row { display:flex; flex-direction:column; margin-top:16px; gap:12px }
+.metric-row-pagination { display:flex; flex-direction:column; margin-top:16px; gap:12px }
 .metric { background:transparent; border:0; border-radius:0; padding:0; box-sizing:border-box; display:flex; justify-content:space-between; align-items:center }
 .metric .m-val { font-weight:700; font-size:15.8px; line-height:24px; }
 .metric .m-label { color:#a3b3c2; font-size:12.6px; line-height:20px; }

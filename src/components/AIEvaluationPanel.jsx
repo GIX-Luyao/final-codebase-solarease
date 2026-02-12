@@ -193,25 +193,25 @@ export default function AIEvaluationPanel({ isOpen, onClose }) {
             <div className="live-metrics">
               <h3>Key Metrics Overview</h3>
               <div className="metrics-grid">
-                <div className="metric-card">
+                <div className="metric-card-ai-panel">
                   <div className="metric-label">Response Relevance</div>
                   <div className="metric-value" style={{ color: getStatusColor(liveMetrics.responseRelevance?.average || 0) }}>
                     {formatMetric(liveMetrics.responseRelevance?.average)}
                   </div>
                 </div>
-                <div className="metric-card">
+                <div className="metric-card-ai-panel">
                   <div className="metric-label">Personalization</div>
                   <div className="metric-value" style={{ color: getStatusColor(liveMetrics.personalizationScore?.average || 0) }}>
                     {formatMetric(liveMetrics.personalizationScore?.average)}
                   </div>
                 </div>
-                <div className="metric-card">
+                <div className="metric-card-ai-panel">
                   <div className="metric-label">Context Awareness</div>
                   <div className="metric-value" style={{ color: getStatusColor(liveMetrics.contextAwareness?.average || 0) }}>
                     {formatMetric(liveMetrics.contextAwareness?.average)}
                   </div>
                 </div>
-                <div className="metric-card">
+                <div className="metric-card-ai-panel">
                   <div className="metric-label">Response Time</div>
                   <div className="metric-value">
                     {formatMetric(liveMetrics.responseTime?.average, 'time')}

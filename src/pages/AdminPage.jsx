@@ -7,8 +7,10 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const [dbStatus, setDbStatus] = useState(null);
   const [contracts, setContracts] = useState([]);
+  const [roiCalculations, setRoiCalculations] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingRoi, setLoadingRoi] = useState(false);
   const [newContract, setNewContract] = useState({
     user_id: '1',
     filename: '',
@@ -82,7 +84,7 @@ export default function AdminPage() {
       const response = await fetch(`${API_URL}/api/admin/contracts/${id}`, {
         method: 'DELETE'
       });
-      
+
       if (response.ok) {
         addLog(`Contract ${id} deleted`, 'success');
         fetchContracts();
@@ -94,9 +96,50 @@ export default function AdminPage() {
     }
   };
 
+  const fetchRoiCalculations = async () => {
+    setLoadingRoi(true);
+    try {
+      addLog('Executing: SELECT * FROM roi_calculations ORDER BY created_at DESC', 'query');
+      const response = await fetch(`${API_URL}/api/admin/roi-calculations`);
+      const data = await response.json();
+      setRoiCalculations(data.calculations || []);
+      addLog(`Retrieved ${data.calculations?.length || 0} ROI calculations from database`, 'success');
+    } catch (err) {
+      addLog(`Query failed: ${err.message}`, 'error');
+    } finally {
+      setLoadingRoi(false);
+    }
+  };
+
+  const deleteRoiCalculation = async (id) => {
+    try {
+      addLog(`Executing: DELETE FROM roi_calculations WHERE id = ${id}`, 'query');
+      const response = await fetch(`${API_URL}/api/admin/roi-calculations/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        addLog(`ROI calculation ${id} deleted`, 'success');
+        fetchRoiCalculations();
+      } else {
+        addLog(`Delete failed for ROI calculation ${id}`, 'error');
+      }
+    } catch (err) {
+      addLog(`Delete error: ${err.message}`, 'error');
+    }
+  };
+
+  const getParticipantCount = (calc) => {
+    if (calc.participants && Array.isArray(calc.participants)) {
+      return calc.participants.length;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     fetchDbStatus();
     fetchContracts();
+    fetchRoiCalculations();
     addLog('Admin panel initialized', 'info');
   }, []);
 
@@ -194,6 +237,49 @@ export default function AdminPage() {
           
           <button onClick={fetchContracts} className="refresh-btn">
             🔄 Refresh Contracts
+          </button>
+        </div>
+
+        {/* ROI Calculations */}
+        <div className="admin-card">
+          <h3>📊 ROI Calculations</h3>
+          <div className="admin-contracts-list">
+            <h4>Saved Calculations ({roiCalculations.length})</h4>
+            {loadingRoi ? (
+              <div className="loading">Executing database query...</div>
+            ) : roiCalculations.length === 0 ? (
+              <div className="empty-message">No ROI calculations saved yet</div>
+            ) : (
+              roiCalculations.map(calc => (
+                <div key={calc.id} className="admin-contract-item roi-item">
+                  <div className="admin-contract-info">
+                    <strong>{calc.name}</strong>
+                    <span className="admin-contract-meta">
+                      ID: {calc.id} | User: {calc.user_id} |
+                      Created: {new Date(calc.created_at).toLocaleString()}
+                    </span>
+                    <span className="admin-contract-meta">
+                      Participants: {getParticipantCount(calc)} |
+                      Value: ${calc.cooperative_value ? Math.round(parseFloat(calc.cooperative_value)).toLocaleString() : 'N/A'}
+                    </span>
+                    {calc.ppa_config && (
+                      <span className="admin-contract-meta">
+                        PPA: ${calc.ppa_config.ppaPrice}/kWh for {calc.ppa_config.ppaTerm} years
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => deleteRoiCalculation(calc.id)}
+                    className="admin-delete-btn"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+          <button onClick={fetchRoiCalculations} className="refresh-btn">
+            🔄 Refresh ROI Calculations
           </button>
         </div>
 
