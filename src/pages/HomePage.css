@@ -1,9 +1,6 @@
 .home-page { width:100%; margin:0 auto; box-sizing:border-box; background: #000f1f; color:#f8fafc; font-family:Poppins, sans-serif; padding-top:12px }
 .home-page > * { display:block }
 
-/* Section rhythm: ensure consistent vertical spacing to match design PDF */
-.home-page > * + * { margin-top:40px }
-
 /* Narrower content wrapper used by sections for consistent grid */
 .content-wrapper { width:100%; max-width:1200px; margin:0 auto; padding:0 16px; box-sizing:border-box }
 

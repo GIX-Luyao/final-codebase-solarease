@@ -19,7 +19,7 @@ export default function HomePage(){
 
       <div className="content-wrapper">
         <InputForm
-          onNavigateToNegotiation={() => navigate('/negotiation-tool')}
+          onNavigateToNegotiation={() => navigate('/roi-calculator')}
           onNavigateToContract={() => navigate('/contract-transparency')}
         />
       </div>

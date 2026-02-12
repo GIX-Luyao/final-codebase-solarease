@@ -118,13 +118,20 @@ export default function AIChatbot() {
         }
       }
     };
-    
+
+    // Listen for open AI assistant event from home page feature card
+    const handleOpenAIAssistant = () => {
+      setIsOpen(true);
+    };
+
     window.addEventListener('roiDataUpdated', handleContextUpdate);
     window.addEventListener('negotiationCompleted', handleContextUpdate);
-    
+    window.addEventListener('openAIAssistant', handleOpenAIAssistant);
+
     return () => {
       window.removeEventListener('roiDataUpdated', handleContextUpdate);
       window.removeEventListener('negotiationCompleted', handleContextUpdate);
+      window.removeEventListener('openAIAssistant', handleOpenAIAssistant);
     };
   }, [aiAgent, contractsLoaded]);
 
@@ -202,7 +209,7 @@ export default function AIChatbot() {
       console.error('Chat Error:', err);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI simulator or negotiation tool?'
+        content: 'I\'m having trouble connecting right now. Let me try to help in another way - would you like me to show you our ROI calculator?'
       }]);
     } finally {
       setIsLoading(false);
@@ -211,12 +218,9 @@ export default function AIChatbot() {
   
   // Handle suggestion clicks
   function handleSuggestionClick(suggestion) {
-    if (suggestion.includes('ROI') || suggestion.includes('Calculate')) {
-      // Navigate to ROI simulator
-      window.location.href = '/roi-simulator';
-    } else if (suggestion.includes('Negotiation') || suggestion.includes('Tool')) {
-      // Navigate to negotiation tool
-      window.location.href = '/negotiation-tool';
+    if (suggestion.includes('ROI') || suggestion.includes('Calculate') || suggestion.includes('Negotiation')) {
+      // Navigate to ROI calculator (includes Nash bargaining)
+      window.location.href = '/roi-calculator';
     } else if (suggestion.includes('contract') || suggestion.includes('Analyze my')) {
       // Handle contract analysis requests
       if (userContracts.length > 0) {
@@ -249,15 +253,13 @@ export default function AIChatbot() {
             const contextData = {};
             
             // Detect current page context
-            if (currentPath.includes('roi-simulator')) {
-              contextData.currentPage = 'roi-simulator';
+            if (currentPath.includes('roi-simulator') || currentPath.includes('roi-calculator')) {
+              contextData.currentPage = 'roi-calculator';
               // Try to get ROI data from URL or localStorage
               const params = new URLSearchParams(window.location.search);
               if (params.get('location')) {
                 contextData.location = params.get('location');
               }
-            } else if (currentPath.includes('negotiation-tool')) {
-              contextData.currentPage = 'negotiation-tool';
             }
             
             aiAgent.updateContext(contextData);

@@ -5,7 +5,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import ROISimulatorPage from "./pages/ROISimulatorPage";
 import ROICalculatorPage from "./pages/ROICalculatorPage";
-import NegotiationToolPage from "./pages/NegotiationToolPage";
 import AdminPage from "./pages/AdminPage";
 import ContractTransparencyPage from "./pages/ContractTransparencyPage";
 import LoginPage from "./pages/LoginPage";
@@ -23,7 +22,6 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/roi-simulator" element={<ROISimulatorPage />} />
             <Route path="/roi-calculator" element={<ROICalculatorPage />} />
-            <Route path="/negotiation-tool" element={<NegotiationToolPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route
               path="/contract-transparency"

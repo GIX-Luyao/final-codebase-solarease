@@ -36,7 +36,7 @@ export default function InputForm({ onNavigateToNegotiation, onNavigateToContrac
             </div>
 
             {/* Middle column */}
-            <div className="Container frame feature-column">
+            <div className="Container frame feature-column clickable" onClick={() => window.dispatchEvent(new CustomEvent('openAIAssistant'))}>
               <div className="Button-container frame">
                 <div className="Button frame icon-box">
                   <img src={iconAi} alt="AI Assistant" width="24" height="24" />

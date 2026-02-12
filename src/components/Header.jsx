@@ -11,7 +11,6 @@ export default function Header() {
 
   const navItems = [
     { label: 'ROI Calculator', path: '/roi-calculator' },
-    { label: 'Negotiation Tool', path: '/negotiation-tool' },
     { label: 'Contracts', path: '/contract-transparency' },
   ];
 
