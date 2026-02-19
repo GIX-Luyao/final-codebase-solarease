@@ -138,3 +138,32 @@
 .auth-footer-text a:hover {
   text-decoration: underline;
 }
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .auth-main {
+    padding: 24px 16px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+  }
+
+  .form-group-login input {
+    padding: 14px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .auth-submit-btn {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+}
