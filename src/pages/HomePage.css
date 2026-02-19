@@ -1,6 +1,71 @@
 .home-page { width:100%; margin:0 auto; box-sizing:border-box; background: #000f1f; color:#f8fafc; font-family:Poppins, sans-serif; padding-top:12px }
 .home-page > * { display:block }
 
+/* Mobile Soli Card - Hidden on desktop */
+.mobile-soli-card {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-soli-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    margin: 24px 0;
+    background: linear-gradient(135deg, rgba(253, 184, 19, 0.1), rgba(13, 162, 231, 0.1));
+    border: 1px solid rgba(253, 184, 19, 0.3);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-soli-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(253, 184, 19, 0.5);
+    box-shadow: 0 8px 24px rgba(253, 184, 19, 0.15);
+  }
+
+  .mobile-soli-card:active {
+    transform: scale(0.98);
+  }
+
+  .soli-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(253, 184, 19, 0.2), rgba(253, 184, 19, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .soli-card-content {
+    flex: 1;
+  }
+
+  .soli-card-content h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 4px 0;
+  }
+
+  .soli-card-content p {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #a3b3c2;
+    margin: 0;
+  }
+
+  .soli-card-arrow {
+    color: #FDB813;
+    flex-shrink: 0;
+  }
+}
+
 /* Narrower content wrapper used by sections for consistent grid */
 .content-wrapper { width:100%; max-width:1200px; margin:0 auto; padding:0 16px; box-sizing:border-box }
 

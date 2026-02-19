@@ -427,4 +427,7 @@
   .export-buttons {
     flex-direction: column;
   }
+  .table-col {
+    justify-content: center;
+  }
 }

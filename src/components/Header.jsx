@@ -9,7 +9,9 @@ export default function Header() {
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const [savedDropdownOpen, setSavedDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   const navItems = [
     { label: 'ROI Calculator', path: '/roi-calculator' },
@@ -22,10 +24,20 @@ export default function Header() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setSavedDropdownOpen(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && !event.target.closest('.hamburger-btn')) {
+        setMobileMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Close mobile menu on navigation
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+    setSavedDropdownOpen(false);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -38,13 +50,13 @@ export default function Header() {
     <header className="chrome-toolbar">
       <div className="chrome-inner">
         <div className="toolbar-left">
-          <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>SolarEase</div>
-          <nav className="nav-links">
+          <div className="brand" onClick={() => handleNavigation('/')} style={{ cursor: 'pointer' }}>SolarEase</div>
+          <nav className="nav-links desktop-nav">
             {navItems.map((item) => (
               <div
                 key={item.path}
                 className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleNavigation(item.path)}
               >
                 {item.label}
               </div>
@@ -72,10 +84,7 @@ export default function Header() {
                   <div className="dropdown-menu">
                     <div
                       className={`dropdown-item ${location.pathname === '/saved-contracts' ? 'active' : ''}`}
-                      onClick={() => {
-                        navigate('/saved-contracts');
-                        setSavedDropdownOpen(false);
-                      }}
+                      onClick={() => handleNavigation('/saved-contracts')}
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -85,10 +94,7 @@ export default function Header() {
                     </div>
                     <div
                       className={`dropdown-item ${location.pathname === '/saved-roi-calculations' ? 'active' : ''}`}
-                      onClick={() => {
-                        navigate('/saved-roi-calculations');
-                        setSavedDropdownOpen(false);
-                      }}
+                      onClick={() => handleNavigation('/saved-roi-calculations')}
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <line x1="12" y1="1" x2="12" y2="23" />
@@ -104,7 +110,7 @@ export default function Header() {
         </div>
 
         <div className="toolbar-right">
-          <div className="auth-wrap">
+          <div className="auth-wrap desktop-auth">
             {isAuthenticated ? (
               <>
                 <span className="user-email">{user?.email}</span>
@@ -114,10 +120,10 @@ export default function Header() {
               </>
             ) : (
               <>
-                <button className="auth-btn login-btn" onClick={() => navigate('/login')}>
+                <button className="auth-btn login-btn" onClick={() => handleNavigation('/login')}>
                   Sign In
                 </button>
-                <button className="auth-btn register-btn" onClick={() => navigate('/register')}>
+                <button className="auth-btn register-btn" onClick={() => handleNavigation('/register')}>
                   Sign Up
                 </button>
               </>
@@ -133,8 +139,83 @@ export default function Header() {
               <img src={githubIcon} alt="GitHub" width="16" height="16" />
             </a>
           </div>
+
+          {/* Hamburger Menu Button */}
+          <button
+            className={`hamburger-btn ${mobileMenuOpen ? 'open' : ''}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`} ref={mobileMenuRef}>
+        <nav className="mobile-nav">
+          {navItems.map((item) => (
+            <div
+              key={item.path}
+              className={`mobile-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={() => handleNavigation(item.path)}
+            >
+              {item.label}
+            </div>
+          ))}
+          {isAuthenticated && (
+            <>
+              <div className="mobile-nav-divider" />
+              <div className="mobile-nav-label">Saved</div>
+              <div
+                className={`mobile-nav-item sub-item ${location.pathname === '/saved-contracts' ? 'active' : ''}`}
+                onClick={() => handleNavigation('/saved-contracts')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14,2 14,8 20,8" />
+                </svg>
+                Contracts
+              </div>
+              <div
+                className={`mobile-nav-item sub-item ${location.pathname === '/saved-roi-calculations' ? 'active' : ''}`}
+                onClick={() => handleNavigation('/saved-roi-calculations')}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                ROI Calculations
+              </div>
+            </>
+          )}
+        </nav>
+
+        <div className="mobile-auth">
+          {isAuthenticated ? (
+            <>
+              <span className="mobile-user-email">{user?.email}</span>
+              <button className="auth-btn logout-btn mobile-auth-btn" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <div className="mobile-auth-buttons">
+              <button className="auth-btn login-btn mobile-auth-btn" onClick={() => handleNavigation('/login')}>
+                Sign In
+              </button>
+              <button className="auth-btn register-btn mobile-auth-btn" onClick={() => handleNavigation('/register')}>
+                Sign Up
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />}
     </header>
   );
 }
